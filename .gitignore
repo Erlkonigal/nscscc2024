@@ -20,3 +20,8 @@ thinpad_top.sim/sim_1/behav/xsim/
 *.log
 *.dcp
 /.lint/
+*/build
+core/.bloop
+core/.metals
+core/.vscode
+core/out
