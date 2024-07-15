@@ -103,7 +103,8 @@ object ALUOp extends ChiselEnum {
         slt, sltu,
         and, or, 
         xor, nor,
-        sll, srl, 
+        mul, mulh, mulhu,
+        sll, srl,
         sra, other = Value
 }
 object ALUAsrc extends ChiselEnum {

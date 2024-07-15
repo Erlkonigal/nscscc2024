@@ -1,4 +1,4 @@
-COMPILER = ../loongarch32r-linux-gnusf-2022-05-20/bin/loongarch32r-linux-gnusf-
+COMPILER = ../../loongarch32r-linux-gnusf-2022-05-20/bin/loongarch32r-linux-gnusf-
 
 GCC = $(COMPILER)gcc
 LD = $(COMPILER)ld
@@ -6,7 +6,7 @@ OBJCOPY = $(COMPILER)objcopy
 OBJDUMP = $(COMPILER)objdump
 
 CFLAGS = -mstrict-align -nostdinc -nostdlib -fno-builtin -mabi=ilp32s -Iinclude
-LDFLAGS = -Tlinker.ld
+LDFLAGS = -Tlinker.ld --print-map
 
 BSP = ../bsp/build/bsp.a
 
@@ -25,7 +25,7 @@ $(BUILD_DIR)/$(IMAGE).bin: $(BUILD_DIR)/$(IMAGE).elf
 	mkdir -p $(BUILD_DIR)
 	$(OBJCOPY) -O binary $< $@
 
-$(BUILD_DIR)/$(IMAGE).elf: $(BSP) $(BUILD_DIR)/$(IMAGE).o
+$(BUILD_DIR)/$(IMAGE).elf: $(BUILD_DIR)/$(IMAGE).o $(BSP)
 	mkdir -p $(BUILD_DIR)
 	$(LD) $(LDFLAGS) $^ -o $@
 

@@ -1,4 +1,4 @@
-COMPILER = ../loongarch32r-linux-gnusf-2022-05-20/bin/loongarch32r-linux-gnusf-
+COMPILER = ../../loongarch32r-linux-gnusf-2022-05-20/bin/loongarch32r-linux-gnusf-
 BUILD_DIR = build
 SRC_DIR = src
 
