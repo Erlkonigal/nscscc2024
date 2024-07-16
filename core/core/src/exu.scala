@@ -68,6 +68,10 @@ class alu extends Module {
     Shifter.io.A := io.A
     Shifter.io.B := io.B(4, 0)
     Shifter.io.Op := io.Op
+
+    val Mul = Module(new mult_gen_0())
+    Mul.io.A := io.A
+    Mul.io.B := io.B
     
     io.Out := MuxLookup(io.Op, 0.U) (Seq(
         ALUOp.add -> FixSum,
@@ -81,12 +85,20 @@ class alu extends Module {
         ALUOp.sll -> Shifter.io.Out,
         ALUOp.srl -> Shifter.io.Out,
         ALUOp.sra -> Shifter.io.Out,
-        ALUOp.mul -> (io.A * io.B)(31, 0),
+        ALUOp.mul -> Mul.io.P,
     ))
 
     io.SLess := SLess
     io.ULess := ULess
     io.Zero := ZF
+}
+
+class mult_gen_0 extends BlackBox {
+    val io = IO(new Bundle {
+        val A = Input(UInt(32.W))
+        val B = Input(UInt(32.W))
+        val P = Output(UInt(32.W))
+    })
 }
 
 class bshifter extends Module {
