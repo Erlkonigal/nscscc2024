@@ -2,25 +2,77 @@ import chisel3._
 import chisel3.util._
 import bundles._
 
-class exu extends Module {
+class exu1 extends Module {
     val io = IO(new Bundle {
-        val prev = Flipped(Decoupled(new idu_exu()))
-        val next = Decoupled(new exu_lsu())
+        val prev = Flipped(Decoupled(new idu_exu1()))
+        val next = Decoupled(new exu1_exu2())
     })
-    val ALU = Module(new alu())
-    ALU.io.A := MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
+
+    val ALUA = MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
         ALUAsrc.rj -> io.prev.bits.rj_data,
         ALUAsrc.pc -> io.prev.bits.pc,
     ))
-    ALU.io.B := MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
+    val ALUB = MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
         ALUBsrc.rk -> io.prev.bits.rk_data,
         ALUBsrc.rd -> io.prev.bits.rd_data,
         ALUBsrc.imm -> io.prev.bits.Imm,
         ALUBsrc.four -> 4.U,
     ))
+
+    val Wallace32 = Module(new wallace(32))
+    val Wallace33 = Module(new wallace(33))
+
+    Wallace32.io.A := ALUA
+    Wallace32.io.B := ALUB // signed
+    Wallace33.io.A := 0.B ## ALUA
+    Wallace33.io.B := 0.B ## ALUB // unsigned
+
+    val MULA = MuxLookup(io.prev.bits.aluOp, Wallace32.io.S1) (Seq(
+        ALUOp.mulhu -> Wallace33.io.S1,
+    ))
+    val MULB = MuxLookup(io.prev.bits.aluOp, Wallace32.io.S2) (Seq(
+        ALUOp.mulhu -> Wallace33.io.S2,
+    ))
+
+    io.next.bits.aluOp := io.prev.bits.aluOp
+    io.next.bits.memOp := io.prev.bits.memOp
+    io.next.bits.branch := io.prev.bits.branch
+    io.next.bits.wbSel := io.prev.bits.wbSel
+    io.next.bits.wbDst := io.prev.bits.wbDst
+    io.next.bits.Imm := io.prev.bits.Imm
+    io.next.bits.rd := io.prev.bits.rd
+    io.next.bits.rd_data := io.prev.bits.rd_data
+    io.next.bits.rj_data := io.prev.bits.rj_data
+    io.next.bits.pc := io.prev.bits.pc
+    io.next.bits.ALUA := ALUA
+    io.next.bits.ALUB := ALUB
+    io.next.bits.MulA := MULA
+    io.next.bits.MulB := MULB
+
+    io.next.valid := io.prev.valid
+    io.prev.ready := 1.B
+}
+
+class exu2 extends Module {
+    val io = IO(new Bundle {
+        val prev = Flipped(Decoupled(new exu1_exu2()))
+        val next = Decoupled(new exu2_lsu())
+    })
+
+    val ALU = Module(new alu())
+    ALU.io.A := io.prev.bits.ALUA
+    ALU.io.B := io.prev.bits.ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
-    io.next.bits.ALUOut := ALU.io.Out
+    val WallaceOut = io.prev.bits.MulA + io.prev.bits.MulB
+
+    val ALUOut = MuxLookup(io.prev.bits.aluOp, ALU.io.Out) (Seq(
+        ALUOp.mul -> WallaceOut(31, 0),
+        ALUOp.mulh -> WallaceOut(63, 32),
+        ALUOp.mulhu -> WallaceOut(63, 32),
+    ))
+
+    io.next.bits.ALUOut := ALUOut
     io.next.bits.SLess := ALU.io.SLess
     io.next.bits.ULess := ALU.io.ULess
     io.next.bits.Zero := ALU.io.Zero
@@ -68,13 +120,6 @@ class alu extends Module {
     Shifter.io.A := io.A
     Shifter.io.B := io.B(4, 0)
     Shifter.io.Op := io.Op
-
-    val SMult = Module(new wallace(32))
-    val UMult = Module(new wallace(33))
-    SMult.io.A := io.A
-    SMult.io.B := io.B
-    UMult.io.A := 0.B ## io.A
-    UMult.io.B := 0.B ## io.B
     
     io.Out := MuxLookup(io.Op, 0.U) (Seq(
         ALUOp.add -> FixSum,
@@ -88,9 +133,6 @@ class alu extends Module {
         ALUOp.sll -> Shifter.io.Out,
         ALUOp.srl -> Shifter.io.Out,
         ALUOp.sra -> Shifter.io.Out,
-        ALUOp.mul -> SMult.io.S(31, 0),
-        ALUOp.mulh -> SMult.io.S(63, 32),
-        ALUOp.mulhu -> UMult.io.S(63, 32),
     ))
 
     io.SLess := SLess
@@ -149,7 +191,6 @@ class WallaceSpec extends AnyFlatSpec {
             dut.io.A.poke(255)
             dut.io.B.poke(255)
             dut.clock.step(1)
-            dut.io.S.expect(1)
         }
     }
 }
@@ -162,7 +203,8 @@ class wallace(n: Int) extends Module {
     val io = IO(new Bundle {
         val A = Input(UInt(n.W))
         val B = Input(UInt(n.W))
-        val S = Output(UInt((2 * n).W))
+        val S1 = Output(UInt((2 * n).W))
+        val S2 = Output(UInt((2 * n).W))
     })
     val odd = n % 2
     val booths = Seq.fill(n / 2)(Module(new booth2(n)))
@@ -211,8 +253,8 @@ class wallace(n: Int) extends Module {
         length = next_length
         cur = tmp
     }
-    io.S := cur(0) + cur(1)
-
+    io.S1 := cur(0)
+    io.S2 := cur(1)
 }
 
 class booth2(n: Int) extends Module {

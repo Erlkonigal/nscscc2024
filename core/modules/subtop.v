@@ -77,55 +77,55 @@ module ifu(	// core/src/ifu.scala:5:7
   assign io_next_bits_inst = io_base_in_bits_data_out;	// core/src/ifu.scala:5:7
 endmodule
 
-module buffer(	// core/src/core.scala:53:7
-  input         clock,	// core/src/core.scala:53:7
-                reset,	// core/src/core.scala:53:7
-                io_prev_valid,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_pc,	// core/src/core.scala:54:16
-                io_prev_bits_inst,	// core/src/core.scala:54:16
-  output        io_next_valid,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_pc,	// core/src/core.scala:54:16
-                io_next_bits_inst	// core/src/core.scala:54:16
+module buffer(	// core/src/core.scala:57:7
+  input         clock,	// core/src/core.scala:57:7
+                reset,	// core/src/core.scala:57:7
+                io_prev_valid,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_pc,	// core/src/core.scala:58:16
+                io_prev_bits_inst,	// core/src/core.scala:58:16
+  output        io_next_valid,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_pc,	// core/src/core.scala:58:16
+                io_next_bits_inst	// core/src/core.scala:58:16
 );
 
-  reg        state;	// core/src/core.scala:58:24
-  reg [31:0] regs_pc;	// core/src/core.scala:61:19
-  reg [31:0] regs_inst;	// core/src/core.scala:61:19
-  always @(posedge clock) begin	// core/src/core.scala:53:7
-    if (reset)	// core/src/core.scala:53:7
-      state <= 1'h0;	// core/src/core.scala:58:24
-    else	// core/src/core.scala:53:7
-      state <= io_prev_valid;	// core/src/core.scala:58:24
-    if (io_prev_valid) begin	// core/src/core.scala:54:16
-      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:61:19
-      regs_inst <= io_prev_bits_inst;	// core/src/core.scala:61:19
+  reg        state;	// core/src/core.scala:62:24
+  reg [31:0] regs_pc;	// core/src/core.scala:65:19
+  reg [31:0] regs_inst;	// core/src/core.scala:65:19
+  always @(posedge clock) begin	// core/src/core.scala:57:7
+    if (reset)	// core/src/core.scala:57:7
+      state <= 1'h0;	// core/src/core.scala:62:24
+    else	// core/src/core.scala:57:7
+      state <= io_prev_valid;	// core/src/core.scala:62:24
+    if (io_prev_valid) begin	// core/src/core.scala:58:16
+      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:65:19
+      regs_inst <= io_prev_bits_inst;	// core/src/core.scala:65:19
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:53:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:53:7
-      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:53:7
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:57:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// core/src/core.scala:53:7
-      automatic logic [31:0] _RANDOM[0:2];	// core/src/core.scala:53:7
-      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:53:7
-        `INIT_RANDOM_PROLOG_	// core/src/core.scala:53:7
+    initial begin	// core/src/core.scala:57:7
+      automatic logic [31:0] _RANDOM[0:2];	// core/src/core.scala:57:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:53:7
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:57:7
         for (logic [1:0] i = 2'h0; i < 2'h3; i += 2'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:53:7
-        end	// core/src/core.scala:53:7
-        state = _RANDOM[2'h0][0];	// core/src/core.scala:53:7, :58:24
-        regs_pc = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_inst = {_RANDOM[2'h1][31:1], _RANDOM[2'h2][0]};	// core/src/core.scala:53:7, :61:19
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:57:7
+        end	// core/src/core.scala:57:7
+        state = _RANDOM[2'h0][0];	// core/src/core.scala:57:7, :62:24
+        regs_pc = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_inst = {_RANDOM[2'h1][31:1], _RANDOM[2'h2][0]};	// core/src/core.scala:57:7, :65:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:53:7
-      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:53:7
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_next_valid = state;	// core/src/core.scala:53:7, :58:24
-  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_inst = regs_inst;	// core/src/core.scala:53:7, :61:19
+  assign io_next_valid = state;	// core/src/core.scala:57:7, :62:24
+  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_inst = regs_inst;	// core/src/core.scala:57:7, :65:19
 endmodule
 
 module ImmGen(	// core/src/idu.scala:171:7
@@ -795,806 +795,1807 @@ module idu(	// core/src/idu.scala:5:7
   assign io_next_bits_pc = io_prev_bits_pc;	// core/src/idu.scala:5:7
 endmodule
 
-module buffer_1(	// core/src/core.scala:53:7
-  input         clock,	// core/src/core.scala:53:7
-                reset,	// core/src/core.scala:53:7
-                io_prev_valid,	// core/src/core.scala:54:16
-  input  [3:0]  io_prev_bits_aluOp,	// core/src/core.scala:54:16
-  input  [1:0]  io_prev_bits_aluAsrc,	// core/src/core.scala:54:16
-  input  [2:0]  io_prev_bits_aluBsrc,	// core/src/core.scala:54:16
-  input  [3:0]  io_prev_bits_memOp,	// core/src/core.scala:54:16
-                io_prev_bits_branch,	// core/src/core.scala:54:16
-  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:54:16
-                io_prev_bits_wbDst,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:54:16
-  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:54:16
-                io_prev_bits_rj_data,	// core/src/core.scala:54:16
-                io_prev_bits_rk_data,	// core/src/core.scala:54:16
-                io_prev_bits_pc,	// core/src/core.scala:54:16
-  output        io_next_valid,	// core/src/core.scala:54:16
-  output [3:0]  io_next_bits_aluOp,	// core/src/core.scala:54:16
-  output [1:0]  io_next_bits_aluAsrc,	// core/src/core.scala:54:16
-  output [2:0]  io_next_bits_aluBsrc,	// core/src/core.scala:54:16
-  output [3:0]  io_next_bits_memOp,	// core/src/core.scala:54:16
-                io_next_bits_branch,	// core/src/core.scala:54:16
-  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:54:16
-                io_next_bits_wbDst,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_Imm,	// core/src/core.scala:54:16
-  output [4:0]  io_next_bits_rd,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:54:16
-                io_next_bits_rj_data,	// core/src/core.scala:54:16
-                io_next_bits_rk_data,	// core/src/core.scala:54:16
-                io_next_bits_pc	// core/src/core.scala:54:16
+module buffer_1(	// core/src/core.scala:57:7
+  input         clock,	// core/src/core.scala:57:7
+                reset,	// core/src/core.scala:57:7
+                io_prev_valid,	// core/src/core.scala:58:16
+  input  [3:0]  io_prev_bits_aluOp,	// core/src/core.scala:58:16
+  input  [1:0]  io_prev_bits_aluAsrc,	// core/src/core.scala:58:16
+  input  [2:0]  io_prev_bits_aluBsrc,	// core/src/core.scala:58:16
+  input  [3:0]  io_prev_bits_memOp,	// core/src/core.scala:58:16
+                io_prev_bits_branch,	// core/src/core.scala:58:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:58:16
+                io_prev_bits_wbDst,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:58:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:58:16
+                io_prev_bits_rj_data,	// core/src/core.scala:58:16
+                io_prev_bits_rk_data,	// core/src/core.scala:58:16
+                io_prev_bits_pc,	// core/src/core.scala:58:16
+  output        io_next_valid,	// core/src/core.scala:58:16
+  output [3:0]  io_next_bits_aluOp,	// core/src/core.scala:58:16
+  output [1:0]  io_next_bits_aluAsrc,	// core/src/core.scala:58:16
+  output [2:0]  io_next_bits_aluBsrc,	// core/src/core.scala:58:16
+  output [3:0]  io_next_bits_memOp,	// core/src/core.scala:58:16
+                io_next_bits_branch,	// core/src/core.scala:58:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:58:16
+                io_next_bits_wbDst,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_Imm,	// core/src/core.scala:58:16
+  output [4:0]  io_next_bits_rd,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:58:16
+                io_next_bits_rj_data,	// core/src/core.scala:58:16
+                io_next_bits_rk_data,	// core/src/core.scala:58:16
+                io_next_bits_pc	// core/src/core.scala:58:16
 );
 
-  reg        state;	// core/src/core.scala:58:24
-  reg [3:0]  regs_aluOp;	// core/src/core.scala:61:19
-  reg [1:0]  regs_aluAsrc;	// core/src/core.scala:61:19
-  reg [2:0]  regs_aluBsrc;	// core/src/core.scala:61:19
-  reg [3:0]  regs_memOp;	// core/src/core.scala:61:19
-  reg [3:0]  regs_branch;	// core/src/core.scala:61:19
-  reg [1:0]  regs_wbSel;	// core/src/core.scala:61:19
-  reg [1:0]  regs_wbDst;	// core/src/core.scala:61:19
-  reg [31:0] regs_Imm;	// core/src/core.scala:61:19
-  reg [4:0]  regs_rd;	// core/src/core.scala:61:19
-  reg [31:0] regs_rd_data;	// core/src/core.scala:61:19
-  reg [31:0] regs_rj_data;	// core/src/core.scala:61:19
-  reg [31:0] regs_rk_data;	// core/src/core.scala:61:19
-  reg [31:0] regs_pc;	// core/src/core.scala:61:19
-  always @(posedge clock) begin	// core/src/core.scala:53:7
-    if (reset)	// core/src/core.scala:53:7
-      state <= 1'h0;	// core/src/core.scala:58:24
-    else	// core/src/core.scala:53:7
-      state <= io_prev_valid;	// core/src/core.scala:58:24
-    if (io_prev_valid) begin	// core/src/core.scala:54:16
-      regs_aluOp <= io_prev_bits_aluOp;	// core/src/core.scala:61:19
-      regs_aluAsrc <= io_prev_bits_aluAsrc;	// core/src/core.scala:61:19
-      regs_aluBsrc <= io_prev_bits_aluBsrc;	// core/src/core.scala:61:19
-      regs_memOp <= io_prev_bits_memOp;	// core/src/core.scala:61:19
-      regs_branch <= io_prev_bits_branch;	// core/src/core.scala:61:19
-      regs_wbSel <= io_prev_bits_wbSel;	// core/src/core.scala:61:19
-      regs_wbDst <= io_prev_bits_wbDst;	// core/src/core.scala:61:19
-      regs_Imm <= io_prev_bits_Imm;	// core/src/core.scala:61:19
-      regs_rd <= io_prev_bits_rd;	// core/src/core.scala:61:19
-      regs_rd_data <= io_prev_bits_rd_data;	// core/src/core.scala:61:19
-      regs_rj_data <= io_prev_bits_rj_data;	// core/src/core.scala:61:19
-      regs_rk_data <= io_prev_bits_rk_data;	// core/src/core.scala:61:19
-      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:61:19
+  reg        state;	// core/src/core.scala:62:24
+  reg [3:0]  regs_aluOp;	// core/src/core.scala:65:19
+  reg [1:0]  regs_aluAsrc;	// core/src/core.scala:65:19
+  reg [2:0]  regs_aluBsrc;	// core/src/core.scala:65:19
+  reg [3:0]  regs_memOp;	// core/src/core.scala:65:19
+  reg [3:0]  regs_branch;	// core/src/core.scala:65:19
+  reg [1:0]  regs_wbSel;	// core/src/core.scala:65:19
+  reg [1:0]  regs_wbDst;	// core/src/core.scala:65:19
+  reg [31:0] regs_Imm;	// core/src/core.scala:65:19
+  reg [4:0]  regs_rd;	// core/src/core.scala:65:19
+  reg [31:0] regs_rd_data;	// core/src/core.scala:65:19
+  reg [31:0] regs_rj_data;	// core/src/core.scala:65:19
+  reg [31:0] regs_rk_data;	// core/src/core.scala:65:19
+  reg [31:0] regs_pc;	// core/src/core.scala:65:19
+  always @(posedge clock) begin	// core/src/core.scala:57:7
+    if (reset)	// core/src/core.scala:57:7
+      state <= 1'h0;	// core/src/core.scala:62:24
+    else	// core/src/core.scala:57:7
+      state <= io_prev_valid;	// core/src/core.scala:62:24
+    if (io_prev_valid) begin	// core/src/core.scala:58:16
+      regs_aluOp <= io_prev_bits_aluOp;	// core/src/core.scala:65:19
+      regs_aluAsrc <= io_prev_bits_aluAsrc;	// core/src/core.scala:65:19
+      regs_aluBsrc <= io_prev_bits_aluBsrc;	// core/src/core.scala:65:19
+      regs_memOp <= io_prev_bits_memOp;	// core/src/core.scala:65:19
+      regs_branch <= io_prev_bits_branch;	// core/src/core.scala:65:19
+      regs_wbSel <= io_prev_bits_wbSel;	// core/src/core.scala:65:19
+      regs_wbDst <= io_prev_bits_wbDst;	// core/src/core.scala:65:19
+      regs_Imm <= io_prev_bits_Imm;	// core/src/core.scala:65:19
+      regs_rd <= io_prev_bits_rd;	// core/src/core.scala:65:19
+      regs_rd_data <= io_prev_bits_rd_data;	// core/src/core.scala:65:19
+      regs_rj_data <= io_prev_bits_rj_data;	// core/src/core.scala:65:19
+      regs_rk_data <= io_prev_bits_rk_data;	// core/src/core.scala:65:19
+      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:65:19
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:53:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:53:7
-      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:53:7
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:57:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// core/src/core.scala:53:7
-      automatic logic [31:0] _RANDOM[0:5];	// core/src/core.scala:53:7
-      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:53:7
-        `INIT_RANDOM_PROLOG_	// core/src/core.scala:53:7
+    initial begin	// core/src/core.scala:57:7
+      automatic logic [31:0] _RANDOM[0:5];	// core/src/core.scala:57:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:53:7
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:57:7
         for (logic [2:0] i = 3'h0; i < 3'h6; i += 3'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:53:7
-        end	// core/src/core.scala:53:7
-        state = _RANDOM[3'h0][0];	// core/src/core.scala:53:7, :58:24
-        regs_aluOp = _RANDOM[3'h0][4:1];	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_aluAsrc = _RANDOM[3'h0][6:5];	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_aluBsrc = _RANDOM[3'h0][9:7];	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_memOp = _RANDOM[3'h0][13:10];	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_branch = _RANDOM[3'h0][17:14];	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_wbSel = _RANDOM[3'h0][19:18];	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_wbDst = _RANDOM[3'h0][21:20];	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_Imm = {_RANDOM[3'h0][31:22], _RANDOM[3'h1][21:0]};	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_rd = _RANDOM[3'h1][26:22];	// core/src/core.scala:53:7, :61:19
-        regs_rd_data = {_RANDOM[3'h1][31:27], _RANDOM[3'h2][26:0]};	// core/src/core.scala:53:7, :61:19
-        regs_rj_data = {_RANDOM[3'h2][31:27], _RANDOM[3'h3][26:0]};	// core/src/core.scala:53:7, :61:19
-        regs_rk_data = {_RANDOM[3'h3][31:27], _RANDOM[3'h4][26:0]};	// core/src/core.scala:53:7, :61:19
-        regs_pc = {_RANDOM[3'h4][31:27], _RANDOM[3'h5][26:0]};	// core/src/core.scala:53:7, :61:19
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:57:7
+        end	// core/src/core.scala:57:7
+        state = _RANDOM[3'h0][0];	// core/src/core.scala:57:7, :62:24
+        regs_aluOp = _RANDOM[3'h0][4:1];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_aluAsrc = _RANDOM[3'h0][6:5];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_aluBsrc = _RANDOM[3'h0][9:7];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_memOp = _RANDOM[3'h0][13:10];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_branch = _RANDOM[3'h0][17:14];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_wbSel = _RANDOM[3'h0][19:18];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_wbDst = _RANDOM[3'h0][21:20];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_Imm = {_RANDOM[3'h0][31:22], _RANDOM[3'h1][21:0]};	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_rd = _RANDOM[3'h1][26:22];	// core/src/core.scala:57:7, :65:19
+        regs_rd_data = {_RANDOM[3'h1][31:27], _RANDOM[3'h2][26:0]};	// core/src/core.scala:57:7, :65:19
+        regs_rj_data = {_RANDOM[3'h2][31:27], _RANDOM[3'h3][26:0]};	// core/src/core.scala:57:7, :65:19
+        regs_rk_data = {_RANDOM[3'h3][31:27], _RANDOM[3'h4][26:0]};	// core/src/core.scala:57:7, :65:19
+        regs_pc = {_RANDOM[3'h4][31:27], _RANDOM[3'h5][26:0]};	// core/src/core.scala:57:7, :65:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:53:7
-      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:53:7
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_next_valid = state;	// core/src/core.scala:53:7, :58:24
-  assign io_next_bits_aluOp = regs_aluOp;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_aluAsrc = regs_aluAsrc;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_aluBsrc = regs_aluBsrc;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_branch = regs_branch;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rk_data = regs_rk_data;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:53:7, :61:19
+  assign io_next_valid = state;	// core/src/core.scala:57:7, :62:24
+  assign io_next_bits_aluOp = regs_aluOp;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_aluAsrc = regs_aluAsrc;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_aluBsrc = regs_aluBsrc;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_branch = regs_branch;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rk_data = regs_rk_data;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:57:7, :65:19
 endmodule
 
-module bshifter(	// core/src/exu.scala:101:7
-  input  [31:0] io_A,	// core/src/exu.scala:102:16
-  input  [4:0]  io_B,	// core/src/exu.scala:102:16
-  input  [3:0]  io_Op,	// core/src/exu.scala:102:16
-  output [31:0] io_Out	// core/src/exu.scala:102:16
+module booth2(	// core/src/exu.scala:260:7
+  input  [31:0] io_A,	// core/src/exu.scala:261:16
+  input  [2:0]  io_B,	// core/src/exu.scala:261:16
+  output [63:0] io_S	// core/src/exu.scala:261:16
 );
 
-  wire _GEN = io_Op != 4'hB;	// core/src/exu.scala:115:53
+  wire [31:0]      _SignExtA_T_1 = {32{io_A[31]}};	// core/src/exu.scala:266:{28,36}
+  wire [64:0]      _GEN =
+    {1'h0, io_B == 3'h2 | io_B == 3'h1 ? {_SignExtA_T_1, io_A} : 64'h0};	// core/src/exu.scala:266:{23,28}, :267:34, :271:31
+  wire [64:0]      _GEN_0 = {1'h0, 64'h0 - {_SignExtA_T_1, io_A}};	// core/src/exu.scala:266:28, :267:34, :271:31, :272:21, :273:21
+  wire [7:0][64:0] _GEN_1 =
+    {{65'h0},
+     {_GEN_0},
+     {_GEN_0},
+     {65'h0 - {_SignExtA_T_1, io_A, 1'h0}},
+     {{_SignExtA_T_1, io_A, 1'h0}},
+     {_GEN},
+     {_GEN},
+     {_GEN}};	// core/src/exu.scala:266:28, :267:34, :271:31, :272:21
+  assign io_S = _GEN_1[io_B][63:0];	// core/src/exu.scala:260:7, :267:{10,34}
+endmodule
+
+module csa(	// core/src/exu.scala:279:7
+  input  [63:0] io_A,	// core/src/exu.scala:280:16
+                io_B,	// core/src/exu.scala:280:16
+                io_Cin,	// core/src/exu.scala:280:16
+  output [63:0] io_S,	// core/src/exu.scala:280:16
+                io_Cout	// core/src/exu.scala:280:16
+);
+
+  assign io_S =
+    {io_A[63] ^ io_B[63] ^ io_Cin[63],
+     io_A[62] ^ io_B[62] ^ io_Cin[62],
+     io_A[61] ^ io_B[61] ^ io_Cin[61],
+     io_A[60] ^ io_B[60] ^ io_Cin[60],
+     io_A[59] ^ io_B[59] ^ io_Cin[59],
+     io_A[58] ^ io_B[58] ^ io_Cin[58],
+     io_A[57] ^ io_B[57] ^ io_Cin[57],
+     io_A[56] ^ io_B[56] ^ io_Cin[56],
+     io_A[55] ^ io_B[55] ^ io_Cin[55],
+     io_A[54] ^ io_B[54] ^ io_Cin[54],
+     io_A[53] ^ io_B[53] ^ io_Cin[53],
+     io_A[52] ^ io_B[52] ^ io_Cin[52],
+     io_A[51] ^ io_B[51] ^ io_Cin[51],
+     io_A[50] ^ io_B[50] ^ io_Cin[50],
+     io_A[49] ^ io_B[49] ^ io_Cin[49],
+     io_A[48] ^ io_B[48] ^ io_Cin[48],
+     io_A[47] ^ io_B[47] ^ io_Cin[47],
+     io_A[46] ^ io_B[46] ^ io_Cin[46],
+     io_A[45] ^ io_B[45] ^ io_Cin[45],
+     io_A[44] ^ io_B[44] ^ io_Cin[44],
+     io_A[43] ^ io_B[43] ^ io_Cin[43],
+     io_A[42] ^ io_B[42] ^ io_Cin[42],
+     io_A[41] ^ io_B[41] ^ io_Cin[41],
+     io_A[40] ^ io_B[40] ^ io_Cin[40],
+     io_A[39] ^ io_B[39] ^ io_Cin[39],
+     io_A[38] ^ io_B[38] ^ io_Cin[38],
+     io_A[37] ^ io_B[37] ^ io_Cin[37],
+     io_A[36] ^ io_B[36] ^ io_Cin[36],
+     io_A[35] ^ io_B[35] ^ io_Cin[35],
+     io_A[34] ^ io_B[34] ^ io_Cin[34],
+     io_A[33] ^ io_B[33] ^ io_Cin[33],
+     io_A[32] ^ io_B[32] ^ io_Cin[32],
+     io_A[31] ^ io_B[31] ^ io_Cin[31],
+     io_A[30] ^ io_B[30] ^ io_Cin[30],
+     io_A[29] ^ io_B[29] ^ io_Cin[29],
+     io_A[28] ^ io_B[28] ^ io_Cin[28],
+     io_A[27] ^ io_B[27] ^ io_Cin[27],
+     io_A[26] ^ io_B[26] ^ io_Cin[26],
+     io_A[25] ^ io_B[25] ^ io_Cin[25],
+     io_A[24] ^ io_B[24] ^ io_Cin[24],
+     io_A[23] ^ io_B[23] ^ io_Cin[23],
+     io_A[22] ^ io_B[22] ^ io_Cin[22],
+     io_A[21] ^ io_B[21] ^ io_Cin[21],
+     io_A[20] ^ io_B[20] ^ io_Cin[20],
+     io_A[19] ^ io_B[19] ^ io_Cin[19],
+     io_A[18] ^ io_B[18] ^ io_Cin[18],
+     io_A[17] ^ io_B[17] ^ io_Cin[17],
+     io_A[16] ^ io_B[16] ^ io_Cin[16],
+     io_A[15] ^ io_B[15] ^ io_Cin[15],
+     io_A[14] ^ io_B[14] ^ io_Cin[14],
+     io_A[13] ^ io_B[13] ^ io_Cin[13],
+     io_A[12] ^ io_B[12] ^ io_Cin[12],
+     io_A[11] ^ io_B[11] ^ io_Cin[11],
+     io_A[10] ^ io_B[10] ^ io_Cin[10],
+     io_A[9] ^ io_B[9] ^ io_Cin[9],
+     io_A[8] ^ io_B[8] ^ io_Cin[8],
+     io_A[7] ^ io_B[7] ^ io_Cin[7],
+     io_A[6] ^ io_B[6] ^ io_Cin[6],
+     io_A[5] ^ io_B[5] ^ io_Cin[5],
+     io_A[4] ^ io_B[4] ^ io_Cin[4],
+     io_A[3] ^ io_B[3] ^ io_Cin[3],
+     io_A[2] ^ io_B[2] ^ io_Cin[2],
+     io_A[1] ^ io_B[1] ^ io_Cin[1],
+     io_A[0] ^ io_B[0] ^ io_Cin[0]};	// core/src/exu.scala:279:7, :290:{21,31,35,43}, :293:15
+  assign io_Cout =
+    {io_A[63] & io_B[63] | io_A[63] & io_Cin[63] | io_B[63] & io_Cin[63],
+     io_A[62] & io_B[62] | io_A[62] & io_Cin[62] | io_B[62] & io_Cin[62],
+     io_A[61] & io_B[61] | io_A[61] & io_Cin[61] | io_B[61] & io_Cin[61],
+     io_A[60] & io_B[60] | io_A[60] & io_Cin[60] | io_B[60] & io_Cin[60],
+     io_A[59] & io_B[59] | io_A[59] & io_Cin[59] | io_B[59] & io_Cin[59],
+     io_A[58] & io_B[58] | io_A[58] & io_Cin[58] | io_B[58] & io_Cin[58],
+     io_A[57] & io_B[57] | io_A[57] & io_Cin[57] | io_B[57] & io_Cin[57],
+     io_A[56] & io_B[56] | io_A[56] & io_Cin[56] | io_B[56] & io_Cin[56],
+     io_A[55] & io_B[55] | io_A[55] & io_Cin[55] | io_B[55] & io_Cin[55],
+     io_A[54] & io_B[54] | io_A[54] & io_Cin[54] | io_B[54] & io_Cin[54],
+     io_A[53] & io_B[53] | io_A[53] & io_Cin[53] | io_B[53] & io_Cin[53],
+     io_A[52] & io_B[52] | io_A[52] & io_Cin[52] | io_B[52] & io_Cin[52],
+     io_A[51] & io_B[51] | io_A[51] & io_Cin[51] | io_B[51] & io_Cin[51],
+     io_A[50] & io_B[50] | io_A[50] & io_Cin[50] | io_B[50] & io_Cin[50],
+     io_A[49] & io_B[49] | io_A[49] & io_Cin[49] | io_B[49] & io_Cin[49],
+     io_A[48] & io_B[48] | io_A[48] & io_Cin[48] | io_B[48] & io_Cin[48],
+     io_A[47] & io_B[47] | io_A[47] & io_Cin[47] | io_B[47] & io_Cin[47],
+     io_A[46] & io_B[46] | io_A[46] & io_Cin[46] | io_B[46] & io_Cin[46],
+     io_A[45] & io_B[45] | io_A[45] & io_Cin[45] | io_B[45] & io_Cin[45],
+     io_A[44] & io_B[44] | io_A[44] & io_Cin[44] | io_B[44] & io_Cin[44],
+     io_A[43] & io_B[43] | io_A[43] & io_Cin[43] | io_B[43] & io_Cin[43],
+     io_A[42] & io_B[42] | io_A[42] & io_Cin[42] | io_B[42] & io_Cin[42],
+     io_A[41] & io_B[41] | io_A[41] & io_Cin[41] | io_B[41] & io_Cin[41],
+     io_A[40] & io_B[40] | io_A[40] & io_Cin[40] | io_B[40] & io_Cin[40],
+     io_A[39] & io_B[39] | io_A[39] & io_Cin[39] | io_B[39] & io_Cin[39],
+     io_A[38] & io_B[38] | io_A[38] & io_Cin[38] | io_B[38] & io_Cin[38],
+     io_A[37] & io_B[37] | io_A[37] & io_Cin[37] | io_B[37] & io_Cin[37],
+     io_A[36] & io_B[36] | io_A[36] & io_Cin[36] | io_B[36] & io_Cin[36],
+     io_A[35] & io_B[35] | io_A[35] & io_Cin[35] | io_B[35] & io_Cin[35],
+     io_A[34] & io_B[34] | io_A[34] & io_Cin[34] | io_B[34] & io_Cin[34],
+     io_A[33] & io_B[33] | io_A[33] & io_Cin[33] | io_B[33] & io_Cin[33],
+     io_A[32] & io_B[32] | io_A[32] & io_Cin[32] | io_B[32] & io_Cin[32],
+     io_A[31] & io_B[31] | io_A[31] & io_Cin[31] | io_B[31] & io_Cin[31],
+     io_A[30] & io_B[30] | io_A[30] & io_Cin[30] | io_B[30] & io_Cin[30],
+     io_A[29] & io_B[29] | io_A[29] & io_Cin[29] | io_B[29] & io_Cin[29],
+     io_A[28] & io_B[28] | io_A[28] & io_Cin[28] | io_B[28] & io_Cin[28],
+     io_A[27] & io_B[27] | io_A[27] & io_Cin[27] | io_B[27] & io_Cin[27],
+     io_A[26] & io_B[26] | io_A[26] & io_Cin[26] | io_B[26] & io_Cin[26],
+     io_A[25] & io_B[25] | io_A[25] & io_Cin[25] | io_B[25] & io_Cin[25],
+     io_A[24] & io_B[24] | io_A[24] & io_Cin[24] | io_B[24] & io_Cin[24],
+     io_A[23] & io_B[23] | io_A[23] & io_Cin[23] | io_B[23] & io_Cin[23],
+     io_A[22] & io_B[22] | io_A[22] & io_Cin[22] | io_B[22] & io_Cin[22],
+     io_A[21] & io_B[21] | io_A[21] & io_Cin[21] | io_B[21] & io_Cin[21],
+     io_A[20] & io_B[20] | io_A[20] & io_Cin[20] | io_B[20] & io_Cin[20],
+     io_A[19] & io_B[19] | io_A[19] & io_Cin[19] | io_B[19] & io_Cin[19],
+     io_A[18] & io_B[18] | io_A[18] & io_Cin[18] | io_B[18] & io_Cin[18],
+     io_A[17] & io_B[17] | io_A[17] & io_Cin[17] | io_B[17] & io_Cin[17],
+     io_A[16] & io_B[16] | io_A[16] & io_Cin[16] | io_B[16] & io_Cin[16],
+     io_A[15] & io_B[15] | io_A[15] & io_Cin[15] | io_B[15] & io_Cin[15],
+     io_A[14] & io_B[14] | io_A[14] & io_Cin[14] | io_B[14] & io_Cin[14],
+     io_A[13] & io_B[13] | io_A[13] & io_Cin[13] | io_B[13] & io_Cin[13],
+     io_A[12] & io_B[12] | io_A[12] & io_Cin[12] | io_B[12] & io_Cin[12],
+     io_A[11] & io_B[11] | io_A[11] & io_Cin[11] | io_B[11] & io_Cin[11],
+     io_A[10] & io_B[10] | io_A[10] & io_Cin[10] | io_B[10] & io_Cin[10],
+     io_A[9] & io_B[9] | io_A[9] & io_Cin[9] | io_B[9] & io_Cin[9],
+     io_A[8] & io_B[8] | io_A[8] & io_Cin[8] | io_B[8] & io_Cin[8],
+     io_A[7] & io_B[7] | io_A[7] & io_Cin[7] | io_B[7] & io_Cin[7],
+     io_A[6] & io_B[6] | io_A[6] & io_Cin[6] | io_B[6] & io_Cin[6],
+     io_A[5] & io_B[5] | io_A[5] & io_Cin[5] | io_B[5] & io_Cin[5],
+     io_A[4] & io_B[4] | io_A[4] & io_Cin[4] | io_B[4] & io_Cin[4],
+     io_A[3] & io_B[3] | io_A[3] & io_Cin[3] | io_B[3] & io_Cin[3],
+     io_A[2] & io_B[2] | io_A[2] & io_Cin[2] | io_B[2] & io_Cin[2],
+     io_A[1] & io_B[1] | io_A[1] & io_Cin[1] | io_B[1] & io_Cin[1],
+     io_A[0] & io_B[0] | io_A[0] & io_Cin[0] | io_B[0] & io_Cin[0]};	// core/src/exu.scala:279:7, :290:{21,31,43}, :291:{29,51,64,75}, :294:21
+endmodule
+
+module wallace(	// core/src/exu.scala:202:7
+  input  [31:0] io_A,	// core/src/exu.scala:203:16
+                io_B,	// core/src/exu.scala:203:16
+  output [63:0] io_S1,	// core/src/exu.scala:203:16
+                io_S2	// core/src/exu.scala:203:16
+);
+
+  wire [63:0] _csas_0_5_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_4_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_4_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_1_3_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_1_3_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_3_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_3_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_1_2_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_1_2_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_2_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_2_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_2_1_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_2_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_1_1_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_1_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_1_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_4_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_4_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_3_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_3_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_2_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_2_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_1_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_io_S;	// core/src/exu.scala:235:47
+  wire [63:0] _csas_0_io_Cout;	// core/src/exu.scala:235:47
+  wire [63:0] _booths_15_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_14_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_13_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_12_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_11_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_10_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_9_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_8_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_7_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_6_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_5_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_4_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_3_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_2_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_1_io_S;	// core/src/exu.scala:210:40
+  wire [63:0] _booths_0_io_S;	// core/src/exu.scala:210:40
+  booth2 booths_0 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B ({io_B[1:0], 1'h0}),	// core/src/exu.scala:218:{30,35}
+    .io_S (_booths_0_io_S)
+  );
+  booth2 booths_1 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[3:1]),	// core/src/exu.scala:214:41
+    .io_S (_booths_1_io_S)
+  );
+  booth2 booths_2 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[5:3]),	// core/src/exu.scala:214:41
+    .io_S (_booths_2_io_S)
+  );
+  booth2 booths_3 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[7:5]),	// core/src/exu.scala:214:41
+    .io_S (_booths_3_io_S)
+  );
+  booth2 booths_4 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[9:7]),	// core/src/exu.scala:214:41
+    .io_S (_booths_4_io_S)
+  );
+  booth2 booths_5 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[11:9]),	// core/src/exu.scala:214:41
+    .io_S (_booths_5_io_S)
+  );
+  booth2 booths_6 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[13:11]),	// core/src/exu.scala:214:41
+    .io_S (_booths_6_io_S)
+  );
+  booth2 booths_7 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[15:13]),	// core/src/exu.scala:214:41
+    .io_S (_booths_7_io_S)
+  );
+  booth2 booths_8 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[17:15]),	// core/src/exu.scala:214:41
+    .io_S (_booths_8_io_S)
+  );
+  booth2 booths_9 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[19:17]),	// core/src/exu.scala:214:41
+    .io_S (_booths_9_io_S)
+  );
+  booth2 booths_10 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[21:19]),	// core/src/exu.scala:214:41
+    .io_S (_booths_10_io_S)
+  );
+  booth2 booths_11 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[23:21]),	// core/src/exu.scala:214:41
+    .io_S (_booths_11_io_S)
+  );
+  booth2 booths_12 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[25:23]),	// core/src/exu.scala:214:41
+    .io_S (_booths_12_io_S)
+  );
+  booth2 booths_13 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[27:25]),	// core/src/exu.scala:214:41
+    .io_S (_booths_13_io_S)
+  );
+  booth2 booths_14 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[29:27]),	// core/src/exu.scala:214:41
+    .io_S (_booths_14_io_S)
+  );
+  booth2 booths_15 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[31:29]),	// core/src/exu.scala:214:41
+    .io_S (_booths_15_io_S)
+  );
+  csa csas_0 (	// core/src/exu.scala:235:47
+    .io_A    (_booths_0_io_S),	// core/src/exu.scala:210:40
+    .io_B    ({_booths_1_io_S[61:0], 2'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_2_io_S[59:0], 4'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_0_io_S),
+    .io_Cout (_csas_0_io_Cout)
+  );
+  csa csas_1 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_3_io_S[57:0], 6'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_4_io_S[55:0], 8'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_5_io_S[53:0], 10'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_1_io_S),
+    .io_Cout (_csas_1_io_Cout)
+  );
+  csa csas_2 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_6_io_S[51:0], 12'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_7_io_S[49:0], 14'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_8_io_S[47:0], 16'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_2_io_S),
+    .io_Cout (_csas_2_io_Cout)
+  );
+  csa csas_3 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_9_io_S[45:0], 18'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_10_io_S[43:0], 20'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_11_io_S[41:0], 22'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_3_io_S),
+    .io_Cout (_csas_3_io_Cout)
+  );
+  csa csas_4 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_12_io_S[39:0], 24'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_13_io_S[37:0], 26'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_14_io_S[35:0], 28'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_4_io_S),
+    .io_Cout (_csas_4_io_Cout)
+  );
+  csa csas_0_1 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_Cin  (_csas_1_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_0_1_io_S),
+    .io_Cout (_csas_0_1_io_Cout)
+  );
+  csa csas_1_1 (	// core/src/exu.scala:235:47
+    .io_A    ({_csas_1_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_B    (_csas_2_io_S),	// core/src/exu.scala:235:47
+    .io_Cin  ({_csas_2_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_S    (_csas_1_1_io_S),
+    .io_Cout (_csas_1_1_io_Cout)
+  );
+  csa csas_2_1 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_3_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_3_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_Cin  (_csas_4_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_2_1_io_S),
+    .io_Cout (_csas_2_1_io_Cout)
+  );
+  csa csas_0_2 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_1_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_1_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_Cin  (_csas_1_1_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_0_2_io_S),
+    .io_Cout (_csas_0_2_io_Cout)
+  );
+  csa csas_1_2 (	// core/src/exu.scala:235:47
+    .io_A    ({_csas_1_1_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_B    (_csas_2_1_io_S),	// core/src/exu.scala:235:47
+    .io_Cin  ({_csas_2_1_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_S    (_csas_1_2_io_S),
+    .io_Cout (_csas_1_2_io_Cout)
+  );
+  csa csas_0_3 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_2_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_2_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_Cin  (_csas_1_2_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_0_3_io_S),
+    .io_Cout (_csas_0_3_io_Cout)
+  );
+  csa csas_1_3 (	// core/src/exu.scala:235:47
+    .io_A    ({_csas_1_2_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_B    ({_csas_4_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_Cin  ({_booths_15_io_S[33:0], 30'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_1_3_io_S),
+    .io_Cout (_csas_1_3_io_Cout)
+  );
+  csa csas_0_4 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_3_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_3_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_Cin  (_csas_1_3_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_0_4_io_S),
+    .io_Cout (_csas_0_4_io_Cout)
+  );
+  csa csas_0_5 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_4_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_4_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_Cin  ({_csas_1_3_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:218:30, :235:47, :243:34
+    .io_S    (io_S1),
+    .io_Cout (_csas_0_5_io_Cout)
+  );
+  assign io_S2 = {_csas_0_5_io_Cout[62:0], 1'h0};	// core/src/exu.scala:202:7, :218:30, :235:47, :243:34
+endmodule
+
+module booth2_16(	// core/src/exu.scala:260:7
+  input  [32:0] io_A,	// core/src/exu.scala:261:16
+  input  [2:0]  io_B,	// core/src/exu.scala:261:16
+  output [65:0] io_S	// core/src/exu.scala:261:16
+);
+
+  wire [32:0]      _SignExtA_T_1 = {33{io_A[32]}};	// core/src/exu.scala:266:{28,36}
+  wire [66:0]      _GEN =
+    {1'h0, io_B == 3'h2 | io_B == 3'h1 ? {_SignExtA_T_1, io_A} : 66'h0};	// core/src/exu.scala:266:{23,28}, :267:34, :271:31
+  wire [66:0]      _GEN_0 = {1'h0, 66'h0 - {_SignExtA_T_1, io_A}};	// core/src/exu.scala:266:28, :267:34, :271:31, :272:21, :273:21
+  wire [7:0][66:0] _GEN_1 =
+    {{67'h0},
+     {_GEN_0},
+     {_GEN_0},
+     {67'h0 - {_SignExtA_T_1, io_A, 1'h0}},
+     {{_SignExtA_T_1, io_A, 1'h0}},
+     {_GEN},
+     {_GEN},
+     {_GEN}};	// core/src/exu.scala:266:28, :267:34, :271:31, :272:21
+  assign io_S = _GEN_1[io_B][65:0];	// core/src/exu.scala:260:7, :267:{10,34}
+endmodule
+
+module csa_14(	// core/src/exu.scala:279:7
+  input  [65:0] io_A,	// core/src/exu.scala:280:16
+                io_B,	// core/src/exu.scala:280:16
+                io_Cin,	// core/src/exu.scala:280:16
+  output [65:0] io_S,	// core/src/exu.scala:280:16
+                io_Cout	// core/src/exu.scala:280:16
+);
+
+  assign io_S =
+    {io_A[65] ^ io_B[65] ^ io_Cin[65],
+     io_A[64] ^ io_B[64] ^ io_Cin[64],
+     io_A[63] ^ io_B[63] ^ io_Cin[63],
+     io_A[62] ^ io_B[62] ^ io_Cin[62],
+     io_A[61] ^ io_B[61] ^ io_Cin[61],
+     io_A[60] ^ io_B[60] ^ io_Cin[60],
+     io_A[59] ^ io_B[59] ^ io_Cin[59],
+     io_A[58] ^ io_B[58] ^ io_Cin[58],
+     io_A[57] ^ io_B[57] ^ io_Cin[57],
+     io_A[56] ^ io_B[56] ^ io_Cin[56],
+     io_A[55] ^ io_B[55] ^ io_Cin[55],
+     io_A[54] ^ io_B[54] ^ io_Cin[54],
+     io_A[53] ^ io_B[53] ^ io_Cin[53],
+     io_A[52] ^ io_B[52] ^ io_Cin[52],
+     io_A[51] ^ io_B[51] ^ io_Cin[51],
+     io_A[50] ^ io_B[50] ^ io_Cin[50],
+     io_A[49] ^ io_B[49] ^ io_Cin[49],
+     io_A[48] ^ io_B[48] ^ io_Cin[48],
+     io_A[47] ^ io_B[47] ^ io_Cin[47],
+     io_A[46] ^ io_B[46] ^ io_Cin[46],
+     io_A[45] ^ io_B[45] ^ io_Cin[45],
+     io_A[44] ^ io_B[44] ^ io_Cin[44],
+     io_A[43] ^ io_B[43] ^ io_Cin[43],
+     io_A[42] ^ io_B[42] ^ io_Cin[42],
+     io_A[41] ^ io_B[41] ^ io_Cin[41],
+     io_A[40] ^ io_B[40] ^ io_Cin[40],
+     io_A[39] ^ io_B[39] ^ io_Cin[39],
+     io_A[38] ^ io_B[38] ^ io_Cin[38],
+     io_A[37] ^ io_B[37] ^ io_Cin[37],
+     io_A[36] ^ io_B[36] ^ io_Cin[36],
+     io_A[35] ^ io_B[35] ^ io_Cin[35],
+     io_A[34] ^ io_B[34] ^ io_Cin[34],
+     io_A[33] ^ io_B[33] ^ io_Cin[33],
+     io_A[32] ^ io_B[32] ^ io_Cin[32],
+     io_A[31] ^ io_B[31] ^ io_Cin[31],
+     io_A[30] ^ io_B[30] ^ io_Cin[30],
+     io_A[29] ^ io_B[29] ^ io_Cin[29],
+     io_A[28] ^ io_B[28] ^ io_Cin[28],
+     io_A[27] ^ io_B[27] ^ io_Cin[27],
+     io_A[26] ^ io_B[26] ^ io_Cin[26],
+     io_A[25] ^ io_B[25] ^ io_Cin[25],
+     io_A[24] ^ io_B[24] ^ io_Cin[24],
+     io_A[23] ^ io_B[23] ^ io_Cin[23],
+     io_A[22] ^ io_B[22] ^ io_Cin[22],
+     io_A[21] ^ io_B[21] ^ io_Cin[21],
+     io_A[20] ^ io_B[20] ^ io_Cin[20],
+     io_A[19] ^ io_B[19] ^ io_Cin[19],
+     io_A[18] ^ io_B[18] ^ io_Cin[18],
+     io_A[17] ^ io_B[17] ^ io_Cin[17],
+     io_A[16] ^ io_B[16] ^ io_Cin[16],
+     io_A[15] ^ io_B[15] ^ io_Cin[15],
+     io_A[14] ^ io_B[14] ^ io_Cin[14],
+     io_A[13] ^ io_B[13] ^ io_Cin[13],
+     io_A[12] ^ io_B[12] ^ io_Cin[12],
+     io_A[11] ^ io_B[11] ^ io_Cin[11],
+     io_A[10] ^ io_B[10] ^ io_Cin[10],
+     io_A[9] ^ io_B[9] ^ io_Cin[9],
+     io_A[8] ^ io_B[8] ^ io_Cin[8],
+     io_A[7] ^ io_B[7] ^ io_Cin[7],
+     io_A[6] ^ io_B[6] ^ io_Cin[6],
+     io_A[5] ^ io_B[5] ^ io_Cin[5],
+     io_A[4] ^ io_B[4] ^ io_Cin[4],
+     io_A[3] ^ io_B[3] ^ io_Cin[3],
+     io_A[2] ^ io_B[2] ^ io_Cin[2],
+     io_A[1] ^ io_B[1] ^ io_Cin[1],
+     io_A[0] ^ io_B[0] ^ io_Cin[0]};	// core/src/exu.scala:279:7, :290:{21,31,35,43}, :293:15
+  assign io_Cout =
+    {io_A[65] & io_B[65] | io_A[65] & io_Cin[65] | io_B[65] & io_Cin[65],
+     io_A[64] & io_B[64] | io_A[64] & io_Cin[64] | io_B[64] & io_Cin[64],
+     io_A[63] & io_B[63] | io_A[63] & io_Cin[63] | io_B[63] & io_Cin[63],
+     io_A[62] & io_B[62] | io_A[62] & io_Cin[62] | io_B[62] & io_Cin[62],
+     io_A[61] & io_B[61] | io_A[61] & io_Cin[61] | io_B[61] & io_Cin[61],
+     io_A[60] & io_B[60] | io_A[60] & io_Cin[60] | io_B[60] & io_Cin[60],
+     io_A[59] & io_B[59] | io_A[59] & io_Cin[59] | io_B[59] & io_Cin[59],
+     io_A[58] & io_B[58] | io_A[58] & io_Cin[58] | io_B[58] & io_Cin[58],
+     io_A[57] & io_B[57] | io_A[57] & io_Cin[57] | io_B[57] & io_Cin[57],
+     io_A[56] & io_B[56] | io_A[56] & io_Cin[56] | io_B[56] & io_Cin[56],
+     io_A[55] & io_B[55] | io_A[55] & io_Cin[55] | io_B[55] & io_Cin[55],
+     io_A[54] & io_B[54] | io_A[54] & io_Cin[54] | io_B[54] & io_Cin[54],
+     io_A[53] & io_B[53] | io_A[53] & io_Cin[53] | io_B[53] & io_Cin[53],
+     io_A[52] & io_B[52] | io_A[52] & io_Cin[52] | io_B[52] & io_Cin[52],
+     io_A[51] & io_B[51] | io_A[51] & io_Cin[51] | io_B[51] & io_Cin[51],
+     io_A[50] & io_B[50] | io_A[50] & io_Cin[50] | io_B[50] & io_Cin[50],
+     io_A[49] & io_B[49] | io_A[49] & io_Cin[49] | io_B[49] & io_Cin[49],
+     io_A[48] & io_B[48] | io_A[48] & io_Cin[48] | io_B[48] & io_Cin[48],
+     io_A[47] & io_B[47] | io_A[47] & io_Cin[47] | io_B[47] & io_Cin[47],
+     io_A[46] & io_B[46] | io_A[46] & io_Cin[46] | io_B[46] & io_Cin[46],
+     io_A[45] & io_B[45] | io_A[45] & io_Cin[45] | io_B[45] & io_Cin[45],
+     io_A[44] & io_B[44] | io_A[44] & io_Cin[44] | io_B[44] & io_Cin[44],
+     io_A[43] & io_B[43] | io_A[43] & io_Cin[43] | io_B[43] & io_Cin[43],
+     io_A[42] & io_B[42] | io_A[42] & io_Cin[42] | io_B[42] & io_Cin[42],
+     io_A[41] & io_B[41] | io_A[41] & io_Cin[41] | io_B[41] & io_Cin[41],
+     io_A[40] & io_B[40] | io_A[40] & io_Cin[40] | io_B[40] & io_Cin[40],
+     io_A[39] & io_B[39] | io_A[39] & io_Cin[39] | io_B[39] & io_Cin[39],
+     io_A[38] & io_B[38] | io_A[38] & io_Cin[38] | io_B[38] & io_Cin[38],
+     io_A[37] & io_B[37] | io_A[37] & io_Cin[37] | io_B[37] & io_Cin[37],
+     io_A[36] & io_B[36] | io_A[36] & io_Cin[36] | io_B[36] & io_Cin[36],
+     io_A[35] & io_B[35] | io_A[35] & io_Cin[35] | io_B[35] & io_Cin[35],
+     io_A[34] & io_B[34] | io_A[34] & io_Cin[34] | io_B[34] & io_Cin[34],
+     io_A[33] & io_B[33] | io_A[33] & io_Cin[33] | io_B[33] & io_Cin[33],
+     io_A[32] & io_B[32] | io_A[32] & io_Cin[32] | io_B[32] & io_Cin[32],
+     io_A[31] & io_B[31] | io_A[31] & io_Cin[31] | io_B[31] & io_Cin[31],
+     io_A[30] & io_B[30] | io_A[30] & io_Cin[30] | io_B[30] & io_Cin[30],
+     io_A[29] & io_B[29] | io_A[29] & io_Cin[29] | io_B[29] & io_Cin[29],
+     io_A[28] & io_B[28] | io_A[28] & io_Cin[28] | io_B[28] & io_Cin[28],
+     io_A[27] & io_B[27] | io_A[27] & io_Cin[27] | io_B[27] & io_Cin[27],
+     io_A[26] & io_B[26] | io_A[26] & io_Cin[26] | io_B[26] & io_Cin[26],
+     io_A[25] & io_B[25] | io_A[25] & io_Cin[25] | io_B[25] & io_Cin[25],
+     io_A[24] & io_B[24] | io_A[24] & io_Cin[24] | io_B[24] & io_Cin[24],
+     io_A[23] & io_B[23] | io_A[23] & io_Cin[23] | io_B[23] & io_Cin[23],
+     io_A[22] & io_B[22] | io_A[22] & io_Cin[22] | io_B[22] & io_Cin[22],
+     io_A[21] & io_B[21] | io_A[21] & io_Cin[21] | io_B[21] & io_Cin[21],
+     io_A[20] & io_B[20] | io_A[20] & io_Cin[20] | io_B[20] & io_Cin[20],
+     io_A[19] & io_B[19] | io_A[19] & io_Cin[19] | io_B[19] & io_Cin[19],
+     io_A[18] & io_B[18] | io_A[18] & io_Cin[18] | io_B[18] & io_Cin[18],
+     io_A[17] & io_B[17] | io_A[17] & io_Cin[17] | io_B[17] & io_Cin[17],
+     io_A[16] & io_B[16] | io_A[16] & io_Cin[16] | io_B[16] & io_Cin[16],
+     io_A[15] & io_B[15] | io_A[15] & io_Cin[15] | io_B[15] & io_Cin[15],
+     io_A[14] & io_B[14] | io_A[14] & io_Cin[14] | io_B[14] & io_Cin[14],
+     io_A[13] & io_B[13] | io_A[13] & io_Cin[13] | io_B[13] & io_Cin[13],
+     io_A[12] & io_B[12] | io_A[12] & io_Cin[12] | io_B[12] & io_Cin[12],
+     io_A[11] & io_B[11] | io_A[11] & io_Cin[11] | io_B[11] & io_Cin[11],
+     io_A[10] & io_B[10] | io_A[10] & io_Cin[10] | io_B[10] & io_Cin[10],
+     io_A[9] & io_B[9] | io_A[9] & io_Cin[9] | io_B[9] & io_Cin[9],
+     io_A[8] & io_B[8] | io_A[8] & io_Cin[8] | io_B[8] & io_Cin[8],
+     io_A[7] & io_B[7] | io_A[7] & io_Cin[7] | io_B[7] & io_Cin[7],
+     io_A[6] & io_B[6] | io_A[6] & io_Cin[6] | io_B[6] & io_Cin[6],
+     io_A[5] & io_B[5] | io_A[5] & io_Cin[5] | io_B[5] & io_Cin[5],
+     io_A[4] & io_B[4] | io_A[4] & io_Cin[4] | io_B[4] & io_Cin[4],
+     io_A[3] & io_B[3] | io_A[3] & io_Cin[3] | io_B[3] & io_Cin[3],
+     io_A[2] & io_B[2] | io_A[2] & io_Cin[2] | io_B[2] & io_Cin[2],
+     io_A[1] & io_B[1] | io_A[1] & io_Cin[1] | io_B[1] & io_Cin[1],
+     io_A[0] & io_B[0] | io_A[0] & io_Cin[0] | io_B[0] & io_Cin[0]};	// core/src/exu.scala:279:7, :290:{21,31,43}, :291:{29,51,64,75}, :294:21
+endmodule
+
+module wallace_1(	// core/src/exu.scala:202:7
+  input  [32:0] io_A,	// core/src/exu.scala:203:16
+                io_B,	// core/src/exu.scala:203:16
+  output [65:0] io_S1,	// core/src/exu.scala:203:16
+                io_S2	// core/src/exu.scala:203:16
+);
+
+  wire [65:0] _csas_0_5_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_4_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_4_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_1_3_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_1_3_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_3_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_3_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_1_2_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_1_2_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_2_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_2_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_3_1_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_3_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_2_1_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_2_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_1_1_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_1_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_1_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_4_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_4_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_3_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_3_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_2_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_2_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_1_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_1_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_io_S;	// core/src/exu.scala:235:47
+  wire [65:0] _csas_0_io_Cout;	// core/src/exu.scala:235:47
+  wire [65:0] _booths_15_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_14_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_13_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_12_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_11_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_10_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_9_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_8_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_7_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_6_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_5_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_4_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_3_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_2_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_1_io_S;	// core/src/exu.scala:210:40
+  wire [65:0] _booths_0_io_S;	// core/src/exu.scala:210:40
+  booth2_16 booths_0 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[2:0]),	// core/src/exu.scala:214:41
+    .io_S (_booths_0_io_S)
+  );
+  booth2_16 booths_1 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[4:2]),	// core/src/exu.scala:214:41
+    .io_S (_booths_1_io_S)
+  );
+  booth2_16 booths_2 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[6:4]),	// core/src/exu.scala:214:41
+    .io_S (_booths_2_io_S)
+  );
+  booth2_16 booths_3 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[8:6]),	// core/src/exu.scala:214:41
+    .io_S (_booths_3_io_S)
+  );
+  booth2_16 booths_4 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[10:8]),	// core/src/exu.scala:214:41
+    .io_S (_booths_4_io_S)
+  );
+  booth2_16 booths_5 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[12:10]),	// core/src/exu.scala:214:41
+    .io_S (_booths_5_io_S)
+  );
+  booth2_16 booths_6 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[14:12]),	// core/src/exu.scala:214:41
+    .io_S (_booths_6_io_S)
+  );
+  booth2_16 booths_7 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[16:14]),	// core/src/exu.scala:214:41
+    .io_S (_booths_7_io_S)
+  );
+  booth2_16 booths_8 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[18:16]),	// core/src/exu.scala:214:41
+    .io_S (_booths_8_io_S)
+  );
+  booth2_16 booths_9 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[20:18]),	// core/src/exu.scala:214:41
+    .io_S (_booths_9_io_S)
+  );
+  booth2_16 booths_10 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[22:20]),	// core/src/exu.scala:214:41
+    .io_S (_booths_10_io_S)
+  );
+  booth2_16 booths_11 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[24:22]),	// core/src/exu.scala:214:41
+    .io_S (_booths_11_io_S)
+  );
+  booth2_16 booths_12 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[26:24]),	// core/src/exu.scala:214:41
+    .io_S (_booths_12_io_S)
+  );
+  booth2_16 booths_13 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[28:26]),	// core/src/exu.scala:214:41
+    .io_S (_booths_13_io_S)
+  );
+  booth2_16 booths_14 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[30:28]),	// core/src/exu.scala:214:41
+    .io_S (_booths_14_io_S)
+  );
+  booth2_16 booths_15 (	// core/src/exu.scala:210:40
+    .io_A (io_A),
+    .io_B (io_B[32:30]),	// core/src/exu.scala:214:41
+    .io_S (_booths_15_io_S)
+  );
+  csa_14 csas_0 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_0_io_S[64:0], 1'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_1_io_S[62:0], 3'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_2_io_S[60:0], 5'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_0_io_S),
+    .io_Cout (_csas_0_io_Cout)
+  );
+  csa_14 csas_1 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_3_io_S[58:0], 7'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_4_io_S[56:0], 9'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_5_io_S[54:0], 11'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_1_io_S),
+    .io_Cout (_csas_1_io_Cout)
+  );
+  csa_14 csas_2 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_6_io_S[52:0], 13'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_7_io_S[50:0], 15'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_8_io_S[48:0], 17'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_2_io_S),
+    .io_Cout (_csas_2_io_Cout)
+  );
+  csa_14 csas_3 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_9_io_S[46:0], 19'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_10_io_S[44:0], 21'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_11_io_S[42:0], 23'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_3_io_S),
+    .io_Cout (_csas_3_io_Cout)
+  );
+  csa_14 csas_4 (	// core/src/exu.scala:235:47
+    .io_A    ({_booths_12_io_S[40:0], 25'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_B    ({_booths_13_io_S[38:0], 27'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  ({_booths_14_io_S[36:0], 29'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_S    (_csas_4_io_S),
+    .io_Cout (_csas_4_io_Cout)
+  );
+  csa_14 csas_0_1 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_Cin  (_csas_1_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_0_1_io_S),
+    .io_Cout (_csas_0_1_io_Cout)
+  );
+  csa_14 csas_1_1 (	// core/src/exu.scala:235:47
+    .io_A    ({_csas_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_B    (_csas_2_io_S),	// core/src/exu.scala:235:47
+    .io_Cin  ({_csas_2_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_S    (_csas_1_1_io_S),
+    .io_Cout (_csas_1_1_io_Cout)
+  );
+  csa_14 csas_2_1 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_3_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_3_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_Cin  (_csas_4_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_2_1_io_S),
+    .io_Cout (_csas_2_1_io_Cout)
+  );
+  csa_14 csas_3_1 (	// core/src/exu.scala:235:47
+    .io_A    ({_csas_4_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_B    ({_booths_15_io_S[34:0], 31'h0}),	// core/src/exu.scala:210:40, :223:{19,37}
+    .io_Cin  (io_B[0] ? 66'h0 - {{33{io_A[32]}}, io_A} : 66'h0),	// core/src/exu.scala:226:{29,34,39,48,56}
+    .io_S    (_csas_3_1_io_S),
+    .io_Cout (_csas_3_1_io_Cout)
+  );
+  csa_14 csas_0_2 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_1_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_Cin  (_csas_1_1_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_0_2_io_S),
+    .io_Cout (_csas_0_2_io_Cout)
+  );
+  csa_14 csas_1_2 (	// core/src/exu.scala:235:47
+    .io_A    ({_csas_1_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_B    (_csas_2_1_io_S),	// core/src/exu.scala:235:47
+    .io_Cin  ({_csas_2_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_S    (_csas_1_2_io_S),
+    .io_Cout (_csas_1_2_io_Cout)
+  );
+  csa_14 csas_0_3 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_2_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_2_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_Cin  (_csas_1_2_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_0_3_io_S),
+    .io_Cout (_csas_0_3_io_Cout)
+  );
+  csa_14 csas_1_3 (	// core/src/exu.scala:235:47
+    .io_A    ({_csas_1_2_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_B    (_csas_3_1_io_S),	// core/src/exu.scala:235:47
+    .io_Cin  ({_csas_3_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_S    (_csas_1_3_io_S),
+    .io_Cout (_csas_1_3_io_Cout)
+  );
+  csa_14 csas_0_4 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_3_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_3_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_Cin  (_csas_1_3_io_S),	// core/src/exu.scala:235:47
+    .io_S    (_csas_0_4_io_S),
+    .io_Cout (_csas_0_4_io_Cout)
+  );
+  csa_14 csas_0_5 (	// core/src/exu.scala:235:47
+    .io_A    (_csas_0_4_io_S),	// core/src/exu.scala:235:47
+    .io_B    ({_csas_0_4_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_Cin  ({_csas_1_3_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:223:37, :235:47, :243:34
+    .io_S    (io_S1),
+    .io_Cout (_csas_0_5_io_Cout)
+  );
+  assign io_S2 = {_csas_0_5_io_Cout[64:0], 1'h0};	// core/src/exu.scala:202:7, :223:37, :235:47, :243:34
+endmodule
+
+module exu1(	// core/src/exu.scala:5:7
+  input         io_prev_valid,	// core/src/exu.scala:6:16
+  input  [3:0]  io_prev_bits_aluOp,	// core/src/exu.scala:6:16
+  input  [1:0]  io_prev_bits_aluAsrc,	// core/src/exu.scala:6:16
+  input  [2:0]  io_prev_bits_aluBsrc,	// core/src/exu.scala:6:16
+  input  [3:0]  io_prev_bits_memOp,	// core/src/exu.scala:6:16
+                io_prev_bits_branch,	// core/src/exu.scala:6:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/exu.scala:6:16
+                io_prev_bits_wbDst,	// core/src/exu.scala:6:16
+  input  [31:0] io_prev_bits_Imm,	// core/src/exu.scala:6:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/exu.scala:6:16
+  input  [31:0] io_prev_bits_rd_data,	// core/src/exu.scala:6:16
+                io_prev_bits_rj_data,	// core/src/exu.scala:6:16
+                io_prev_bits_rk_data,	// core/src/exu.scala:6:16
+                io_prev_bits_pc,	// core/src/exu.scala:6:16
+  output        io_next_valid,	// core/src/exu.scala:6:16
+  output [3:0]  io_next_bits_aluOp,	// core/src/exu.scala:6:16
+                io_next_bits_memOp,	// core/src/exu.scala:6:16
+                io_next_bits_branch,	// core/src/exu.scala:6:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/exu.scala:6:16
+                io_next_bits_wbDst,	// core/src/exu.scala:6:16
+  output [31:0] io_next_bits_Imm,	// core/src/exu.scala:6:16
+  output [4:0]  io_next_bits_rd,	// core/src/exu.scala:6:16
+  output [31:0] io_next_bits_rd_data,	// core/src/exu.scala:6:16
+                io_next_bits_rj_data,	// core/src/exu.scala:6:16
+                io_next_bits_pc,	// core/src/exu.scala:6:16
+                io_next_bits_ALUA,	// core/src/exu.scala:6:16
+                io_next_bits_ALUB,	// core/src/exu.scala:6:16
+  output [63:0] io_next_bits_MulA,	// core/src/exu.scala:6:16
+                io_next_bits_MulB	// core/src/exu.scala:6:16
+);
+
+  wire [65:0] _Wallace33_io_S1;	// core/src/exu.scala:23:27
+  wire [65:0] _Wallace33_io_S2;	// core/src/exu.scala:23:27
+  wire [63:0] _Wallace32_io_S1;	// core/src/exu.scala:22:27
+  wire [63:0] _Wallace32_io_S2;	// core/src/exu.scala:22:27
+  wire [31:0] ALUA =
+    io_prev_bits_aluAsrc == 2'h1
+      ? io_prev_bits_pc
+      : io_prev_bits_aluAsrc == 2'h0 ? io_prev_bits_rj_data : 32'h0;	// core/src/exu.scala:11:53
+  wire [31:0] ALUB =
+    io_prev_bits_aluBsrc == 3'h3
+      ? 32'h4
+      : io_prev_bits_aluBsrc == 3'h2
+          ? io_prev_bits_Imm
+          : io_prev_bits_aluBsrc == 3'h1
+              ? io_prev_bits_rd_data
+              : io_prev_bits_aluBsrc == 3'h0 ? io_prev_bits_rk_data : 32'h0;	// core/src/exu.scala:11:53, :15:53
+  wallace Wallace32 (	// core/src/exu.scala:22:27
+    .io_A  (ALUA),	// core/src/exu.scala:11:53
+    .io_B  (ALUB),	// core/src/exu.scala:15:53
+    .io_S1 (_Wallace32_io_S1),
+    .io_S2 (_Wallace32_io_S2)
+  );
+  wallace_1 Wallace33 (	// core/src/exu.scala:23:27
+    .io_A  ({1'h0, ALUA}),	// core/src/exu.scala:11:53, :27:27
+    .io_B  ({1'h0, ALUB}),	// core/src/exu.scala:11:53, :15:53, :28:27
+    .io_S1 (_Wallace33_io_S1),
+    .io_S2 (_Wallace33_io_S2)
+  );
+  assign io_next_valid = io_prev_valid;	// core/src/exu.scala:5:7
+  assign io_next_bits_aluOp = io_prev_bits_aluOp;	// core/src/exu.scala:5:7
+  assign io_next_bits_memOp = io_prev_bits_memOp;	// core/src/exu.scala:5:7
+  assign io_next_bits_branch = io_prev_bits_branch;	// core/src/exu.scala:5:7
+  assign io_next_bits_wbSel = io_prev_bits_wbSel;	// core/src/exu.scala:5:7
+  assign io_next_bits_wbDst = io_prev_bits_wbDst;	// core/src/exu.scala:5:7
+  assign io_next_bits_Imm = io_prev_bits_Imm;	// core/src/exu.scala:5:7
+  assign io_next_bits_rd = io_prev_bits_rd;	// core/src/exu.scala:5:7
+  assign io_next_bits_rd_data = io_prev_bits_rd_data;	// core/src/exu.scala:5:7
+  assign io_next_bits_rj_data = io_prev_bits_rj_data;	// core/src/exu.scala:5:7
+  assign io_next_bits_pc = io_prev_bits_pc;	// core/src/exu.scala:5:7
+  assign io_next_bits_ALUA = ALUA;	// core/src/exu.scala:5:7, :11:53
+  assign io_next_bits_ALUB = ALUB;	// core/src/exu.scala:5:7, :15:53
+  assign io_next_bits_MulA =
+    io_prev_bits_aluOp == 4'hA ? _Wallace33_io_S1[63:0] : _Wallace32_io_S1;	// core/src/exu.scala:5:7, :22:27, :23:27, :30:63
+  assign io_next_bits_MulB =
+    io_prev_bits_aluOp == 4'hA ? _Wallace33_io_S2[63:0] : _Wallace32_io_S2;	// core/src/exu.scala:5:7, :22:27, :23:27, :30:63, :33:63
+endmodule
+
+module buffer_2(	// core/src/core.scala:57:7
+  input         clock,	// core/src/core.scala:57:7
+                reset,	// core/src/core.scala:57:7
+                io_prev_valid,	// core/src/core.scala:58:16
+  input  [3:0]  io_prev_bits_aluOp,	// core/src/core.scala:58:16
+                io_prev_bits_memOp,	// core/src/core.scala:58:16
+                io_prev_bits_branch,	// core/src/core.scala:58:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:58:16
+                io_prev_bits_wbDst,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:58:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:58:16
+                io_prev_bits_rj_data,	// core/src/core.scala:58:16
+                io_prev_bits_pc,	// core/src/core.scala:58:16
+                io_prev_bits_ALUA,	// core/src/core.scala:58:16
+                io_prev_bits_ALUB,	// core/src/core.scala:58:16
+  input  [63:0] io_prev_bits_MulA,	// core/src/core.scala:58:16
+                io_prev_bits_MulB,	// core/src/core.scala:58:16
+  output        io_next_valid,	// core/src/core.scala:58:16
+  output [3:0]  io_next_bits_aluOp,	// core/src/core.scala:58:16
+                io_next_bits_memOp,	// core/src/core.scala:58:16
+                io_next_bits_branch,	// core/src/core.scala:58:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:58:16
+                io_next_bits_wbDst,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_Imm,	// core/src/core.scala:58:16
+  output [4:0]  io_next_bits_rd,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:58:16
+                io_next_bits_rj_data,	// core/src/core.scala:58:16
+                io_next_bits_pc,	// core/src/core.scala:58:16
+                io_next_bits_ALUA,	// core/src/core.scala:58:16
+                io_next_bits_ALUB,	// core/src/core.scala:58:16
+  output [63:0] io_next_bits_MulA,	// core/src/core.scala:58:16
+                io_next_bits_MulB	// core/src/core.scala:58:16
+);
+
+  reg        state;	// core/src/core.scala:62:24
+  reg [3:0]  regs_aluOp;	// core/src/core.scala:65:19
+  reg [3:0]  regs_memOp;	// core/src/core.scala:65:19
+  reg [3:0]  regs_branch;	// core/src/core.scala:65:19
+  reg [1:0]  regs_wbSel;	// core/src/core.scala:65:19
+  reg [1:0]  regs_wbDst;	// core/src/core.scala:65:19
+  reg [31:0] regs_Imm;	// core/src/core.scala:65:19
+  reg [4:0]  regs_rd;	// core/src/core.scala:65:19
+  reg [31:0] regs_rd_data;	// core/src/core.scala:65:19
+  reg [31:0] regs_rj_data;	// core/src/core.scala:65:19
+  reg [31:0] regs_pc;	// core/src/core.scala:65:19
+  reg [31:0] regs_ALUA;	// core/src/core.scala:65:19
+  reg [31:0] regs_ALUB;	// core/src/core.scala:65:19
+  reg [63:0] regs_MulA;	// core/src/core.scala:65:19
+  reg [63:0] regs_MulB;	// core/src/core.scala:65:19
+  always @(posedge clock) begin	// core/src/core.scala:57:7
+    if (reset)	// core/src/core.scala:57:7
+      state <= 1'h0;	// core/src/core.scala:62:24
+    else	// core/src/core.scala:57:7
+      state <= io_prev_valid;	// core/src/core.scala:62:24
+    if (io_prev_valid) begin	// core/src/core.scala:58:16
+      regs_aluOp <= io_prev_bits_aluOp;	// core/src/core.scala:65:19
+      regs_memOp <= io_prev_bits_memOp;	// core/src/core.scala:65:19
+      regs_branch <= io_prev_bits_branch;	// core/src/core.scala:65:19
+      regs_wbSel <= io_prev_bits_wbSel;	// core/src/core.scala:65:19
+      regs_wbDst <= io_prev_bits_wbDst;	// core/src/core.scala:65:19
+      regs_Imm <= io_prev_bits_Imm;	// core/src/core.scala:65:19
+      regs_rd <= io_prev_bits_rd;	// core/src/core.scala:65:19
+      regs_rd_data <= io_prev_bits_rd_data;	// core/src/core.scala:65:19
+      regs_rj_data <= io_prev_bits_rj_data;	// core/src/core.scala:65:19
+      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:65:19
+      regs_ALUA <= io_prev_bits_ALUA;	// core/src/core.scala:65:19
+      regs_ALUB <= io_prev_bits_ALUB;	// core/src/core.scala:65:19
+      regs_MulA <= io_prev_bits_MulA;	// core/src/core.scala:65:19
+      regs_MulB <= io_prev_bits_MulB;	// core/src/core.scala:65:19
+    end
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:57:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
+    `endif // FIRRTL_BEFORE_INITIAL
+    initial begin	// core/src/core.scala:57:7
+      automatic logic [31:0] _RANDOM[0:10];	// core/src/core.scala:57:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
+      `endif // INIT_RANDOM_PROLOG_
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:57:7
+        for (logic [3:0] i = 4'h0; i < 4'hB; i += 4'h1) begin
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:57:7
+        end	// core/src/core.scala:57:7
+        state = _RANDOM[4'h0][0];	// core/src/core.scala:57:7, :62:24
+        regs_aluOp = _RANDOM[4'h0][4:1];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_memOp = _RANDOM[4'h0][8:5];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_branch = _RANDOM[4'h0][12:9];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_wbSel = _RANDOM[4'h0][14:13];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_wbDst = _RANDOM[4'h0][16:15];	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_Imm = {_RANDOM[4'h0][31:17], _RANDOM[4'h1][16:0]};	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_rd = _RANDOM[4'h1][21:17];	// core/src/core.scala:57:7, :65:19
+        regs_rd_data = {_RANDOM[4'h1][31:22], _RANDOM[4'h2][21:0]};	// core/src/core.scala:57:7, :65:19
+        regs_rj_data = {_RANDOM[4'h2][31:22], _RANDOM[4'h3][21:0]};	// core/src/core.scala:57:7, :65:19
+        regs_pc = {_RANDOM[4'h3][31:22], _RANDOM[4'h4][21:0]};	// core/src/core.scala:57:7, :65:19
+        regs_ALUA = {_RANDOM[4'h4][31:22], _RANDOM[4'h5][21:0]};	// core/src/core.scala:57:7, :65:19
+        regs_ALUB = {_RANDOM[4'h5][31:22], _RANDOM[4'h6][21:0]};	// core/src/core.scala:57:7, :65:19
+        regs_MulA = {_RANDOM[4'h6][31:22], _RANDOM[4'h7], _RANDOM[4'h8][21:0]};	// core/src/core.scala:57:7, :65:19
+        regs_MulB = {_RANDOM[4'h8][31:22], _RANDOM[4'h9], _RANDOM[4'hA][21:0]};	// core/src/core.scala:57:7, :65:19
+      `endif // RANDOMIZE_REG_INIT
+    end // initial
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
+    `endif // FIRRTL_AFTER_INITIAL
+  `endif // ENABLE_INITIAL_REG_
+  assign io_next_valid = state;	// core/src/core.scala:57:7, :62:24
+  assign io_next_bits_aluOp = regs_aluOp;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_branch = regs_branch;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_ALUA = regs_ALUA;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_ALUB = regs_ALUB;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_MulA = regs_MulA;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_MulB = regs_MulB;	// core/src/core.scala:57:7, :65:19
+endmodule
+
+module bshifter(	// core/src/exu.scala:143:7
+  input  [31:0] io_A,	// core/src/exu.scala:144:16
+  input  [4:0]  io_B,	// core/src/exu.scala:144:16
+  input  [3:0]  io_Op,	// core/src/exu.scala:144:16
+  output [31:0] io_Out	// core/src/exu.scala:144:16
+);
+
+  wire _GEN = io_Op != 4'hB;	// core/src/exu.scala:157:53
   wire Shifter_1_0 =
-    io_B[0] ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[1] : _GEN & io_A[0]) : io_A[0];	// core/src/exu.scala:110:24, :114:{37,43}, :115:53
+    io_B[0] ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[1] : _GEN & io_A[0]) : io_A[0];	// core/src/exu.scala:152:24, :156:{37,43}, :157:53
   wire Shifter_1_1 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[2] : io_Op == 4'hB ? io_A[0] : io_A[1])
-      : io_A[1];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[1];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_2 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[3] : io_Op == 4'hB ? io_A[1] : io_A[2])
-      : io_A[2];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[2];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_3 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[4] : io_Op == 4'hB ? io_A[2] : io_A[3])
-      : io_A[3];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[3];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_4 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[5] : io_Op == 4'hB ? io_A[3] : io_A[4])
-      : io_A[4];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[4];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_5 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[6] : io_Op == 4'hB ? io_A[4] : io_A[5])
-      : io_A[5];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[5];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_6 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[7] : io_Op == 4'hB ? io_A[5] : io_A[6])
-      : io_A[6];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[6];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_7 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[8] : io_Op == 4'hB ? io_A[6] : io_A[7])
-      : io_A[7];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[7];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_8 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[9] : io_Op == 4'hB ? io_A[7] : io_A[8])
-      : io_A[8];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[8];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_9 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[10] : io_Op == 4'hB ? io_A[8] : io_A[9])
-      : io_A[9];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[9];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_10 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[11] : io_Op == 4'hB ? io_A[9] : io_A[10])
-      : io_A[10];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[10];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_11 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[12] : io_Op == 4'hB ? io_A[10] : io_A[11])
-      : io_A[11];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[11];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_12 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[13] : io_Op == 4'hB ? io_A[11] : io_A[12])
-      : io_A[12];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[12];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_13 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[14] : io_Op == 4'hB ? io_A[12] : io_A[13])
-      : io_A[13];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[13];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_14 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[15] : io_Op == 4'hB ? io_A[13] : io_A[14])
-      : io_A[14];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[14];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_15 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[16] : io_Op == 4'hB ? io_A[14] : io_A[15])
-      : io_A[15];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[15];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_16 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[17] : io_Op == 4'hB ? io_A[15] : io_A[16])
-      : io_A[16];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[16];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_17 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[18] : io_Op == 4'hB ? io_A[16] : io_A[17])
-      : io_A[17];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[17];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_18 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[19] : io_Op == 4'hB ? io_A[17] : io_A[18])
-      : io_A[18];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[18];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_19 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[20] : io_Op == 4'hB ? io_A[18] : io_A[19])
-      : io_A[19];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[19];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_20 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[21] : io_Op == 4'hB ? io_A[19] : io_A[20])
-      : io_A[20];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[20];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_21 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[22] : io_Op == 4'hB ? io_A[20] : io_A[21])
-      : io_A[21];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[21];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_22 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[23] : io_Op == 4'hB ? io_A[21] : io_A[22])
-      : io_A[22];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[22];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_23 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[24] : io_Op == 4'hB ? io_A[22] : io_A[23])
-      : io_A[23];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[23];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_24 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[25] : io_Op == 4'hB ? io_A[23] : io_A[24])
-      : io_A[24];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[24];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_25 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[26] : io_Op == 4'hB ? io_A[24] : io_A[25])
-      : io_A[25];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[25];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_26 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[27] : io_Op == 4'hB ? io_A[25] : io_A[26])
-      : io_A[26];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[26];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_27 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[28] : io_Op == 4'hB ? io_A[26] : io_A[27])
-      : io_A[27];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[27];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_28 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[29] : io_Op == 4'hB ? io_A[27] : io_A[28])
-      : io_A[28];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[28];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_29 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[30] : io_Op == 4'hB ? io_A[28] : io_A[29])
-      : io_A[29];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
+      : io_A[29];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
   wire Shifter_1_30 =
     io_B[0]
       ? (io_Op == 4'hD | io_Op == 4'hC ? io_A[31] : io_Op == 4'hB ? io_A[29] : io_A[30])
-      : io_A[30];	// core/src/exu.scala:110:24, :114:43, :115:53, :130:37, :131:53
-  wire _GEN_0 = io_Op != 4'hC;	// core/src/exu.scala:115:53, :123:53
+      : io_A[30];	// core/src/exu.scala:152:24, :156:43, :157:53, :172:37, :173:53
+  wire _GEN_0 = io_Op != 4'hC;	// core/src/exu.scala:157:53, :165:53
   wire Shifter_1_31 =
     ~(io_B[0]) | io_Op == 4'hD
       ? io_A[31]
-      : _GEN_0 & (io_Op == 4'hB ? io_A[30] : io_A[31]);	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53
+      : _GEN_0 & (io_Op == 4'hB ? io_A[30] : io_A[31]);	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53
   wire Shifter_2_0 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_1_2 : _GEN & Shifter_1_0)
-      : Shifter_1_0;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_1_0;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_2_1 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_1_3 : _GEN & Shifter_1_1)
-      : Shifter_1_1;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_1_1;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_2_2 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_4
            : io_Op == 4'hB ? Shifter_1_0 : Shifter_1_2)
-      : Shifter_1_2;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37, :131:53
+      : Shifter_1_2;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37, :173:53
   wire Shifter_2_3 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_5
            : io_Op == 4'hB ? Shifter_1_1 : Shifter_1_3)
-      : Shifter_1_3;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_3;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_4 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_6
            : io_Op == 4'hB ? Shifter_1_2 : Shifter_1_4)
-      : Shifter_1_4;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_4;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_5 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_7
            : io_Op == 4'hB ? Shifter_1_3 : Shifter_1_5)
-      : Shifter_1_5;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_5;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_6 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_8
            : io_Op == 4'hB ? Shifter_1_4 : Shifter_1_6)
-      : Shifter_1_6;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_6;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_7 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_9
            : io_Op == 4'hB ? Shifter_1_5 : Shifter_1_7)
-      : Shifter_1_7;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_7;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_8 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_10
            : io_Op == 4'hB ? Shifter_1_6 : Shifter_1_8)
-      : Shifter_1_8;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_8;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_9 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_11
            : io_Op == 4'hB ? Shifter_1_7 : Shifter_1_9)
-      : Shifter_1_9;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_9;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_10 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_12
            : io_Op == 4'hB ? Shifter_1_8 : Shifter_1_10)
-      : Shifter_1_10;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_10;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_11 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_13
            : io_Op == 4'hB ? Shifter_1_9 : Shifter_1_11)
-      : Shifter_1_11;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_11;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_12 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_14
            : io_Op == 4'hB ? Shifter_1_10 : Shifter_1_12)
-      : Shifter_1_12;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_12;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_13 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_15
            : io_Op == 4'hB ? Shifter_1_11 : Shifter_1_13)
-      : Shifter_1_13;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_13;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_14 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_16
            : io_Op == 4'hB ? Shifter_1_12 : Shifter_1_14)
-      : Shifter_1_14;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_14;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_15 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_17
            : io_Op == 4'hB ? Shifter_1_13 : Shifter_1_15)
-      : Shifter_1_15;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_15;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_16 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_18
            : io_Op == 4'hB ? Shifter_1_14 : Shifter_1_16)
-      : Shifter_1_16;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_16;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_17 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_19
            : io_Op == 4'hB ? Shifter_1_15 : Shifter_1_17)
-      : Shifter_1_17;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_17;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_18 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_20
            : io_Op == 4'hB ? Shifter_1_16 : Shifter_1_18)
-      : Shifter_1_18;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_18;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_19 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_21
            : io_Op == 4'hB ? Shifter_1_17 : Shifter_1_19)
-      : Shifter_1_19;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_19;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_20 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_22
            : io_Op == 4'hB ? Shifter_1_18 : Shifter_1_20)
-      : Shifter_1_20;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_20;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_21 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_23
            : io_Op == 4'hB ? Shifter_1_19 : Shifter_1_21)
-      : Shifter_1_21;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_21;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_22 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_24
            : io_Op == 4'hB ? Shifter_1_20 : Shifter_1_22)
-      : Shifter_1_22;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_22;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_23 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_25
            : io_Op == 4'hB ? Shifter_1_21 : Shifter_1_23)
-      : Shifter_1_23;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_23;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_24 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_26
            : io_Op == 4'hB ? Shifter_1_22 : Shifter_1_24)
-      : Shifter_1_24;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_24;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_25 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_27
            : io_Op == 4'hB ? Shifter_1_23 : Shifter_1_25)
-      : Shifter_1_25;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_25;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_26 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_28
            : io_Op == 4'hB ? Shifter_1_24 : Shifter_1_26)
-      : Shifter_1_26;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_26;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_27 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_29
            : io_Op == 4'hB ? Shifter_1_25 : Shifter_1_27)
-      : Shifter_1_27;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_27;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_28 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_30
            : io_Op == 4'hB ? Shifter_1_26 : Shifter_1_28)
-      : Shifter_1_28;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_1_28;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_2_29 =
     io_B[1]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_1_31
            : io_Op == 4'hB ? Shifter_1_27 : Shifter_1_29)
-      : Shifter_1_29;	// core/src/exu.scala:114:43, :115:53, :122:37, :130:37, :131:53
+      : Shifter_1_29;	// core/src/exu.scala:156:43, :157:53, :164:37, :172:37, :173:53
   wire Shifter_2_30 =
     io_B[1]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_1_28 : Shifter_1_30))
-      : Shifter_1_30;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_1_30;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_2_31 =
     io_B[1]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_1_29 : Shifter_1_31))
-      : Shifter_1_31;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_1_31;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_3_0 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_2_4 : _GEN & Shifter_2_0)
-      : Shifter_2_0;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_2_0;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_3_1 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_2_5 : _GEN & Shifter_2_1)
-      : Shifter_2_1;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_2_1;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_3_2 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_2_6 : _GEN & Shifter_2_2)
-      : Shifter_2_2;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_2_2;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_3_3 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_2_7 : _GEN & Shifter_2_3)
-      : Shifter_2_3;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_2_3;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_3_4 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_8
            : io_Op == 4'hB ? Shifter_2_0 : Shifter_2_4)
-      : Shifter_2_4;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37, :131:53
+      : Shifter_2_4;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37, :173:53
   wire Shifter_3_5 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_9
            : io_Op == 4'hB ? Shifter_2_1 : Shifter_2_5)
-      : Shifter_2_5;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37, :131:53
+      : Shifter_2_5;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37, :173:53
   wire Shifter_3_6 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_10
            : io_Op == 4'hB ? Shifter_2_2 : Shifter_2_6)
-      : Shifter_2_6;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_6;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_7 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_11
            : io_Op == 4'hB ? Shifter_2_3 : Shifter_2_7)
-      : Shifter_2_7;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_7;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_8 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_12
            : io_Op == 4'hB ? Shifter_2_4 : Shifter_2_8)
-      : Shifter_2_8;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_8;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_9 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_13
            : io_Op == 4'hB ? Shifter_2_5 : Shifter_2_9)
-      : Shifter_2_9;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_9;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_10 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_14
            : io_Op == 4'hB ? Shifter_2_6 : Shifter_2_10)
-      : Shifter_2_10;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_10;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_11 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_15
            : io_Op == 4'hB ? Shifter_2_7 : Shifter_2_11)
-      : Shifter_2_11;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_11;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_12 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_16
            : io_Op == 4'hB ? Shifter_2_8 : Shifter_2_12)
-      : Shifter_2_12;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_12;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_13 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_17
            : io_Op == 4'hB ? Shifter_2_9 : Shifter_2_13)
-      : Shifter_2_13;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_13;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_14 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_18
            : io_Op == 4'hB ? Shifter_2_10 : Shifter_2_14)
-      : Shifter_2_14;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_14;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_15 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_19
            : io_Op == 4'hB ? Shifter_2_11 : Shifter_2_15)
-      : Shifter_2_15;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_15;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_16 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_20
            : io_Op == 4'hB ? Shifter_2_12 : Shifter_2_16)
-      : Shifter_2_16;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_16;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_17 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_21
            : io_Op == 4'hB ? Shifter_2_13 : Shifter_2_17)
-      : Shifter_2_17;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_17;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_18 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_22
            : io_Op == 4'hB ? Shifter_2_14 : Shifter_2_18)
-      : Shifter_2_18;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_18;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_19 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_23
            : io_Op == 4'hB ? Shifter_2_15 : Shifter_2_19)
-      : Shifter_2_19;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_19;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_20 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_24
            : io_Op == 4'hB ? Shifter_2_16 : Shifter_2_20)
-      : Shifter_2_20;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_20;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_21 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_25
            : io_Op == 4'hB ? Shifter_2_17 : Shifter_2_21)
-      : Shifter_2_21;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_21;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_22 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_26
            : io_Op == 4'hB ? Shifter_2_18 : Shifter_2_22)
-      : Shifter_2_22;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_22;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_23 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_27
            : io_Op == 4'hB ? Shifter_2_19 : Shifter_2_23)
-      : Shifter_2_23;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_23;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_24 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_28
            : io_Op == 4'hB ? Shifter_2_20 : Shifter_2_24)
-      : Shifter_2_24;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_24;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_25 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_29
            : io_Op == 4'hB ? Shifter_2_21 : Shifter_2_25)
-      : Shifter_2_25;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_2_25;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_3_26 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_30
            : io_Op == 4'hB ? Shifter_2_22 : Shifter_2_26)
-      : Shifter_2_26;	// core/src/exu.scala:114:43, :115:53, :122:37, :130:37, :131:53
+      : Shifter_2_26;	// core/src/exu.scala:156:43, :157:53, :164:37, :172:37, :173:53
   wire Shifter_3_27 =
     io_B[2]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_2_31
            : io_Op == 4'hB ? Shifter_2_23 : Shifter_2_27)
-      : Shifter_2_27;	// core/src/exu.scala:114:43, :115:53, :122:37, :130:37, :131:53
+      : Shifter_2_27;	// core/src/exu.scala:156:43, :157:53, :164:37, :172:37, :173:53
   wire Shifter_3_28 =
     io_B[2]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_2_24 : Shifter_2_28))
-      : Shifter_2_28;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_2_28;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_3_29 =
     io_B[2]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_2_25 : Shifter_2_29))
-      : Shifter_2_29;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_2_29;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_3_30 =
     io_B[2]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_2_26 : Shifter_2_30))
-      : Shifter_2_30;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_2_30;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_3_31 =
     io_B[2]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_2_27 : Shifter_2_31))
-      : Shifter_2_31;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_2_31;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_4_0 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_3_8 : _GEN & Shifter_3_0)
-      : Shifter_3_0;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_3_0;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_4_1 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_3_9 : _GEN & Shifter_3_1)
-      : Shifter_3_1;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_3_1;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_4_2 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_3_10 : _GEN & Shifter_3_2)
-      : Shifter_3_2;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_3_2;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_4_3 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_3_11 : _GEN & Shifter_3_3)
-      : Shifter_3_3;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_3_3;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_4_4 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_3_12 : _GEN & Shifter_3_4)
-      : Shifter_3_4;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_3_4;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_4_5 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_3_13 : _GEN & Shifter_3_5)
-      : Shifter_3_5;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_3_5;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_4_6 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_3_14 : _GEN & Shifter_3_6)
-      : Shifter_3_6;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_3_6;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_4_7 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_3_15 : _GEN & Shifter_3_7)
-      : Shifter_3_7;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37
+      : Shifter_3_7;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37
   wire Shifter_4_8 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_16
            : io_Op == 4'hB ? Shifter_3_0 : Shifter_3_8)
-      : Shifter_3_8;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37, :131:53
+      : Shifter_3_8;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37, :173:53
   wire Shifter_4_9 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_17
            : io_Op == 4'hB ? Shifter_3_1 : Shifter_3_9)
-      : Shifter_3_9;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37, :131:53
+      : Shifter_3_9;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37, :173:53
   wire Shifter_4_10 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_18
            : io_Op == 4'hB ? Shifter_3_2 : Shifter_3_10)
-      : Shifter_3_10;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37, :131:53
+      : Shifter_3_10;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37, :173:53
   wire Shifter_4_11 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_19
            : io_Op == 4'hB ? Shifter_3_3 : Shifter_3_11)
-      : Shifter_3_11;	// core/src/exu.scala:114:{37,43}, :115:53, :130:37, :131:53
+      : Shifter_3_11;	// core/src/exu.scala:156:{37,43}, :157:53, :172:37, :173:53
   wire Shifter_4_12 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_20
            : io_Op == 4'hB ? Shifter_3_4 : Shifter_3_12)
-      : Shifter_3_12;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_3_12;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_4_13 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_21
            : io_Op == 4'hB ? Shifter_3_5 : Shifter_3_13)
-      : Shifter_3_13;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_3_13;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_4_14 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_22
            : io_Op == 4'hB ? Shifter_3_6 : Shifter_3_14)
-      : Shifter_3_14;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_3_14;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_4_15 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_23
            : io_Op == 4'hB ? Shifter_3_7 : Shifter_3_15)
-      : Shifter_3_15;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_3_15;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_4_16 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_24
            : io_Op == 4'hB ? Shifter_3_8 : Shifter_3_16)
-      : Shifter_3_16;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_3_16;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_4_17 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_25
            : io_Op == 4'hB ? Shifter_3_9 : Shifter_3_17)
-      : Shifter_3_17;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_3_17;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_4_18 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_26
            : io_Op == 4'hB ? Shifter_3_10 : Shifter_3_18)
-      : Shifter_3_18;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_3_18;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_4_19 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_27
            : io_Op == 4'hB ? Shifter_3_11 : Shifter_3_19)
-      : Shifter_3_19;	// core/src/exu.scala:114:43, :115:53, :130:37, :131:53
+      : Shifter_3_19;	// core/src/exu.scala:156:43, :157:53, :172:37, :173:53
   wire Shifter_4_20 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_28
            : io_Op == 4'hB ? Shifter_3_12 : Shifter_3_20)
-      : Shifter_3_20;	// core/src/exu.scala:114:43, :115:53, :122:37, :130:37, :131:53
+      : Shifter_3_20;	// core/src/exu.scala:156:43, :157:53, :164:37, :172:37, :173:53
   wire Shifter_4_21 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_29
            : io_Op == 4'hB ? Shifter_3_13 : Shifter_3_21)
-      : Shifter_3_21;	// core/src/exu.scala:114:43, :115:53, :122:37, :130:37, :131:53
+      : Shifter_3_21;	// core/src/exu.scala:156:43, :157:53, :164:37, :172:37, :173:53
   wire Shifter_4_22 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_30
            : io_Op == 4'hB ? Shifter_3_14 : Shifter_3_22)
-      : Shifter_3_22;	// core/src/exu.scala:114:43, :115:53, :122:37, :130:37, :131:53
+      : Shifter_3_22;	// core/src/exu.scala:156:43, :157:53, :164:37, :172:37, :173:53
   wire Shifter_4_23 =
     io_B[3]
       ? (io_Op == 4'hD | io_Op == 4'hC
            ? Shifter_3_31
            : io_Op == 4'hB ? Shifter_3_15 : Shifter_3_23)
-      : Shifter_3_23;	// core/src/exu.scala:114:43, :115:53, :122:37, :130:37, :131:53
+      : Shifter_3_23;	// core/src/exu.scala:156:43, :157:53, :164:37, :172:37, :173:53
   wire Shifter_4_24 =
     io_B[3]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_3_16 : Shifter_3_24))
-      : Shifter_3_24;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_3_24;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_4_25 =
     io_B[3]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_3_17 : Shifter_3_25))
-      : Shifter_3_25;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_3_25;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_4_26 =
     io_B[3]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_3_18 : Shifter_3_26))
-      : Shifter_3_26;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_3_26;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_4_27 =
     io_B[3]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_3_19 : Shifter_3_27))
-      : Shifter_3_27;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_3_27;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_4_28 =
     io_B[3]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_3_20 : Shifter_3_28))
-      : Shifter_3_28;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_3_28;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_4_29 =
     io_B[3]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_3_21 : Shifter_3_29))
-      : Shifter_3_29;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_3_29;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_4_30 =
     io_B[3]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_3_22 : Shifter_3_30))
-      : Shifter_3_30;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_3_30;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   wire Shifter_4_31 =
     io_B[3]
       ? (io_Op == 4'hD
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'hB ? Shifter_3_23 : Shifter_3_31))
-      : Shifter_3_31;	// core/src/exu.scala:110:24, :114:43, :115:53, :122:37, :123:53, :130:37
+      : Shifter_3_31;	// core/src/exu.scala:152:24, :156:43, :157:53, :164:37, :165:53, :172:37
   assign io_Out =
     {io_B[4]
        ? (io_Op == 4'hD
@@ -1723,836 +2724,35 @@ module bshifter(	// core/src/exu.scala:101:7
        : Shifter_4_1,
      io_B[4]
        ? (io_Op == 4'hD | io_Op == 4'hC ? Shifter_4_16 : _GEN & Shifter_4_0)
-       : Shifter_4_0};	// core/src/exu.scala:101:7, :110:24, :114:{37,43}, :115:53, :122:37, :123:53, :130:37, :139:26
+       : Shifter_4_0};	// core/src/exu.scala:143:7, :152:24, :156:{37,43}, :157:53, :164:37, :165:53, :172:37, :181:26
 endmodule
 
-module booth2(	// core/src/exu.scala:218:7
-  input  [31:0] io_A,	// core/src/exu.scala:219:16
-  input  [2:0]  io_B,	// core/src/exu.scala:219:16
-  output [63:0] io_S	// core/src/exu.scala:219:16
+module alu(	// core/src/exu.scala:93:7
+  input  [31:0] io_A,	// core/src/exu.scala:94:16
+                io_B,	// core/src/exu.scala:94:16
+  input  [3:0]  io_Op,	// core/src/exu.scala:94:16
+  output [31:0] io_Out,	// core/src/exu.scala:94:16
+  output        io_SLess,	// core/src/exu.scala:94:16
+                io_ULess,	// core/src/exu.scala:94:16
+                io_Zero	// core/src/exu.scala:94:16
 );
 
-  wire [31:0]      _SignExtA_T_1 = {32{io_A[31]}};	// core/src/exu.scala:224:{28,36}
-  wire [64:0]      _GEN =
-    {1'h0, io_B == 3'h2 | io_B == 3'h1 ? {_SignExtA_T_1, io_A} : 64'h0};	// core/src/exu.scala:224:{23,28}, :225:34, :229:31
-  wire [64:0]      _GEN_0 = {1'h0, 64'h0 - {_SignExtA_T_1, io_A}};	// core/src/exu.scala:224:28, :225:34, :229:31, :230:21, :231:21
-  wire [7:0][64:0] _GEN_1 =
-    {{65'h0},
-     {_GEN_0},
-     {_GEN_0},
-     {65'h0 - {_SignExtA_T_1, io_A, 1'h0}},
-     {{_SignExtA_T_1, io_A, 1'h0}},
-     {_GEN},
-     {_GEN},
-     {_GEN}};	// core/src/exu.scala:224:28, :225:34, :229:31, :230:21
-  assign io_S = _GEN_1[io_B][63:0];	// core/src/exu.scala:218:7, :225:{10,34}
-endmodule
-
-module csa(	// core/src/exu.scala:237:7
-  input  [63:0] io_A,	// core/src/exu.scala:238:16
-                io_B,	// core/src/exu.scala:238:16
-                io_Cin,	// core/src/exu.scala:238:16
-  output [63:0] io_S,	// core/src/exu.scala:238:16
-                io_Cout	// core/src/exu.scala:238:16
-);
-
-  assign io_S =
-    {io_A[63] ^ io_B[63] ^ io_Cin[63],
-     io_A[62] ^ io_B[62] ^ io_Cin[62],
-     io_A[61] ^ io_B[61] ^ io_Cin[61],
-     io_A[60] ^ io_B[60] ^ io_Cin[60],
-     io_A[59] ^ io_B[59] ^ io_Cin[59],
-     io_A[58] ^ io_B[58] ^ io_Cin[58],
-     io_A[57] ^ io_B[57] ^ io_Cin[57],
-     io_A[56] ^ io_B[56] ^ io_Cin[56],
-     io_A[55] ^ io_B[55] ^ io_Cin[55],
-     io_A[54] ^ io_B[54] ^ io_Cin[54],
-     io_A[53] ^ io_B[53] ^ io_Cin[53],
-     io_A[52] ^ io_B[52] ^ io_Cin[52],
-     io_A[51] ^ io_B[51] ^ io_Cin[51],
-     io_A[50] ^ io_B[50] ^ io_Cin[50],
-     io_A[49] ^ io_B[49] ^ io_Cin[49],
-     io_A[48] ^ io_B[48] ^ io_Cin[48],
-     io_A[47] ^ io_B[47] ^ io_Cin[47],
-     io_A[46] ^ io_B[46] ^ io_Cin[46],
-     io_A[45] ^ io_B[45] ^ io_Cin[45],
-     io_A[44] ^ io_B[44] ^ io_Cin[44],
-     io_A[43] ^ io_B[43] ^ io_Cin[43],
-     io_A[42] ^ io_B[42] ^ io_Cin[42],
-     io_A[41] ^ io_B[41] ^ io_Cin[41],
-     io_A[40] ^ io_B[40] ^ io_Cin[40],
-     io_A[39] ^ io_B[39] ^ io_Cin[39],
-     io_A[38] ^ io_B[38] ^ io_Cin[38],
-     io_A[37] ^ io_B[37] ^ io_Cin[37],
-     io_A[36] ^ io_B[36] ^ io_Cin[36],
-     io_A[35] ^ io_B[35] ^ io_Cin[35],
-     io_A[34] ^ io_B[34] ^ io_Cin[34],
-     io_A[33] ^ io_B[33] ^ io_Cin[33],
-     io_A[32] ^ io_B[32] ^ io_Cin[32],
-     io_A[31] ^ io_B[31] ^ io_Cin[31],
-     io_A[30] ^ io_B[30] ^ io_Cin[30],
-     io_A[29] ^ io_B[29] ^ io_Cin[29],
-     io_A[28] ^ io_B[28] ^ io_Cin[28],
-     io_A[27] ^ io_B[27] ^ io_Cin[27],
-     io_A[26] ^ io_B[26] ^ io_Cin[26],
-     io_A[25] ^ io_B[25] ^ io_Cin[25],
-     io_A[24] ^ io_B[24] ^ io_Cin[24],
-     io_A[23] ^ io_B[23] ^ io_Cin[23],
-     io_A[22] ^ io_B[22] ^ io_Cin[22],
-     io_A[21] ^ io_B[21] ^ io_Cin[21],
-     io_A[20] ^ io_B[20] ^ io_Cin[20],
-     io_A[19] ^ io_B[19] ^ io_Cin[19],
-     io_A[18] ^ io_B[18] ^ io_Cin[18],
-     io_A[17] ^ io_B[17] ^ io_Cin[17],
-     io_A[16] ^ io_B[16] ^ io_Cin[16],
-     io_A[15] ^ io_B[15] ^ io_Cin[15],
-     io_A[14] ^ io_B[14] ^ io_Cin[14],
-     io_A[13] ^ io_B[13] ^ io_Cin[13],
-     io_A[12] ^ io_B[12] ^ io_Cin[12],
-     io_A[11] ^ io_B[11] ^ io_Cin[11],
-     io_A[10] ^ io_B[10] ^ io_Cin[10],
-     io_A[9] ^ io_B[9] ^ io_Cin[9],
-     io_A[8] ^ io_B[8] ^ io_Cin[8],
-     io_A[7] ^ io_B[7] ^ io_Cin[7],
-     io_A[6] ^ io_B[6] ^ io_Cin[6],
-     io_A[5] ^ io_B[5] ^ io_Cin[5],
-     io_A[4] ^ io_B[4] ^ io_Cin[4],
-     io_A[3] ^ io_B[3] ^ io_Cin[3],
-     io_A[2] ^ io_B[2] ^ io_Cin[2],
-     io_A[1] ^ io_B[1] ^ io_Cin[1],
-     io_A[0] ^ io_B[0] ^ io_Cin[0]};	// core/src/exu.scala:237:7, :248:{21,31,35,43}, :251:15
-  assign io_Cout =
-    {io_A[63] & io_B[63] | io_A[63] & io_Cin[63] | io_B[63] & io_Cin[63],
-     io_A[62] & io_B[62] | io_A[62] & io_Cin[62] | io_B[62] & io_Cin[62],
-     io_A[61] & io_B[61] | io_A[61] & io_Cin[61] | io_B[61] & io_Cin[61],
-     io_A[60] & io_B[60] | io_A[60] & io_Cin[60] | io_B[60] & io_Cin[60],
-     io_A[59] & io_B[59] | io_A[59] & io_Cin[59] | io_B[59] & io_Cin[59],
-     io_A[58] & io_B[58] | io_A[58] & io_Cin[58] | io_B[58] & io_Cin[58],
-     io_A[57] & io_B[57] | io_A[57] & io_Cin[57] | io_B[57] & io_Cin[57],
-     io_A[56] & io_B[56] | io_A[56] & io_Cin[56] | io_B[56] & io_Cin[56],
-     io_A[55] & io_B[55] | io_A[55] & io_Cin[55] | io_B[55] & io_Cin[55],
-     io_A[54] & io_B[54] | io_A[54] & io_Cin[54] | io_B[54] & io_Cin[54],
-     io_A[53] & io_B[53] | io_A[53] & io_Cin[53] | io_B[53] & io_Cin[53],
-     io_A[52] & io_B[52] | io_A[52] & io_Cin[52] | io_B[52] & io_Cin[52],
-     io_A[51] & io_B[51] | io_A[51] & io_Cin[51] | io_B[51] & io_Cin[51],
-     io_A[50] & io_B[50] | io_A[50] & io_Cin[50] | io_B[50] & io_Cin[50],
-     io_A[49] & io_B[49] | io_A[49] & io_Cin[49] | io_B[49] & io_Cin[49],
-     io_A[48] & io_B[48] | io_A[48] & io_Cin[48] | io_B[48] & io_Cin[48],
-     io_A[47] & io_B[47] | io_A[47] & io_Cin[47] | io_B[47] & io_Cin[47],
-     io_A[46] & io_B[46] | io_A[46] & io_Cin[46] | io_B[46] & io_Cin[46],
-     io_A[45] & io_B[45] | io_A[45] & io_Cin[45] | io_B[45] & io_Cin[45],
-     io_A[44] & io_B[44] | io_A[44] & io_Cin[44] | io_B[44] & io_Cin[44],
-     io_A[43] & io_B[43] | io_A[43] & io_Cin[43] | io_B[43] & io_Cin[43],
-     io_A[42] & io_B[42] | io_A[42] & io_Cin[42] | io_B[42] & io_Cin[42],
-     io_A[41] & io_B[41] | io_A[41] & io_Cin[41] | io_B[41] & io_Cin[41],
-     io_A[40] & io_B[40] | io_A[40] & io_Cin[40] | io_B[40] & io_Cin[40],
-     io_A[39] & io_B[39] | io_A[39] & io_Cin[39] | io_B[39] & io_Cin[39],
-     io_A[38] & io_B[38] | io_A[38] & io_Cin[38] | io_B[38] & io_Cin[38],
-     io_A[37] & io_B[37] | io_A[37] & io_Cin[37] | io_B[37] & io_Cin[37],
-     io_A[36] & io_B[36] | io_A[36] & io_Cin[36] | io_B[36] & io_Cin[36],
-     io_A[35] & io_B[35] | io_A[35] & io_Cin[35] | io_B[35] & io_Cin[35],
-     io_A[34] & io_B[34] | io_A[34] & io_Cin[34] | io_B[34] & io_Cin[34],
-     io_A[33] & io_B[33] | io_A[33] & io_Cin[33] | io_B[33] & io_Cin[33],
-     io_A[32] & io_B[32] | io_A[32] & io_Cin[32] | io_B[32] & io_Cin[32],
-     io_A[31] & io_B[31] | io_A[31] & io_Cin[31] | io_B[31] & io_Cin[31],
-     io_A[30] & io_B[30] | io_A[30] & io_Cin[30] | io_B[30] & io_Cin[30],
-     io_A[29] & io_B[29] | io_A[29] & io_Cin[29] | io_B[29] & io_Cin[29],
-     io_A[28] & io_B[28] | io_A[28] & io_Cin[28] | io_B[28] & io_Cin[28],
-     io_A[27] & io_B[27] | io_A[27] & io_Cin[27] | io_B[27] & io_Cin[27],
-     io_A[26] & io_B[26] | io_A[26] & io_Cin[26] | io_B[26] & io_Cin[26],
-     io_A[25] & io_B[25] | io_A[25] & io_Cin[25] | io_B[25] & io_Cin[25],
-     io_A[24] & io_B[24] | io_A[24] & io_Cin[24] | io_B[24] & io_Cin[24],
-     io_A[23] & io_B[23] | io_A[23] & io_Cin[23] | io_B[23] & io_Cin[23],
-     io_A[22] & io_B[22] | io_A[22] & io_Cin[22] | io_B[22] & io_Cin[22],
-     io_A[21] & io_B[21] | io_A[21] & io_Cin[21] | io_B[21] & io_Cin[21],
-     io_A[20] & io_B[20] | io_A[20] & io_Cin[20] | io_B[20] & io_Cin[20],
-     io_A[19] & io_B[19] | io_A[19] & io_Cin[19] | io_B[19] & io_Cin[19],
-     io_A[18] & io_B[18] | io_A[18] & io_Cin[18] | io_B[18] & io_Cin[18],
-     io_A[17] & io_B[17] | io_A[17] & io_Cin[17] | io_B[17] & io_Cin[17],
-     io_A[16] & io_B[16] | io_A[16] & io_Cin[16] | io_B[16] & io_Cin[16],
-     io_A[15] & io_B[15] | io_A[15] & io_Cin[15] | io_B[15] & io_Cin[15],
-     io_A[14] & io_B[14] | io_A[14] & io_Cin[14] | io_B[14] & io_Cin[14],
-     io_A[13] & io_B[13] | io_A[13] & io_Cin[13] | io_B[13] & io_Cin[13],
-     io_A[12] & io_B[12] | io_A[12] & io_Cin[12] | io_B[12] & io_Cin[12],
-     io_A[11] & io_B[11] | io_A[11] & io_Cin[11] | io_B[11] & io_Cin[11],
-     io_A[10] & io_B[10] | io_A[10] & io_Cin[10] | io_B[10] & io_Cin[10],
-     io_A[9] & io_B[9] | io_A[9] & io_Cin[9] | io_B[9] & io_Cin[9],
-     io_A[8] & io_B[8] | io_A[8] & io_Cin[8] | io_B[8] & io_Cin[8],
-     io_A[7] & io_B[7] | io_A[7] & io_Cin[7] | io_B[7] & io_Cin[7],
-     io_A[6] & io_B[6] | io_A[6] & io_Cin[6] | io_B[6] & io_Cin[6],
-     io_A[5] & io_B[5] | io_A[5] & io_Cin[5] | io_B[5] & io_Cin[5],
-     io_A[4] & io_B[4] | io_A[4] & io_Cin[4] | io_B[4] & io_Cin[4],
-     io_A[3] & io_B[3] | io_A[3] & io_Cin[3] | io_B[3] & io_Cin[3],
-     io_A[2] & io_B[2] | io_A[2] & io_Cin[2] | io_B[2] & io_Cin[2],
-     io_A[1] & io_B[1] | io_A[1] & io_Cin[1] | io_B[1] & io_Cin[1],
-     io_A[0] & io_B[0] | io_A[0] & io_Cin[0] | io_B[0] & io_Cin[0]};	// core/src/exu.scala:237:7, :248:{21,31,43}, :249:{29,51,64,75}, :252:21
-endmodule
-
-module wallace(	// core/src/exu.scala:161:7
-  input  [31:0] io_A,	// core/src/exu.scala:162:16
-                io_B,	// core/src/exu.scala:162:16
-  output [63:0] io_S	// core/src/exu.scala:162:16
-);
-
-  wire [63:0] _csas_0_5_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_5_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_4_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_4_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_1_3_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_1_3_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_3_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_3_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_1_2_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_1_2_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_2_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_2_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_2_1_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_2_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_1_1_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_1_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_1_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_4_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_4_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_3_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_3_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_2_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_2_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_1_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_io_S;	// core/src/exu.scala:193:47
-  wire [63:0] _csas_0_io_Cout;	// core/src/exu.scala:193:47
-  wire [63:0] _booths_15_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_14_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_13_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_12_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_11_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_10_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_9_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_8_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_7_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_6_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_5_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_4_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_3_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_2_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_1_io_S;	// core/src/exu.scala:168:40
-  wire [63:0] _booths_0_io_S;	// core/src/exu.scala:168:40
-  booth2 booths_0 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B ({io_B[1:0], 1'h0}),	// core/src/exu.scala:176:{30,35}
-    .io_S (_booths_0_io_S)
-  );
-  booth2 booths_1 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[3:1]),	// core/src/exu.scala:172:41
-    .io_S (_booths_1_io_S)
-  );
-  booth2 booths_2 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[5:3]),	// core/src/exu.scala:172:41
-    .io_S (_booths_2_io_S)
-  );
-  booth2 booths_3 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[7:5]),	// core/src/exu.scala:172:41
-    .io_S (_booths_3_io_S)
-  );
-  booth2 booths_4 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[9:7]),	// core/src/exu.scala:172:41
-    .io_S (_booths_4_io_S)
-  );
-  booth2 booths_5 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[11:9]),	// core/src/exu.scala:172:41
-    .io_S (_booths_5_io_S)
-  );
-  booth2 booths_6 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[13:11]),	// core/src/exu.scala:172:41
-    .io_S (_booths_6_io_S)
-  );
-  booth2 booths_7 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[15:13]),	// core/src/exu.scala:172:41
-    .io_S (_booths_7_io_S)
-  );
-  booth2 booths_8 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[17:15]),	// core/src/exu.scala:172:41
-    .io_S (_booths_8_io_S)
-  );
-  booth2 booths_9 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[19:17]),	// core/src/exu.scala:172:41
-    .io_S (_booths_9_io_S)
-  );
-  booth2 booths_10 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[21:19]),	// core/src/exu.scala:172:41
-    .io_S (_booths_10_io_S)
-  );
-  booth2 booths_11 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[23:21]),	// core/src/exu.scala:172:41
-    .io_S (_booths_11_io_S)
-  );
-  booth2 booths_12 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[25:23]),	// core/src/exu.scala:172:41
-    .io_S (_booths_12_io_S)
-  );
-  booth2 booths_13 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[27:25]),	// core/src/exu.scala:172:41
-    .io_S (_booths_13_io_S)
-  );
-  booth2 booths_14 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[29:27]),	// core/src/exu.scala:172:41
-    .io_S (_booths_14_io_S)
-  );
-  booth2 booths_15 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[31:29]),	// core/src/exu.scala:172:41
-    .io_S (_booths_15_io_S)
-  );
-  csa csas_0 (	// core/src/exu.scala:193:47
-    .io_A    (_booths_0_io_S),	// core/src/exu.scala:168:40
-    .io_B    ({_booths_1_io_S[61:0], 2'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_2_io_S[59:0], 4'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_0_io_S),
-    .io_Cout (_csas_0_io_Cout)
-  );
-  csa csas_1 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_3_io_S[57:0], 6'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_4_io_S[55:0], 8'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_5_io_S[53:0], 10'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_1_io_S),
-    .io_Cout (_csas_1_io_Cout)
-  );
-  csa csas_2 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_6_io_S[51:0], 12'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_7_io_S[49:0], 14'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_8_io_S[47:0], 16'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_2_io_S),
-    .io_Cout (_csas_2_io_Cout)
-  );
-  csa csas_3 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_9_io_S[45:0], 18'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_10_io_S[43:0], 20'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_11_io_S[41:0], 22'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_3_io_S),
-    .io_Cout (_csas_3_io_Cout)
-  );
-  csa csas_4 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_12_io_S[39:0], 24'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_13_io_S[37:0], 26'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_14_io_S[35:0], 28'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_4_io_S),
-    .io_Cout (_csas_4_io_Cout)
-  );
-  csa csas_0_1 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_Cin  (_csas_1_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_0_1_io_S),
-    .io_Cout (_csas_0_1_io_Cout)
-  );
-  csa csas_1_1 (	// core/src/exu.scala:193:47
-    .io_A    ({_csas_1_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_B    (_csas_2_io_S),	// core/src/exu.scala:193:47
-    .io_Cin  ({_csas_2_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_S    (_csas_1_1_io_S),
-    .io_Cout (_csas_1_1_io_Cout)
-  );
-  csa csas_2_1 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_3_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_3_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_Cin  (_csas_4_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_2_1_io_S),
-    .io_Cout (_csas_2_1_io_Cout)
-  );
-  csa csas_0_2 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_1_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_1_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_Cin  (_csas_1_1_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_0_2_io_S),
-    .io_Cout (_csas_0_2_io_Cout)
-  );
-  csa csas_1_2 (	// core/src/exu.scala:193:47
-    .io_A    ({_csas_1_1_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_B    (_csas_2_1_io_S),	// core/src/exu.scala:193:47
-    .io_Cin  ({_csas_2_1_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_S    (_csas_1_2_io_S),
-    .io_Cout (_csas_1_2_io_Cout)
-  );
-  csa csas_0_3 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_2_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_2_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_Cin  (_csas_1_2_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_0_3_io_S),
-    .io_Cout (_csas_0_3_io_Cout)
-  );
-  csa csas_1_3 (	// core/src/exu.scala:193:47
-    .io_A    ({_csas_1_2_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_B    ({_csas_4_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_Cin  ({_booths_15_io_S[33:0], 30'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_1_3_io_S),
-    .io_Cout (_csas_1_3_io_Cout)
-  );
-  csa csas_0_4 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_3_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_3_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_Cin  (_csas_1_3_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_0_4_io_S),
-    .io_Cout (_csas_0_4_io_Cout)
-  );
-  csa csas_0_5 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_4_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_4_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_Cin  ({_csas_1_3_io_Cout[62:0], 1'h0}),	// core/src/exu.scala:176:30, :193:47, :201:34
-    .io_S    (_csas_0_5_io_S),
-    .io_Cout (_csas_0_5_io_Cout)
-  );
-  assign io_S = _csas_0_5_io_S + {_csas_0_5_io_Cout[62:0], 1'h0};	// core/src/exu.scala:161:7, :176:30, :193:47, :201:34, :214:20
-endmodule
-
-module booth2_16(	// core/src/exu.scala:218:7
-  input  [32:0] io_A,	// core/src/exu.scala:219:16
-  input  [2:0]  io_B,	// core/src/exu.scala:219:16
-  output [65:0] io_S	// core/src/exu.scala:219:16
-);
-
-  wire [32:0]      _SignExtA_T_1 = {33{io_A[32]}};	// core/src/exu.scala:224:{28,36}
-  wire [66:0]      _GEN =
-    {1'h0, io_B == 3'h2 | io_B == 3'h1 ? {_SignExtA_T_1, io_A} : 66'h0};	// core/src/exu.scala:224:{23,28}, :225:34, :229:31
-  wire [66:0]      _GEN_0 = {1'h0, 66'h0 - {_SignExtA_T_1, io_A}};	// core/src/exu.scala:224:28, :225:34, :229:31, :230:21, :231:21
-  wire [7:0][66:0] _GEN_1 =
-    {{67'h0},
-     {_GEN_0},
-     {_GEN_0},
-     {67'h0 - {_SignExtA_T_1, io_A, 1'h0}},
-     {{_SignExtA_T_1, io_A, 1'h0}},
-     {_GEN},
-     {_GEN},
-     {_GEN}};	// core/src/exu.scala:224:28, :225:34, :229:31, :230:21
-  assign io_S = _GEN_1[io_B][65:0];	// core/src/exu.scala:218:7, :225:{10,34}
-endmodule
-
-module csa_14(	// core/src/exu.scala:237:7
-  input  [65:0] io_A,	// core/src/exu.scala:238:16
-                io_B,	// core/src/exu.scala:238:16
-                io_Cin,	// core/src/exu.scala:238:16
-  output [65:0] io_S,	// core/src/exu.scala:238:16
-                io_Cout	// core/src/exu.scala:238:16
-);
-
-  assign io_S =
-    {io_A[65] ^ io_B[65] ^ io_Cin[65],
-     io_A[64] ^ io_B[64] ^ io_Cin[64],
-     io_A[63] ^ io_B[63] ^ io_Cin[63],
-     io_A[62] ^ io_B[62] ^ io_Cin[62],
-     io_A[61] ^ io_B[61] ^ io_Cin[61],
-     io_A[60] ^ io_B[60] ^ io_Cin[60],
-     io_A[59] ^ io_B[59] ^ io_Cin[59],
-     io_A[58] ^ io_B[58] ^ io_Cin[58],
-     io_A[57] ^ io_B[57] ^ io_Cin[57],
-     io_A[56] ^ io_B[56] ^ io_Cin[56],
-     io_A[55] ^ io_B[55] ^ io_Cin[55],
-     io_A[54] ^ io_B[54] ^ io_Cin[54],
-     io_A[53] ^ io_B[53] ^ io_Cin[53],
-     io_A[52] ^ io_B[52] ^ io_Cin[52],
-     io_A[51] ^ io_B[51] ^ io_Cin[51],
-     io_A[50] ^ io_B[50] ^ io_Cin[50],
-     io_A[49] ^ io_B[49] ^ io_Cin[49],
-     io_A[48] ^ io_B[48] ^ io_Cin[48],
-     io_A[47] ^ io_B[47] ^ io_Cin[47],
-     io_A[46] ^ io_B[46] ^ io_Cin[46],
-     io_A[45] ^ io_B[45] ^ io_Cin[45],
-     io_A[44] ^ io_B[44] ^ io_Cin[44],
-     io_A[43] ^ io_B[43] ^ io_Cin[43],
-     io_A[42] ^ io_B[42] ^ io_Cin[42],
-     io_A[41] ^ io_B[41] ^ io_Cin[41],
-     io_A[40] ^ io_B[40] ^ io_Cin[40],
-     io_A[39] ^ io_B[39] ^ io_Cin[39],
-     io_A[38] ^ io_B[38] ^ io_Cin[38],
-     io_A[37] ^ io_B[37] ^ io_Cin[37],
-     io_A[36] ^ io_B[36] ^ io_Cin[36],
-     io_A[35] ^ io_B[35] ^ io_Cin[35],
-     io_A[34] ^ io_B[34] ^ io_Cin[34],
-     io_A[33] ^ io_B[33] ^ io_Cin[33],
-     io_A[32] ^ io_B[32] ^ io_Cin[32],
-     io_A[31] ^ io_B[31] ^ io_Cin[31],
-     io_A[30] ^ io_B[30] ^ io_Cin[30],
-     io_A[29] ^ io_B[29] ^ io_Cin[29],
-     io_A[28] ^ io_B[28] ^ io_Cin[28],
-     io_A[27] ^ io_B[27] ^ io_Cin[27],
-     io_A[26] ^ io_B[26] ^ io_Cin[26],
-     io_A[25] ^ io_B[25] ^ io_Cin[25],
-     io_A[24] ^ io_B[24] ^ io_Cin[24],
-     io_A[23] ^ io_B[23] ^ io_Cin[23],
-     io_A[22] ^ io_B[22] ^ io_Cin[22],
-     io_A[21] ^ io_B[21] ^ io_Cin[21],
-     io_A[20] ^ io_B[20] ^ io_Cin[20],
-     io_A[19] ^ io_B[19] ^ io_Cin[19],
-     io_A[18] ^ io_B[18] ^ io_Cin[18],
-     io_A[17] ^ io_B[17] ^ io_Cin[17],
-     io_A[16] ^ io_B[16] ^ io_Cin[16],
-     io_A[15] ^ io_B[15] ^ io_Cin[15],
-     io_A[14] ^ io_B[14] ^ io_Cin[14],
-     io_A[13] ^ io_B[13] ^ io_Cin[13],
-     io_A[12] ^ io_B[12] ^ io_Cin[12],
-     io_A[11] ^ io_B[11] ^ io_Cin[11],
-     io_A[10] ^ io_B[10] ^ io_Cin[10],
-     io_A[9] ^ io_B[9] ^ io_Cin[9],
-     io_A[8] ^ io_B[8] ^ io_Cin[8],
-     io_A[7] ^ io_B[7] ^ io_Cin[7],
-     io_A[6] ^ io_B[6] ^ io_Cin[6],
-     io_A[5] ^ io_B[5] ^ io_Cin[5],
-     io_A[4] ^ io_B[4] ^ io_Cin[4],
-     io_A[3] ^ io_B[3] ^ io_Cin[3],
-     io_A[2] ^ io_B[2] ^ io_Cin[2],
-     io_A[1] ^ io_B[1] ^ io_Cin[1],
-     io_A[0] ^ io_B[0] ^ io_Cin[0]};	// core/src/exu.scala:237:7, :248:{21,31,35,43}, :251:15
-  assign io_Cout =
-    {io_A[65] & io_B[65] | io_A[65] & io_Cin[65] | io_B[65] & io_Cin[65],
-     io_A[64] & io_B[64] | io_A[64] & io_Cin[64] | io_B[64] & io_Cin[64],
-     io_A[63] & io_B[63] | io_A[63] & io_Cin[63] | io_B[63] & io_Cin[63],
-     io_A[62] & io_B[62] | io_A[62] & io_Cin[62] | io_B[62] & io_Cin[62],
-     io_A[61] & io_B[61] | io_A[61] & io_Cin[61] | io_B[61] & io_Cin[61],
-     io_A[60] & io_B[60] | io_A[60] & io_Cin[60] | io_B[60] & io_Cin[60],
-     io_A[59] & io_B[59] | io_A[59] & io_Cin[59] | io_B[59] & io_Cin[59],
-     io_A[58] & io_B[58] | io_A[58] & io_Cin[58] | io_B[58] & io_Cin[58],
-     io_A[57] & io_B[57] | io_A[57] & io_Cin[57] | io_B[57] & io_Cin[57],
-     io_A[56] & io_B[56] | io_A[56] & io_Cin[56] | io_B[56] & io_Cin[56],
-     io_A[55] & io_B[55] | io_A[55] & io_Cin[55] | io_B[55] & io_Cin[55],
-     io_A[54] & io_B[54] | io_A[54] & io_Cin[54] | io_B[54] & io_Cin[54],
-     io_A[53] & io_B[53] | io_A[53] & io_Cin[53] | io_B[53] & io_Cin[53],
-     io_A[52] & io_B[52] | io_A[52] & io_Cin[52] | io_B[52] & io_Cin[52],
-     io_A[51] & io_B[51] | io_A[51] & io_Cin[51] | io_B[51] & io_Cin[51],
-     io_A[50] & io_B[50] | io_A[50] & io_Cin[50] | io_B[50] & io_Cin[50],
-     io_A[49] & io_B[49] | io_A[49] & io_Cin[49] | io_B[49] & io_Cin[49],
-     io_A[48] & io_B[48] | io_A[48] & io_Cin[48] | io_B[48] & io_Cin[48],
-     io_A[47] & io_B[47] | io_A[47] & io_Cin[47] | io_B[47] & io_Cin[47],
-     io_A[46] & io_B[46] | io_A[46] & io_Cin[46] | io_B[46] & io_Cin[46],
-     io_A[45] & io_B[45] | io_A[45] & io_Cin[45] | io_B[45] & io_Cin[45],
-     io_A[44] & io_B[44] | io_A[44] & io_Cin[44] | io_B[44] & io_Cin[44],
-     io_A[43] & io_B[43] | io_A[43] & io_Cin[43] | io_B[43] & io_Cin[43],
-     io_A[42] & io_B[42] | io_A[42] & io_Cin[42] | io_B[42] & io_Cin[42],
-     io_A[41] & io_B[41] | io_A[41] & io_Cin[41] | io_B[41] & io_Cin[41],
-     io_A[40] & io_B[40] | io_A[40] & io_Cin[40] | io_B[40] & io_Cin[40],
-     io_A[39] & io_B[39] | io_A[39] & io_Cin[39] | io_B[39] & io_Cin[39],
-     io_A[38] & io_B[38] | io_A[38] & io_Cin[38] | io_B[38] & io_Cin[38],
-     io_A[37] & io_B[37] | io_A[37] & io_Cin[37] | io_B[37] & io_Cin[37],
-     io_A[36] & io_B[36] | io_A[36] & io_Cin[36] | io_B[36] & io_Cin[36],
-     io_A[35] & io_B[35] | io_A[35] & io_Cin[35] | io_B[35] & io_Cin[35],
-     io_A[34] & io_B[34] | io_A[34] & io_Cin[34] | io_B[34] & io_Cin[34],
-     io_A[33] & io_B[33] | io_A[33] & io_Cin[33] | io_B[33] & io_Cin[33],
-     io_A[32] & io_B[32] | io_A[32] & io_Cin[32] | io_B[32] & io_Cin[32],
-     io_A[31] & io_B[31] | io_A[31] & io_Cin[31] | io_B[31] & io_Cin[31],
-     io_A[30] & io_B[30] | io_A[30] & io_Cin[30] | io_B[30] & io_Cin[30],
-     io_A[29] & io_B[29] | io_A[29] & io_Cin[29] | io_B[29] & io_Cin[29],
-     io_A[28] & io_B[28] | io_A[28] & io_Cin[28] | io_B[28] & io_Cin[28],
-     io_A[27] & io_B[27] | io_A[27] & io_Cin[27] | io_B[27] & io_Cin[27],
-     io_A[26] & io_B[26] | io_A[26] & io_Cin[26] | io_B[26] & io_Cin[26],
-     io_A[25] & io_B[25] | io_A[25] & io_Cin[25] | io_B[25] & io_Cin[25],
-     io_A[24] & io_B[24] | io_A[24] & io_Cin[24] | io_B[24] & io_Cin[24],
-     io_A[23] & io_B[23] | io_A[23] & io_Cin[23] | io_B[23] & io_Cin[23],
-     io_A[22] & io_B[22] | io_A[22] & io_Cin[22] | io_B[22] & io_Cin[22],
-     io_A[21] & io_B[21] | io_A[21] & io_Cin[21] | io_B[21] & io_Cin[21],
-     io_A[20] & io_B[20] | io_A[20] & io_Cin[20] | io_B[20] & io_Cin[20],
-     io_A[19] & io_B[19] | io_A[19] & io_Cin[19] | io_B[19] & io_Cin[19],
-     io_A[18] & io_B[18] | io_A[18] & io_Cin[18] | io_B[18] & io_Cin[18],
-     io_A[17] & io_B[17] | io_A[17] & io_Cin[17] | io_B[17] & io_Cin[17],
-     io_A[16] & io_B[16] | io_A[16] & io_Cin[16] | io_B[16] & io_Cin[16],
-     io_A[15] & io_B[15] | io_A[15] & io_Cin[15] | io_B[15] & io_Cin[15],
-     io_A[14] & io_B[14] | io_A[14] & io_Cin[14] | io_B[14] & io_Cin[14],
-     io_A[13] & io_B[13] | io_A[13] & io_Cin[13] | io_B[13] & io_Cin[13],
-     io_A[12] & io_B[12] | io_A[12] & io_Cin[12] | io_B[12] & io_Cin[12],
-     io_A[11] & io_B[11] | io_A[11] & io_Cin[11] | io_B[11] & io_Cin[11],
-     io_A[10] & io_B[10] | io_A[10] & io_Cin[10] | io_B[10] & io_Cin[10],
-     io_A[9] & io_B[9] | io_A[9] & io_Cin[9] | io_B[9] & io_Cin[9],
-     io_A[8] & io_B[8] | io_A[8] & io_Cin[8] | io_B[8] & io_Cin[8],
-     io_A[7] & io_B[7] | io_A[7] & io_Cin[7] | io_B[7] & io_Cin[7],
-     io_A[6] & io_B[6] | io_A[6] & io_Cin[6] | io_B[6] & io_Cin[6],
-     io_A[5] & io_B[5] | io_A[5] & io_Cin[5] | io_B[5] & io_Cin[5],
-     io_A[4] & io_B[4] | io_A[4] & io_Cin[4] | io_B[4] & io_Cin[4],
-     io_A[3] & io_B[3] | io_A[3] & io_Cin[3] | io_B[3] & io_Cin[3],
-     io_A[2] & io_B[2] | io_A[2] & io_Cin[2] | io_B[2] & io_Cin[2],
-     io_A[1] & io_B[1] | io_A[1] & io_Cin[1] | io_B[1] & io_Cin[1],
-     io_A[0] & io_B[0] | io_A[0] & io_Cin[0] | io_B[0] & io_Cin[0]};	// core/src/exu.scala:237:7, :248:{21,31,43}, :249:{29,51,64,75}, :252:21
-endmodule
-
-module wallace_1(	// core/src/exu.scala:161:7
-  input  [32:0] io_A,	// core/src/exu.scala:162:16
-                io_B,	// core/src/exu.scala:162:16
-  output [65:0] io_S	// core/src/exu.scala:162:16
-);
-
-  wire [65:0] _csas_0_5_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_5_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_4_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_4_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_1_3_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_1_3_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_3_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_3_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_1_2_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_1_2_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_2_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_2_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_3_1_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_3_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_2_1_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_2_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_1_1_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_1_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_1_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_4_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_4_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_3_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_3_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_2_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_2_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_1_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_1_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_io_S;	// core/src/exu.scala:193:47
-  wire [65:0] _csas_0_io_Cout;	// core/src/exu.scala:193:47
-  wire [65:0] _booths_15_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_14_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_13_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_12_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_11_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_10_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_9_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_8_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_7_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_6_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_5_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_4_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_3_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_2_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_1_io_S;	// core/src/exu.scala:168:40
-  wire [65:0] _booths_0_io_S;	// core/src/exu.scala:168:40
-  booth2_16 booths_0 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[2:0]),	// core/src/exu.scala:172:41
-    .io_S (_booths_0_io_S)
-  );
-  booth2_16 booths_1 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[4:2]),	// core/src/exu.scala:172:41
-    .io_S (_booths_1_io_S)
-  );
-  booth2_16 booths_2 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[6:4]),	// core/src/exu.scala:172:41
-    .io_S (_booths_2_io_S)
-  );
-  booth2_16 booths_3 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[8:6]),	// core/src/exu.scala:172:41
-    .io_S (_booths_3_io_S)
-  );
-  booth2_16 booths_4 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[10:8]),	// core/src/exu.scala:172:41
-    .io_S (_booths_4_io_S)
-  );
-  booth2_16 booths_5 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[12:10]),	// core/src/exu.scala:172:41
-    .io_S (_booths_5_io_S)
-  );
-  booth2_16 booths_6 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[14:12]),	// core/src/exu.scala:172:41
-    .io_S (_booths_6_io_S)
-  );
-  booth2_16 booths_7 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[16:14]),	// core/src/exu.scala:172:41
-    .io_S (_booths_7_io_S)
-  );
-  booth2_16 booths_8 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[18:16]),	// core/src/exu.scala:172:41
-    .io_S (_booths_8_io_S)
-  );
-  booth2_16 booths_9 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[20:18]),	// core/src/exu.scala:172:41
-    .io_S (_booths_9_io_S)
-  );
-  booth2_16 booths_10 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[22:20]),	// core/src/exu.scala:172:41
-    .io_S (_booths_10_io_S)
-  );
-  booth2_16 booths_11 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[24:22]),	// core/src/exu.scala:172:41
-    .io_S (_booths_11_io_S)
-  );
-  booth2_16 booths_12 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[26:24]),	// core/src/exu.scala:172:41
-    .io_S (_booths_12_io_S)
-  );
-  booth2_16 booths_13 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[28:26]),	// core/src/exu.scala:172:41
-    .io_S (_booths_13_io_S)
-  );
-  booth2_16 booths_14 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[30:28]),	// core/src/exu.scala:172:41
-    .io_S (_booths_14_io_S)
-  );
-  booth2_16 booths_15 (	// core/src/exu.scala:168:40
-    .io_A (io_A),
-    .io_B (io_B[32:30]),	// core/src/exu.scala:172:41
-    .io_S (_booths_15_io_S)
-  );
-  csa_14 csas_0 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_0_io_S[64:0], 1'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_1_io_S[62:0], 3'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_2_io_S[60:0], 5'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_0_io_S),
-    .io_Cout (_csas_0_io_Cout)
-  );
-  csa_14 csas_1 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_3_io_S[58:0], 7'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_4_io_S[56:0], 9'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_5_io_S[54:0], 11'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_1_io_S),
-    .io_Cout (_csas_1_io_Cout)
-  );
-  csa_14 csas_2 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_6_io_S[52:0], 13'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_7_io_S[50:0], 15'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_8_io_S[48:0], 17'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_2_io_S),
-    .io_Cout (_csas_2_io_Cout)
-  );
-  csa_14 csas_3 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_9_io_S[46:0], 19'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_10_io_S[44:0], 21'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_11_io_S[42:0], 23'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_3_io_S),
-    .io_Cout (_csas_3_io_Cout)
-  );
-  csa_14 csas_4 (	// core/src/exu.scala:193:47
-    .io_A    ({_booths_12_io_S[40:0], 25'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_B    ({_booths_13_io_S[38:0], 27'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  ({_booths_14_io_S[36:0], 29'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_S    (_csas_4_io_S),
-    .io_Cout (_csas_4_io_Cout)
-  );
-  csa_14 csas_0_1 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_Cin  (_csas_1_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_0_1_io_S),
-    .io_Cout (_csas_0_1_io_Cout)
-  );
-  csa_14 csas_1_1 (	// core/src/exu.scala:193:47
-    .io_A    ({_csas_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_B    (_csas_2_io_S),	// core/src/exu.scala:193:47
-    .io_Cin  ({_csas_2_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_S    (_csas_1_1_io_S),
-    .io_Cout (_csas_1_1_io_Cout)
-  );
-  csa_14 csas_2_1 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_3_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_3_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_Cin  (_csas_4_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_2_1_io_S),
-    .io_Cout (_csas_2_1_io_Cout)
-  );
-  csa_14 csas_3_1 (	// core/src/exu.scala:193:47
-    .io_A    ({_csas_4_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_B    ({_booths_15_io_S[34:0], 31'h0}),	// core/src/exu.scala:168:40, :181:{19,37}
-    .io_Cin  (io_B[0] ? 66'h0 - {{33{io_A[32]}}, io_A} : 66'h0),	// core/src/exu.scala:184:{29,34,39,48,56}
-    .io_S    (_csas_3_1_io_S),
-    .io_Cout (_csas_3_1_io_Cout)
-  );
-  csa_14 csas_0_2 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_1_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_Cin  (_csas_1_1_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_0_2_io_S),
-    .io_Cout (_csas_0_2_io_Cout)
-  );
-  csa_14 csas_1_2 (	// core/src/exu.scala:193:47
-    .io_A    ({_csas_1_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_B    (_csas_2_1_io_S),	// core/src/exu.scala:193:47
-    .io_Cin  ({_csas_2_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_S    (_csas_1_2_io_S),
-    .io_Cout (_csas_1_2_io_Cout)
-  );
-  csa_14 csas_0_3 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_2_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_2_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_Cin  (_csas_1_2_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_0_3_io_S),
-    .io_Cout (_csas_0_3_io_Cout)
-  );
-  csa_14 csas_1_3 (	// core/src/exu.scala:193:47
-    .io_A    ({_csas_1_2_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_B    (_csas_3_1_io_S),	// core/src/exu.scala:193:47
-    .io_Cin  ({_csas_3_1_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_S    (_csas_1_3_io_S),
-    .io_Cout (_csas_1_3_io_Cout)
-  );
-  csa_14 csas_0_4 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_3_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_3_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_Cin  (_csas_1_3_io_S),	// core/src/exu.scala:193:47
-    .io_S    (_csas_0_4_io_S),
-    .io_Cout (_csas_0_4_io_Cout)
-  );
-  csa_14 csas_0_5 (	// core/src/exu.scala:193:47
-    .io_A    (_csas_0_4_io_S),	// core/src/exu.scala:193:47
-    .io_B    ({_csas_0_4_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_Cin  ({_csas_1_3_io_Cout[64:0], 1'h0}),	// core/src/exu.scala:181:37, :193:47, :201:34
-    .io_S    (_csas_0_5_io_S),
-    .io_Cout (_csas_0_5_io_Cout)
-  );
-  assign io_S = _csas_0_5_io_S + {_csas_0_5_io_Cout[64:0], 1'h0};	// core/src/exu.scala:161:7, :181:37, :193:47, :201:34, :214:20
-endmodule
-
-module alu(	// core/src/exu.scala:41:7
-  input  [31:0] io_A,	// core/src/exu.scala:42:16
-                io_B,	// core/src/exu.scala:42:16
-  input  [3:0]  io_Op,	// core/src/exu.scala:42:16
-  output [31:0] io_Out,	// core/src/exu.scala:42:16
-  output        io_SLess,	// core/src/exu.scala:42:16
-                io_ULess,	// core/src/exu.scala:42:16
-                io_Zero	// core/src/exu.scala:42:16
-);
-
-  wire [65:0]       _UMult_io_S;	// core/src/exu.scala:73:23
-  wire [63:0]       _SMult_io_S;	// core/src/exu.scala:72:23
-  wire [31:0]       _Shifter_io_Out;	// core/src/exu.scala:67:25
-  wire              Sub = io_Op == 4'h3 | io_Op == 4'h2 | io_Op == 4'h1;	// core/src/exu.scala:52:37
-  wire [31:0]       FixB = io_B ^ {32{Sub}};	// core/src/exu.scala:52:37, :60:{21,27}
-  wire [33:0]       FixSum = {1'h0, {1'h0, io_A} + {1'h0, FixB}} + {33'h0, Sub};	// core/src/exu.scala:52:37, :60:21, :61:{23,31}
-  wire              SLess = FixSum[31] ^ io_A[31] == FixB[31] & FixSum[31] != io_A[31];	// core/src/exu.scala:60:21, :61:31, :62:{19,24,32,38,48,53}, :64:29
-  wire [31:0]       _io_Out_T_5 = io_A | io_B;	// core/src/exu.scala:85:27
-  wire [33:0]       _GEN = {2'h0, _Shifter_io_Out};	// core/src/exu.scala:52:37, :67:25, :79:37
+  wire [31:0]       _Shifter_io_Out;	// core/src/exu.scala:119:25
+  wire              Sub = io_Op == 4'h3 | io_Op == 4'h2 | io_Op == 4'h1;	// core/src/exu.scala:104:37
+  wire [31:0]       FixB = io_B ^ {32{Sub}};	// core/src/exu.scala:104:37, :112:{21,27}
+  wire [33:0]       FixSum = {1'h0, {1'h0, io_A} + {1'h0, FixB}} + {33'h0, Sub};	// core/src/exu.scala:104:37, :112:21, :113:{23,31}
+  wire              SLess = FixSum[31] ^ io_A[31] == FixB[31] & FixSum[31] != io_A[31];	// core/src/exu.scala:112:21, :113:31, :114:{19,24,32,38,48,53}, :116:29
+  wire [31:0]       _io_Out_T_5 = io_A | io_B;	// core/src/exu.scala:130:27
+  wire [33:0]       _GEN = {2'h0, _Shifter_io_Out};	// core/src/exu.scala:104:37, :119:25, :124:37
   wire [15:0][33:0] _GEN_0 =
     {{34'h0},
      {34'h0},
      {_GEN},
      {_GEN},
      {_GEN},
-     {{2'h0, _UMult_io_S[63:32]}},
-     {{2'h0, _SMult_io_S[63:32]}},
-     {{2'h0, _SMult_io_S[31:0]}},
+     {34'h0},
+     {34'h0},
+     {34'h0},
      {{2'h0, ~_io_Out_T_5}},
      {{2'h0, io_A ^ io_B}},
      {{2'h0, _io_Out_T_5}},
@@ -2560,206 +2760,193 @@ module alu(	// core/src/exu.scala:41:7
      {{33'h0, ~(FixSum[32])}},
      {{33'h0, SLess}},
      {FixSum},
-     {FixSum}};	// core/src/exu.scala:52:37, :61:31, :64:29, :65:{17,24}, :72:23, :73:23, :79:37, :84:28, :85:27, :86:28, :87:22, :91:32, :92:33, :93:34
-  bshifter Shifter (	// core/src/exu.scala:67:25
+     {FixSum}};	// core/src/exu.scala:104:37, :113:31, :116:29, :117:{17,24}, :124:37, :129:28, :130:27, :131:28, :132:22
+  bshifter Shifter (	// core/src/exu.scala:119:25
     .io_A   (io_A),
-    .io_B   (io_B[4:0]),	// core/src/exu.scala:69:25
+    .io_B   (io_B[4:0]),	// core/src/exu.scala:121:25
     .io_Op  (io_Op),
     .io_Out (_Shifter_io_Out)
   );
-  wallace SMult (	// core/src/exu.scala:72:23
-    .io_A (io_A),
-    .io_B (io_B),
-    .io_S (_SMult_io_S)
-  );
-  wallace_1 UMult (	// core/src/exu.scala:73:23
-    .io_A ({1'h0, io_A}),	// core/src/exu.scala:52:37, :76:23
-    .io_B ({1'h0, io_B}),	// core/src/exu.scala:52:37, :77:23
-    .io_S (_UMult_io_S)
-  );
-  assign io_Out = _GEN_0[io_Op][31:0];	// core/src/exu.scala:41:7, :79:{12,37}
-  assign io_SLess = SLess;	// core/src/exu.scala:41:7, :64:29
-  assign io_ULess = ~(FixSum[32]);	// core/src/exu.scala:41:7, :61:31, :65:{17,24}
-  assign io_Zero = FixSum[31:0] == 32'h0;	// core/src/exu.scala:41:7, :60:27, :61:31, :63:{21,29}
+  assign io_Out = _GEN_0[io_Op][31:0];	// core/src/exu.scala:93:7, :124:{12,37}
+  assign io_SLess = SLess;	// core/src/exu.scala:93:7, :116:29
+  assign io_ULess = ~(FixSum[32]);	// core/src/exu.scala:93:7, :113:31, :117:{17,24}
+  assign io_Zero = FixSum[31:0] == 32'h0;	// core/src/exu.scala:93:7, :112:27, :113:31, :115:{21,29}
 endmodule
 
-module exu(	// core/src/exu.scala:5:7
-  input         io_prev_valid,	// core/src/exu.scala:6:16
-  input  [3:0]  io_prev_bits_aluOp,	// core/src/exu.scala:6:16
-  input  [1:0]  io_prev_bits_aluAsrc,	// core/src/exu.scala:6:16
-  input  [2:0]  io_prev_bits_aluBsrc,	// core/src/exu.scala:6:16
-  input  [3:0]  io_prev_bits_memOp,	// core/src/exu.scala:6:16
-                io_prev_bits_branch,	// core/src/exu.scala:6:16
-  input  [1:0]  io_prev_bits_wbSel,	// core/src/exu.scala:6:16
-                io_prev_bits_wbDst,	// core/src/exu.scala:6:16
-  input  [31:0] io_prev_bits_Imm,	// core/src/exu.scala:6:16
-  input  [4:0]  io_prev_bits_rd,	// core/src/exu.scala:6:16
-  input  [31:0] io_prev_bits_rd_data,	// core/src/exu.scala:6:16
-                io_prev_bits_rj_data,	// core/src/exu.scala:6:16
-                io_prev_bits_rk_data,	// core/src/exu.scala:6:16
-                io_prev_bits_pc,	// core/src/exu.scala:6:16
-  output        io_next_valid,	// core/src/exu.scala:6:16
-  output [31:0] io_next_bits_ALUOut,	// core/src/exu.scala:6:16
-  output        io_next_bits_SLess,	// core/src/exu.scala:6:16
-                io_next_bits_ULess,	// core/src/exu.scala:6:16
-                io_next_bits_Zero,	// core/src/exu.scala:6:16
-  output [3:0]  io_next_bits_memOp,	// core/src/exu.scala:6:16
-                io_next_bits_branch,	// core/src/exu.scala:6:16
-  output [1:0]  io_next_bits_wbSel,	// core/src/exu.scala:6:16
-                io_next_bits_wbDst,	// core/src/exu.scala:6:16
-  output [31:0] io_next_bits_Imm,	// core/src/exu.scala:6:16
-  output [4:0]  io_next_bits_rd,	// core/src/exu.scala:6:16
-  output [31:0] io_next_bits_rd_data,	// core/src/exu.scala:6:16
-                io_next_bits_rj_data,	// core/src/exu.scala:6:16
-                io_next_bits_pc	// core/src/exu.scala:6:16
+module exu2(	// core/src/exu.scala:56:7
+  input         io_prev_valid,	// core/src/exu.scala:57:16
+  input  [3:0]  io_prev_bits_aluOp,	// core/src/exu.scala:57:16
+                io_prev_bits_memOp,	// core/src/exu.scala:57:16
+                io_prev_bits_branch,	// core/src/exu.scala:57:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/exu.scala:57:16
+                io_prev_bits_wbDst,	// core/src/exu.scala:57:16
+  input  [31:0] io_prev_bits_Imm,	// core/src/exu.scala:57:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/exu.scala:57:16
+  input  [31:0] io_prev_bits_rd_data,	// core/src/exu.scala:57:16
+                io_prev_bits_rj_data,	// core/src/exu.scala:57:16
+                io_prev_bits_pc,	// core/src/exu.scala:57:16
+                io_prev_bits_ALUA,	// core/src/exu.scala:57:16
+                io_prev_bits_ALUB,	// core/src/exu.scala:57:16
+  input  [63:0] io_prev_bits_MulA,	// core/src/exu.scala:57:16
+                io_prev_bits_MulB,	// core/src/exu.scala:57:16
+  output        io_next_valid,	// core/src/exu.scala:57:16
+  output [31:0] io_next_bits_ALUOut,	// core/src/exu.scala:57:16
+  output        io_next_bits_SLess,	// core/src/exu.scala:57:16
+                io_next_bits_ULess,	// core/src/exu.scala:57:16
+                io_next_bits_Zero,	// core/src/exu.scala:57:16
+  output [3:0]  io_next_bits_memOp,	// core/src/exu.scala:57:16
+                io_next_bits_branch,	// core/src/exu.scala:57:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/exu.scala:57:16
+                io_next_bits_wbDst,	// core/src/exu.scala:57:16
+  output [31:0] io_next_bits_Imm,	// core/src/exu.scala:57:16
+  output [4:0]  io_next_bits_rd,	// core/src/exu.scala:57:16
+  output [31:0] io_next_bits_rd_data,	// core/src/exu.scala:57:16
+                io_next_bits_rj_data,	// core/src/exu.scala:57:16
+                io_next_bits_pc	// core/src/exu.scala:57:16
 );
 
-  alu ALU (	// core/src/exu.scala:10:21
-    .io_A
-      (io_prev_bits_aluAsrc == 2'h1
-         ? io_prev_bits_pc
-         : io_prev_bits_aluAsrc == 2'h0 ? io_prev_bits_rj_data : 32'h0),	// core/src/exu.scala:11:54
-    .io_B
-      (io_prev_bits_aluBsrc == 3'h3
-         ? 32'h4
-         : io_prev_bits_aluBsrc == 3'h2
-             ? io_prev_bits_Imm
-             : io_prev_bits_aluBsrc == 3'h1
-                 ? io_prev_bits_rd_data
-                 : io_prev_bits_aluBsrc == 3'h0 ? io_prev_bits_rk_data : 32'h0),	// core/src/exu.scala:11:54, :15:54
+  wire [31:0] _ALU_io_Out;	// core/src/exu.scala:62:21
+  wire [63:0] _WallaceOut_T = io_prev_bits_MulA + io_prev_bits_MulB;	// core/src/exu.scala:67:40
+  alu ALU (	// core/src/exu.scala:62:21
+    .io_A     (io_prev_bits_ALUA),
+    .io_B     (io_prev_bits_ALUB),
     .io_Op    (io_prev_bits_aluOp),
-    .io_Out   (io_next_bits_ALUOut),
+    .io_Out   (_ALU_io_Out),
     .io_SLess (io_next_bits_SLess),
     .io_ULess (io_next_bits_ULess),
     .io_Zero  (io_next_bits_Zero)
   );
-  assign io_next_valid = io_prev_valid;	// core/src/exu.scala:5:7
-  assign io_next_bits_memOp = io_prev_bits_memOp;	// core/src/exu.scala:5:7
-  assign io_next_bits_branch = io_prev_bits_branch;	// core/src/exu.scala:5:7
-  assign io_next_bits_wbSel = io_prev_bits_wbSel;	// core/src/exu.scala:5:7
-  assign io_next_bits_wbDst = io_prev_bits_wbDst;	// core/src/exu.scala:5:7
-  assign io_next_bits_Imm = io_prev_bits_Imm;	// core/src/exu.scala:5:7
-  assign io_next_bits_rd = io_prev_bits_rd;	// core/src/exu.scala:5:7
-  assign io_next_bits_rd_data = io_prev_bits_rd_data;	// core/src/exu.scala:5:7
-  assign io_next_bits_rj_data = io_prev_bits_rj_data;	// core/src/exu.scala:5:7
-  assign io_next_bits_pc = io_prev_bits_pc;	// core/src/exu.scala:5:7
+  assign io_next_valid = io_prev_valid;	// core/src/exu.scala:56:7
+  assign io_next_bits_ALUOut =
+    io_prev_bits_aluOp == 4'hA | io_prev_bits_aluOp == 4'h9
+      ? _WallaceOut_T[63:32]
+      : io_prev_bits_aluOp == 4'h8 ? _WallaceOut_T[31:0] : _ALU_io_Out;	// core/src/exu.scala:56:7, :62:21, :67:40, :69:60, :70:32, :71:33
+  assign io_next_bits_memOp = io_prev_bits_memOp;	// core/src/exu.scala:56:7
+  assign io_next_bits_branch = io_prev_bits_branch;	// core/src/exu.scala:56:7
+  assign io_next_bits_wbSel = io_prev_bits_wbSel;	// core/src/exu.scala:56:7
+  assign io_next_bits_wbDst = io_prev_bits_wbDst;	// core/src/exu.scala:56:7
+  assign io_next_bits_Imm = io_prev_bits_Imm;	// core/src/exu.scala:56:7
+  assign io_next_bits_rd = io_prev_bits_rd;	// core/src/exu.scala:56:7
+  assign io_next_bits_rd_data = io_prev_bits_rd_data;	// core/src/exu.scala:56:7
+  assign io_next_bits_rj_data = io_prev_bits_rj_data;	// core/src/exu.scala:56:7
+  assign io_next_bits_pc = io_prev_bits_pc;	// core/src/exu.scala:56:7
 endmodule
 
-module buffer_2(	// core/src/core.scala:53:7
-  input         clock,	// core/src/core.scala:53:7
-                reset,	// core/src/core.scala:53:7
-                io_prev_valid,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_ALUOut,	// core/src/core.scala:54:16
-  input         io_prev_bits_SLess,	// core/src/core.scala:54:16
-                io_prev_bits_ULess,	// core/src/core.scala:54:16
-                io_prev_bits_Zero,	// core/src/core.scala:54:16
-  input  [3:0]  io_prev_bits_memOp,	// core/src/core.scala:54:16
-                io_prev_bits_branch,	// core/src/core.scala:54:16
-  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:54:16
-                io_prev_bits_wbDst,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:54:16
-  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:54:16
-                io_prev_bits_rj_data,	// core/src/core.scala:54:16
-                io_prev_bits_pc,	// core/src/core.scala:54:16
-  output        io_next_valid,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_ALUOut,	// core/src/core.scala:54:16
-  output        io_next_bits_SLess,	// core/src/core.scala:54:16
-                io_next_bits_ULess,	// core/src/core.scala:54:16
-                io_next_bits_Zero,	// core/src/core.scala:54:16
-  output [3:0]  io_next_bits_memOp,	// core/src/core.scala:54:16
-                io_next_bits_branch,	// core/src/core.scala:54:16
-  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:54:16
-                io_next_bits_wbDst,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_Imm,	// core/src/core.scala:54:16
-  output [4:0]  io_next_bits_rd,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:54:16
-                io_next_bits_rj_data,	// core/src/core.scala:54:16
-                io_next_bits_pc	// core/src/core.scala:54:16
+module buffer_3(	// core/src/core.scala:57:7
+  input         clock,	// core/src/core.scala:57:7
+                reset,	// core/src/core.scala:57:7
+                io_prev_valid,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_ALUOut,	// core/src/core.scala:58:16
+  input         io_prev_bits_SLess,	// core/src/core.scala:58:16
+                io_prev_bits_ULess,	// core/src/core.scala:58:16
+                io_prev_bits_Zero,	// core/src/core.scala:58:16
+  input  [3:0]  io_prev_bits_memOp,	// core/src/core.scala:58:16
+                io_prev_bits_branch,	// core/src/core.scala:58:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:58:16
+                io_prev_bits_wbDst,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:58:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:58:16
+                io_prev_bits_rj_data,	// core/src/core.scala:58:16
+                io_prev_bits_pc,	// core/src/core.scala:58:16
+  output        io_next_valid,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_ALUOut,	// core/src/core.scala:58:16
+  output        io_next_bits_SLess,	// core/src/core.scala:58:16
+                io_next_bits_ULess,	// core/src/core.scala:58:16
+                io_next_bits_Zero,	// core/src/core.scala:58:16
+  output [3:0]  io_next_bits_memOp,	// core/src/core.scala:58:16
+                io_next_bits_branch,	// core/src/core.scala:58:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:58:16
+                io_next_bits_wbDst,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_Imm,	// core/src/core.scala:58:16
+  output [4:0]  io_next_bits_rd,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:58:16
+                io_next_bits_rj_data,	// core/src/core.scala:58:16
+                io_next_bits_pc	// core/src/core.scala:58:16
 );
 
-  reg        state;	// core/src/core.scala:58:24
-  reg [31:0] regs_ALUOut;	// core/src/core.scala:61:19
-  reg        regs_SLess;	// core/src/core.scala:61:19
-  reg        regs_ULess;	// core/src/core.scala:61:19
-  reg        regs_Zero;	// core/src/core.scala:61:19
-  reg [3:0]  regs_memOp;	// core/src/core.scala:61:19
-  reg [3:0]  regs_branch;	// core/src/core.scala:61:19
-  reg [1:0]  regs_wbSel;	// core/src/core.scala:61:19
-  reg [1:0]  regs_wbDst;	// core/src/core.scala:61:19
-  reg [31:0] regs_Imm;	// core/src/core.scala:61:19
-  reg [4:0]  regs_rd;	// core/src/core.scala:61:19
-  reg [31:0] regs_rd_data;	// core/src/core.scala:61:19
-  reg [31:0] regs_rj_data;	// core/src/core.scala:61:19
-  reg [31:0] regs_pc;	// core/src/core.scala:61:19
-  always @(posedge clock) begin	// core/src/core.scala:53:7
-    if (reset)	// core/src/core.scala:53:7
-      state <= 1'h0;	// core/src/core.scala:58:24
-    else	// core/src/core.scala:53:7
-      state <= io_prev_valid;	// core/src/core.scala:58:24
-    if (io_prev_valid) begin	// core/src/core.scala:54:16
-      regs_ALUOut <= io_prev_bits_ALUOut;	// core/src/core.scala:61:19
-      regs_SLess <= io_prev_bits_SLess;	// core/src/core.scala:61:19
-      regs_ULess <= io_prev_bits_ULess;	// core/src/core.scala:61:19
-      regs_Zero <= io_prev_bits_Zero;	// core/src/core.scala:61:19
-      regs_memOp <= io_prev_bits_memOp;	// core/src/core.scala:61:19
-      regs_branch <= io_prev_bits_branch;	// core/src/core.scala:61:19
-      regs_wbSel <= io_prev_bits_wbSel;	// core/src/core.scala:61:19
-      regs_wbDst <= io_prev_bits_wbDst;	// core/src/core.scala:61:19
-      regs_Imm <= io_prev_bits_Imm;	// core/src/core.scala:61:19
-      regs_rd <= io_prev_bits_rd;	// core/src/core.scala:61:19
-      regs_rd_data <= io_prev_bits_rd_data;	// core/src/core.scala:61:19
-      regs_rj_data <= io_prev_bits_rj_data;	// core/src/core.scala:61:19
-      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:61:19
+  reg        state;	// core/src/core.scala:62:24
+  reg [31:0] regs_ALUOut;	// core/src/core.scala:65:19
+  reg        regs_SLess;	// core/src/core.scala:65:19
+  reg        regs_ULess;	// core/src/core.scala:65:19
+  reg        regs_Zero;	// core/src/core.scala:65:19
+  reg [3:0]  regs_memOp;	// core/src/core.scala:65:19
+  reg [3:0]  regs_branch;	// core/src/core.scala:65:19
+  reg [1:0]  regs_wbSel;	// core/src/core.scala:65:19
+  reg [1:0]  regs_wbDst;	// core/src/core.scala:65:19
+  reg [31:0] regs_Imm;	// core/src/core.scala:65:19
+  reg [4:0]  regs_rd;	// core/src/core.scala:65:19
+  reg [31:0] regs_rd_data;	// core/src/core.scala:65:19
+  reg [31:0] regs_rj_data;	// core/src/core.scala:65:19
+  reg [31:0] regs_pc;	// core/src/core.scala:65:19
+  always @(posedge clock) begin	// core/src/core.scala:57:7
+    if (reset)	// core/src/core.scala:57:7
+      state <= 1'h0;	// core/src/core.scala:62:24
+    else	// core/src/core.scala:57:7
+      state <= io_prev_valid;	// core/src/core.scala:62:24
+    if (io_prev_valid) begin	// core/src/core.scala:58:16
+      regs_ALUOut <= io_prev_bits_ALUOut;	// core/src/core.scala:65:19
+      regs_SLess <= io_prev_bits_SLess;	// core/src/core.scala:65:19
+      regs_ULess <= io_prev_bits_ULess;	// core/src/core.scala:65:19
+      regs_Zero <= io_prev_bits_Zero;	// core/src/core.scala:65:19
+      regs_memOp <= io_prev_bits_memOp;	// core/src/core.scala:65:19
+      regs_branch <= io_prev_bits_branch;	// core/src/core.scala:65:19
+      regs_wbSel <= io_prev_bits_wbSel;	// core/src/core.scala:65:19
+      regs_wbDst <= io_prev_bits_wbDst;	// core/src/core.scala:65:19
+      regs_Imm <= io_prev_bits_Imm;	// core/src/core.scala:65:19
+      regs_rd <= io_prev_bits_rd;	// core/src/core.scala:65:19
+      regs_rd_data <= io_prev_bits_rd_data;	// core/src/core.scala:65:19
+      regs_rj_data <= io_prev_bits_rj_data;	// core/src/core.scala:65:19
+      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:65:19
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:53:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:53:7
-      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:53:7
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:57:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// core/src/core.scala:53:7
-      automatic logic [31:0] _RANDOM[0:5];	// core/src/core.scala:53:7
-      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:53:7
-        `INIT_RANDOM_PROLOG_	// core/src/core.scala:53:7
+    initial begin	// core/src/core.scala:57:7
+      automatic logic [31:0] _RANDOM[0:5];	// core/src/core.scala:57:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:53:7
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:57:7
         for (logic [2:0] i = 3'h0; i < 3'h6; i += 3'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:53:7
-        end	// core/src/core.scala:53:7
-        state = _RANDOM[3'h0][0];	// core/src/core.scala:53:7, :58:24
-        regs_ALUOut = {_RANDOM[3'h0][31:1], _RANDOM[3'h1][0]};	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_SLess = _RANDOM[3'h1][1];	// core/src/core.scala:53:7, :61:19
-        regs_ULess = _RANDOM[3'h1][2];	// core/src/core.scala:53:7, :61:19
-        regs_Zero = _RANDOM[3'h1][3];	// core/src/core.scala:53:7, :61:19
-        regs_memOp = _RANDOM[3'h1][7:4];	// core/src/core.scala:53:7, :61:19
-        regs_branch = _RANDOM[3'h1][11:8];	// core/src/core.scala:53:7, :61:19
-        regs_wbSel = _RANDOM[3'h1][13:12];	// core/src/core.scala:53:7, :61:19
-        regs_wbDst = _RANDOM[3'h1][15:14];	// core/src/core.scala:53:7, :61:19
-        regs_Imm = {_RANDOM[3'h1][31:16], _RANDOM[3'h2][15:0]};	// core/src/core.scala:53:7, :61:19
-        regs_rd = _RANDOM[3'h2][20:16];	// core/src/core.scala:53:7, :61:19
-        regs_rd_data = {_RANDOM[3'h2][31:21], _RANDOM[3'h3][20:0]};	// core/src/core.scala:53:7, :61:19
-        regs_rj_data = {_RANDOM[3'h3][31:21], _RANDOM[3'h4][20:0]};	// core/src/core.scala:53:7, :61:19
-        regs_pc = {_RANDOM[3'h4][31:21], _RANDOM[3'h5][20:0]};	// core/src/core.scala:53:7, :61:19
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:57:7
+        end	// core/src/core.scala:57:7
+        state = _RANDOM[3'h0][0];	// core/src/core.scala:57:7, :62:24
+        regs_ALUOut = {_RANDOM[3'h0][31:1], _RANDOM[3'h1][0]};	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_SLess = _RANDOM[3'h1][1];	// core/src/core.scala:57:7, :65:19
+        regs_ULess = _RANDOM[3'h1][2];	// core/src/core.scala:57:7, :65:19
+        regs_Zero = _RANDOM[3'h1][3];	// core/src/core.scala:57:7, :65:19
+        regs_memOp = _RANDOM[3'h1][7:4];	// core/src/core.scala:57:7, :65:19
+        regs_branch = _RANDOM[3'h1][11:8];	// core/src/core.scala:57:7, :65:19
+        regs_wbSel = _RANDOM[3'h1][13:12];	// core/src/core.scala:57:7, :65:19
+        regs_wbDst = _RANDOM[3'h1][15:14];	// core/src/core.scala:57:7, :65:19
+        regs_Imm = {_RANDOM[3'h1][31:16], _RANDOM[3'h2][15:0]};	// core/src/core.scala:57:7, :65:19
+        regs_rd = _RANDOM[3'h2][20:16];	// core/src/core.scala:57:7, :65:19
+        regs_rd_data = {_RANDOM[3'h2][31:21], _RANDOM[3'h3][20:0]};	// core/src/core.scala:57:7, :65:19
+        regs_rj_data = {_RANDOM[3'h3][31:21], _RANDOM[3'h4][20:0]};	// core/src/core.scala:57:7, :65:19
+        regs_pc = {_RANDOM[3'h4][31:21], _RANDOM[3'h5][20:0]};	// core/src/core.scala:57:7, :65:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:53:7
-      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:53:7
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_next_valid = state;	// core/src/core.scala:53:7, :58:24
-  assign io_next_bits_ALUOut = regs_ALUOut;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_SLess = regs_SLess;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_ULess = regs_ULess;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_Zero = regs_Zero;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_branch = regs_branch;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:53:7, :61:19
+  assign io_next_valid = state;	// core/src/core.scala:57:7, :62:24
+  assign io_next_bits_ALUOut = regs_ALUOut;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_SLess = regs_SLess;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_ULess = regs_ULess;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_Zero = regs_Zero;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_branch = regs_branch;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:57:7, :65:19
 endmodule
 
 module lsu(	// core/src/lsu.scala:5:7
@@ -2885,115 +3072,115 @@ module lsu(	// core/src/lsu.scala:5:7
   assign io_next_bits_pc = io_prev_bits_pc;	// core/src/lsu.scala:5:7
 endmodule
 
-module buffer_3(	// core/src/core.scala:53:7
-  input         clock,	// core/src/core.scala:53:7
-                reset,	// core/src/core.scala:53:7
-                io_prev_valid,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_MemOut,	// core/src/core.scala:54:16
-                io_prev_bits_ALUOut,	// core/src/core.scala:54:16
-  input         io_prev_bits_SLess,	// core/src/core.scala:54:16
-                io_prev_bits_ULess,	// core/src/core.scala:54:16
-                io_prev_bits_Zero,	// core/src/core.scala:54:16
-  input  [3:0]  io_prev_bits_branch,	// core/src/core.scala:54:16
-  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:54:16
-                io_prev_bits_wbDst,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:54:16
-  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:54:16
-  input  [31:0] io_prev_bits_rj_data,	// core/src/core.scala:54:16
-                io_prev_bits_pc,	// core/src/core.scala:54:16
-  output        io_next_valid,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_MemOut,	// core/src/core.scala:54:16
-                io_next_bits_ALUOut,	// core/src/core.scala:54:16
-  output        io_next_bits_SLess,	// core/src/core.scala:54:16
-                io_next_bits_ULess,	// core/src/core.scala:54:16
-                io_next_bits_Zero,	// core/src/core.scala:54:16
-  output [3:0]  io_next_bits_branch,	// core/src/core.scala:54:16
-  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:54:16
-                io_next_bits_wbDst,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_Imm,	// core/src/core.scala:54:16
-  output [4:0]  io_next_bits_rd,	// core/src/core.scala:54:16
-  output [31:0] io_next_bits_rj_data,	// core/src/core.scala:54:16
-                io_next_bits_pc	// core/src/core.scala:54:16
+module buffer_4(	// core/src/core.scala:57:7
+  input         clock,	// core/src/core.scala:57:7
+                reset,	// core/src/core.scala:57:7
+                io_prev_valid,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_MemOut,	// core/src/core.scala:58:16
+                io_prev_bits_ALUOut,	// core/src/core.scala:58:16
+  input         io_prev_bits_SLess,	// core/src/core.scala:58:16
+                io_prev_bits_ULess,	// core/src/core.scala:58:16
+                io_prev_bits_Zero,	// core/src/core.scala:58:16
+  input  [3:0]  io_prev_bits_branch,	// core/src/core.scala:58:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:58:16
+                io_prev_bits_wbDst,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:58:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:58:16
+  input  [31:0] io_prev_bits_rj_data,	// core/src/core.scala:58:16
+                io_prev_bits_pc,	// core/src/core.scala:58:16
+  output        io_next_valid,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_MemOut,	// core/src/core.scala:58:16
+                io_next_bits_ALUOut,	// core/src/core.scala:58:16
+  output        io_next_bits_SLess,	// core/src/core.scala:58:16
+                io_next_bits_ULess,	// core/src/core.scala:58:16
+                io_next_bits_Zero,	// core/src/core.scala:58:16
+  output [3:0]  io_next_bits_branch,	// core/src/core.scala:58:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:58:16
+                io_next_bits_wbDst,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_Imm,	// core/src/core.scala:58:16
+  output [4:0]  io_next_bits_rd,	// core/src/core.scala:58:16
+  output [31:0] io_next_bits_rj_data,	// core/src/core.scala:58:16
+                io_next_bits_pc	// core/src/core.scala:58:16
 );
 
-  reg        state;	// core/src/core.scala:58:24
-  reg [31:0] regs_MemOut;	// core/src/core.scala:61:19
-  reg [31:0] regs_ALUOut;	// core/src/core.scala:61:19
-  reg        regs_SLess;	// core/src/core.scala:61:19
-  reg        regs_ULess;	// core/src/core.scala:61:19
-  reg        regs_Zero;	// core/src/core.scala:61:19
-  reg [3:0]  regs_branch;	// core/src/core.scala:61:19
-  reg [1:0]  regs_wbSel;	// core/src/core.scala:61:19
-  reg [1:0]  regs_wbDst;	// core/src/core.scala:61:19
-  reg [31:0] regs_Imm;	// core/src/core.scala:61:19
-  reg [4:0]  regs_rd;	// core/src/core.scala:61:19
-  reg [31:0] regs_rj_data;	// core/src/core.scala:61:19
-  reg [31:0] regs_pc;	// core/src/core.scala:61:19
-  always @(posedge clock) begin	// core/src/core.scala:53:7
-    if (reset)	// core/src/core.scala:53:7
-      state <= 1'h0;	// core/src/core.scala:58:24
-    else	// core/src/core.scala:53:7
-      state <= io_prev_valid;	// core/src/core.scala:58:24
-    if (io_prev_valid) begin	// core/src/core.scala:54:16
-      regs_MemOut <= io_prev_bits_MemOut;	// core/src/core.scala:61:19
-      regs_ALUOut <= io_prev_bits_ALUOut;	// core/src/core.scala:61:19
-      regs_SLess <= io_prev_bits_SLess;	// core/src/core.scala:61:19
-      regs_ULess <= io_prev_bits_ULess;	// core/src/core.scala:61:19
-      regs_Zero <= io_prev_bits_Zero;	// core/src/core.scala:61:19
-      regs_branch <= io_prev_bits_branch;	// core/src/core.scala:61:19
-      regs_wbSel <= io_prev_bits_wbSel;	// core/src/core.scala:61:19
-      regs_wbDst <= io_prev_bits_wbDst;	// core/src/core.scala:61:19
-      regs_Imm <= io_prev_bits_Imm;	// core/src/core.scala:61:19
-      regs_rd <= io_prev_bits_rd;	// core/src/core.scala:61:19
-      regs_rj_data <= io_prev_bits_rj_data;	// core/src/core.scala:61:19
-      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:61:19
+  reg        state;	// core/src/core.scala:62:24
+  reg [31:0] regs_MemOut;	// core/src/core.scala:65:19
+  reg [31:0] regs_ALUOut;	// core/src/core.scala:65:19
+  reg        regs_SLess;	// core/src/core.scala:65:19
+  reg        regs_ULess;	// core/src/core.scala:65:19
+  reg        regs_Zero;	// core/src/core.scala:65:19
+  reg [3:0]  regs_branch;	// core/src/core.scala:65:19
+  reg [1:0]  regs_wbSel;	// core/src/core.scala:65:19
+  reg [1:0]  regs_wbDst;	// core/src/core.scala:65:19
+  reg [31:0] regs_Imm;	// core/src/core.scala:65:19
+  reg [4:0]  regs_rd;	// core/src/core.scala:65:19
+  reg [31:0] regs_rj_data;	// core/src/core.scala:65:19
+  reg [31:0] regs_pc;	// core/src/core.scala:65:19
+  always @(posedge clock) begin	// core/src/core.scala:57:7
+    if (reset)	// core/src/core.scala:57:7
+      state <= 1'h0;	// core/src/core.scala:62:24
+    else	// core/src/core.scala:57:7
+      state <= io_prev_valid;	// core/src/core.scala:62:24
+    if (io_prev_valid) begin	// core/src/core.scala:58:16
+      regs_MemOut <= io_prev_bits_MemOut;	// core/src/core.scala:65:19
+      regs_ALUOut <= io_prev_bits_ALUOut;	// core/src/core.scala:65:19
+      regs_SLess <= io_prev_bits_SLess;	// core/src/core.scala:65:19
+      regs_ULess <= io_prev_bits_ULess;	// core/src/core.scala:65:19
+      regs_Zero <= io_prev_bits_Zero;	// core/src/core.scala:65:19
+      regs_branch <= io_prev_bits_branch;	// core/src/core.scala:65:19
+      regs_wbSel <= io_prev_bits_wbSel;	// core/src/core.scala:65:19
+      regs_wbDst <= io_prev_bits_wbDst;	// core/src/core.scala:65:19
+      regs_Imm <= io_prev_bits_Imm;	// core/src/core.scala:65:19
+      regs_rd <= io_prev_bits_rd;	// core/src/core.scala:65:19
+      regs_rj_data <= io_prev_bits_rj_data;	// core/src/core.scala:65:19
+      regs_pc <= io_prev_bits_pc;	// core/src/core.scala:65:19
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:53:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:53:7
-      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:53:7
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:57:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:57:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// core/src/core.scala:53:7
-      automatic logic [31:0] _RANDOM[0:5];	// core/src/core.scala:53:7
-      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:53:7
-        `INIT_RANDOM_PROLOG_	// core/src/core.scala:53:7
+    initial begin	// core/src/core.scala:57:7
+      automatic logic [31:0] _RANDOM[0:5];	// core/src/core.scala:57:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:57:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:53:7
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:57:7
         for (logic [2:0] i = 3'h0; i < 3'h6; i += 3'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:53:7
-        end	// core/src/core.scala:53:7
-        state = _RANDOM[3'h0][0];	// core/src/core.scala:53:7, :58:24
-        regs_MemOut = {_RANDOM[3'h0][31:1], _RANDOM[3'h1][0]};	// core/src/core.scala:53:7, :58:24, :61:19
-        regs_ALUOut = {_RANDOM[3'h1][31:1], _RANDOM[3'h2][0]};	// core/src/core.scala:53:7, :61:19
-        regs_SLess = _RANDOM[3'h2][1];	// core/src/core.scala:53:7, :61:19
-        regs_ULess = _RANDOM[3'h2][2];	// core/src/core.scala:53:7, :61:19
-        regs_Zero = _RANDOM[3'h2][3];	// core/src/core.scala:53:7, :61:19
-        regs_branch = _RANDOM[3'h2][7:4];	// core/src/core.scala:53:7, :61:19
-        regs_wbSel = _RANDOM[3'h2][9:8];	// core/src/core.scala:53:7, :61:19
-        regs_wbDst = _RANDOM[3'h2][11:10];	// core/src/core.scala:53:7, :61:19
-        regs_Imm = {_RANDOM[3'h2][31:12], _RANDOM[3'h3][11:0]};	// core/src/core.scala:53:7, :61:19
-        regs_rd = _RANDOM[3'h3][16:12];	// core/src/core.scala:53:7, :61:19
-        regs_rj_data = {_RANDOM[3'h3][31:17], _RANDOM[3'h4][16:0]};	// core/src/core.scala:53:7, :61:19
-        regs_pc = {_RANDOM[3'h4][31:17], _RANDOM[3'h5][16:0]};	// core/src/core.scala:53:7, :61:19
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:57:7
+        end	// core/src/core.scala:57:7
+        state = _RANDOM[3'h0][0];	// core/src/core.scala:57:7, :62:24
+        regs_MemOut = {_RANDOM[3'h0][31:1], _RANDOM[3'h1][0]};	// core/src/core.scala:57:7, :62:24, :65:19
+        regs_ALUOut = {_RANDOM[3'h1][31:1], _RANDOM[3'h2][0]};	// core/src/core.scala:57:7, :65:19
+        regs_SLess = _RANDOM[3'h2][1];	// core/src/core.scala:57:7, :65:19
+        regs_ULess = _RANDOM[3'h2][2];	// core/src/core.scala:57:7, :65:19
+        regs_Zero = _RANDOM[3'h2][3];	// core/src/core.scala:57:7, :65:19
+        regs_branch = _RANDOM[3'h2][7:4];	// core/src/core.scala:57:7, :65:19
+        regs_wbSel = _RANDOM[3'h2][9:8];	// core/src/core.scala:57:7, :65:19
+        regs_wbDst = _RANDOM[3'h2][11:10];	// core/src/core.scala:57:7, :65:19
+        regs_Imm = {_RANDOM[3'h2][31:12], _RANDOM[3'h3][11:0]};	// core/src/core.scala:57:7, :65:19
+        regs_rd = _RANDOM[3'h3][16:12];	// core/src/core.scala:57:7, :65:19
+        regs_rj_data = {_RANDOM[3'h3][31:17], _RANDOM[3'h4][16:0]};	// core/src/core.scala:57:7, :65:19
+        regs_pc = {_RANDOM[3'h4][31:17], _RANDOM[3'h5][16:0]};	// core/src/core.scala:57:7, :65:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:53:7
-      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:53:7
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:57:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_next_valid = state;	// core/src/core.scala:53:7, :58:24
-  assign io_next_bits_MemOut = regs_MemOut;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_ALUOut = regs_ALUOut;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_SLess = regs_SLess;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_ULess = regs_ULess;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_Zero = regs_Zero;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_branch = regs_branch;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:53:7, :61:19
-  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:53:7, :61:19
+  assign io_next_valid = state;	// core/src/core.scala:57:7, :62:24
+  assign io_next_bits_MemOut = regs_MemOut;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_ALUOut = regs_ALUOut;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_SLess = regs_SLess;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_ULess = regs_ULess;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_Zero = regs_Zero;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_branch = regs_branch;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:57:7, :65:19
+  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:57:7, :65:19
 endmodule
 
 module branchContr(	// core/src/wbu.scala:47:7
@@ -3246,75 +3433,105 @@ module core(	// core/src/core.scala:5:7
                 io_bus_out_bits_we_n	// core/src/core.scala:6:16
 );
 
-  wire [31:0] _abt_io_out_BusOut_0_bits_data_out;	// core/src/core.scala:29:21
-  wire [31:0] _abt_io_out_BusOut_1_bits_data_out;	// core/src/core.scala:29:21
-  wire        _wbu_io_InstFetch;	// core/src/core.scala:18:21
-  wire [31:0] _wbu_io_pc;	// core/src/core.scala:18:21
-  wire        _wbu_io_wen;	// core/src/core.scala:18:21
-  wire [4:0]  _wbu_io_waddr;	// core/src/core.scala:18:21
-  wire [31:0] _wbu_io_wdata;	// core/src/core.scala:18:21
-  wire        _lsu_wbu_io_next_valid;	// core/src/core.scala:17:25
-  wire [31:0] _lsu_wbu_io_next_bits_MemOut;	// core/src/core.scala:17:25
-  wire [31:0] _lsu_wbu_io_next_bits_ALUOut;	// core/src/core.scala:17:25
-  wire        _lsu_wbu_io_next_bits_SLess;	// core/src/core.scala:17:25
-  wire        _lsu_wbu_io_next_bits_ULess;	// core/src/core.scala:17:25
-  wire        _lsu_wbu_io_next_bits_Zero;	// core/src/core.scala:17:25
-  wire [3:0]  _lsu_wbu_io_next_bits_branch;	// core/src/core.scala:17:25
-  wire [1:0]  _lsu_wbu_io_next_bits_wbSel;	// core/src/core.scala:17:25
-  wire [1:0]  _lsu_wbu_io_next_bits_wbDst;	// core/src/core.scala:17:25
-  wire [31:0] _lsu_wbu_io_next_bits_Imm;	// core/src/core.scala:17:25
-  wire [4:0]  _lsu_wbu_io_next_bits_rd;	// core/src/core.scala:17:25
-  wire [31:0] _lsu_wbu_io_next_bits_rj_data;	// core/src/core.scala:17:25
-  wire [31:0] _lsu_wbu_io_next_bits_pc;	// core/src/core.scala:17:25
-  wire        _lsu_io_ext_out_valid;	// core/src/core.scala:16:21
-  wire        _lsu_io_ext_out_bits_data_wen;	// core/src/core.scala:16:21
-  wire [31:0] _lsu_io_ext_out_bits_data_in;	// core/src/core.scala:16:21
-  wire [31:0] _lsu_io_ext_out_bits_addr;	// core/src/core.scala:16:21
-  wire [3:0]  _lsu_io_ext_out_bits_be_n;	// core/src/core.scala:16:21
-  wire        _lsu_io_ext_out_bits_ce_n;	// core/src/core.scala:16:21
-  wire        _lsu_io_ext_out_bits_oe_n;	// core/src/core.scala:16:21
-  wire        _lsu_io_ext_out_bits_we_n;	// core/src/core.scala:16:21
-  wire        _lsu_io_next_valid;	// core/src/core.scala:16:21
-  wire [31:0] _lsu_io_next_bits_MemOut;	// core/src/core.scala:16:21
-  wire [31:0] _lsu_io_next_bits_ALUOut;	// core/src/core.scala:16:21
-  wire        _lsu_io_next_bits_SLess;	// core/src/core.scala:16:21
-  wire        _lsu_io_next_bits_ULess;	// core/src/core.scala:16:21
-  wire        _lsu_io_next_bits_Zero;	// core/src/core.scala:16:21
-  wire [3:0]  _lsu_io_next_bits_branch;	// core/src/core.scala:16:21
-  wire [1:0]  _lsu_io_next_bits_wbSel;	// core/src/core.scala:16:21
-  wire [1:0]  _lsu_io_next_bits_wbDst;	// core/src/core.scala:16:21
-  wire [31:0] _lsu_io_next_bits_Imm;	// core/src/core.scala:16:21
-  wire [4:0]  _lsu_io_next_bits_rd;	// core/src/core.scala:16:21
-  wire [31:0] _lsu_io_next_bits_rj_data;	// core/src/core.scala:16:21
-  wire [31:0] _lsu_io_next_bits_pc;	// core/src/core.scala:16:21
-  wire        _exu_lsu_io_next_valid;	// core/src/core.scala:15:25
-  wire [31:0] _exu_lsu_io_next_bits_ALUOut;	// core/src/core.scala:15:25
-  wire        _exu_lsu_io_next_bits_SLess;	// core/src/core.scala:15:25
-  wire        _exu_lsu_io_next_bits_ULess;	// core/src/core.scala:15:25
-  wire        _exu_lsu_io_next_bits_Zero;	// core/src/core.scala:15:25
-  wire [3:0]  _exu_lsu_io_next_bits_memOp;	// core/src/core.scala:15:25
-  wire [3:0]  _exu_lsu_io_next_bits_branch;	// core/src/core.scala:15:25
-  wire [1:0]  _exu_lsu_io_next_bits_wbSel;	// core/src/core.scala:15:25
-  wire [1:0]  _exu_lsu_io_next_bits_wbDst;	// core/src/core.scala:15:25
-  wire [31:0] _exu_lsu_io_next_bits_Imm;	// core/src/core.scala:15:25
-  wire [4:0]  _exu_lsu_io_next_bits_rd;	// core/src/core.scala:15:25
-  wire [31:0] _exu_lsu_io_next_bits_rd_data;	// core/src/core.scala:15:25
-  wire [31:0] _exu_lsu_io_next_bits_rj_data;	// core/src/core.scala:15:25
-  wire [31:0] _exu_lsu_io_next_bits_pc;	// core/src/core.scala:15:25
-  wire        _exu_io_next_valid;	// core/src/core.scala:14:21
-  wire [31:0] _exu_io_next_bits_ALUOut;	// core/src/core.scala:14:21
-  wire        _exu_io_next_bits_SLess;	// core/src/core.scala:14:21
-  wire        _exu_io_next_bits_ULess;	// core/src/core.scala:14:21
-  wire        _exu_io_next_bits_Zero;	// core/src/core.scala:14:21
-  wire [3:0]  _exu_io_next_bits_memOp;	// core/src/core.scala:14:21
-  wire [3:0]  _exu_io_next_bits_branch;	// core/src/core.scala:14:21
-  wire [1:0]  _exu_io_next_bits_wbSel;	// core/src/core.scala:14:21
-  wire [1:0]  _exu_io_next_bits_wbDst;	// core/src/core.scala:14:21
-  wire [31:0] _exu_io_next_bits_Imm;	// core/src/core.scala:14:21
-  wire [4:0]  _exu_io_next_bits_rd;	// core/src/core.scala:14:21
-  wire [31:0] _exu_io_next_bits_rd_data;	// core/src/core.scala:14:21
-  wire [31:0] _exu_io_next_bits_rj_data;	// core/src/core.scala:14:21
-  wire [31:0] _exu_io_next_bits_pc;	// core/src/core.scala:14:21
+  wire [31:0] _abt_io_out_BusOut_0_bits_data_out;	// core/src/core.scala:31:21
+  wire [31:0] _abt_io_out_BusOut_1_bits_data_out;	// core/src/core.scala:31:21
+  wire        _wbu_io_InstFetch;	// core/src/core.scala:20:21
+  wire [31:0] _wbu_io_pc;	// core/src/core.scala:20:21
+  wire        _wbu_io_wen;	// core/src/core.scala:20:21
+  wire [4:0]  _wbu_io_waddr;	// core/src/core.scala:20:21
+  wire [31:0] _wbu_io_wdata;	// core/src/core.scala:20:21
+  wire        _lsu_wbu_io_next_valid;	// core/src/core.scala:19:25
+  wire [31:0] _lsu_wbu_io_next_bits_MemOut;	// core/src/core.scala:19:25
+  wire [31:0] _lsu_wbu_io_next_bits_ALUOut;	// core/src/core.scala:19:25
+  wire        _lsu_wbu_io_next_bits_SLess;	// core/src/core.scala:19:25
+  wire        _lsu_wbu_io_next_bits_ULess;	// core/src/core.scala:19:25
+  wire        _lsu_wbu_io_next_bits_Zero;	// core/src/core.scala:19:25
+  wire [3:0]  _lsu_wbu_io_next_bits_branch;	// core/src/core.scala:19:25
+  wire [1:0]  _lsu_wbu_io_next_bits_wbSel;	// core/src/core.scala:19:25
+  wire [1:0]  _lsu_wbu_io_next_bits_wbDst;	// core/src/core.scala:19:25
+  wire [31:0] _lsu_wbu_io_next_bits_Imm;	// core/src/core.scala:19:25
+  wire [4:0]  _lsu_wbu_io_next_bits_rd;	// core/src/core.scala:19:25
+  wire [31:0] _lsu_wbu_io_next_bits_rj_data;	// core/src/core.scala:19:25
+  wire [31:0] _lsu_wbu_io_next_bits_pc;	// core/src/core.scala:19:25
+  wire        _lsu_io_ext_out_valid;	// core/src/core.scala:18:21
+  wire        _lsu_io_ext_out_bits_data_wen;	// core/src/core.scala:18:21
+  wire [31:0] _lsu_io_ext_out_bits_data_in;	// core/src/core.scala:18:21
+  wire [31:0] _lsu_io_ext_out_bits_addr;	// core/src/core.scala:18:21
+  wire [3:0]  _lsu_io_ext_out_bits_be_n;	// core/src/core.scala:18:21
+  wire        _lsu_io_ext_out_bits_ce_n;	// core/src/core.scala:18:21
+  wire        _lsu_io_ext_out_bits_oe_n;	// core/src/core.scala:18:21
+  wire        _lsu_io_ext_out_bits_we_n;	// core/src/core.scala:18:21
+  wire        _lsu_io_next_valid;	// core/src/core.scala:18:21
+  wire [31:0] _lsu_io_next_bits_MemOut;	// core/src/core.scala:18:21
+  wire [31:0] _lsu_io_next_bits_ALUOut;	// core/src/core.scala:18:21
+  wire        _lsu_io_next_bits_SLess;	// core/src/core.scala:18:21
+  wire        _lsu_io_next_bits_ULess;	// core/src/core.scala:18:21
+  wire        _lsu_io_next_bits_Zero;	// core/src/core.scala:18:21
+  wire [3:0]  _lsu_io_next_bits_branch;	// core/src/core.scala:18:21
+  wire [1:0]  _lsu_io_next_bits_wbSel;	// core/src/core.scala:18:21
+  wire [1:0]  _lsu_io_next_bits_wbDst;	// core/src/core.scala:18:21
+  wire [31:0] _lsu_io_next_bits_Imm;	// core/src/core.scala:18:21
+  wire [4:0]  _lsu_io_next_bits_rd;	// core/src/core.scala:18:21
+  wire [31:0] _lsu_io_next_bits_rj_data;	// core/src/core.scala:18:21
+  wire [31:0] _lsu_io_next_bits_pc;	// core/src/core.scala:18:21
+  wire        _exu2_lsu_io_next_valid;	// core/src/core.scala:17:26
+  wire [31:0] _exu2_lsu_io_next_bits_ALUOut;	// core/src/core.scala:17:26
+  wire        _exu2_lsu_io_next_bits_SLess;	// core/src/core.scala:17:26
+  wire        _exu2_lsu_io_next_bits_ULess;	// core/src/core.scala:17:26
+  wire        _exu2_lsu_io_next_bits_Zero;	// core/src/core.scala:17:26
+  wire [3:0]  _exu2_lsu_io_next_bits_memOp;	// core/src/core.scala:17:26
+  wire [3:0]  _exu2_lsu_io_next_bits_branch;	// core/src/core.scala:17:26
+  wire [1:0]  _exu2_lsu_io_next_bits_wbSel;	// core/src/core.scala:17:26
+  wire [1:0]  _exu2_lsu_io_next_bits_wbDst;	// core/src/core.scala:17:26
+  wire [31:0] _exu2_lsu_io_next_bits_Imm;	// core/src/core.scala:17:26
+  wire [4:0]  _exu2_lsu_io_next_bits_rd;	// core/src/core.scala:17:26
+  wire [31:0] _exu2_lsu_io_next_bits_rd_data;	// core/src/core.scala:17:26
+  wire [31:0] _exu2_lsu_io_next_bits_rj_data;	// core/src/core.scala:17:26
+  wire [31:0] _exu2_lsu_io_next_bits_pc;	// core/src/core.scala:17:26
+  wire        _exu2_io_next_valid;	// core/src/core.scala:16:22
+  wire [31:0] _exu2_io_next_bits_ALUOut;	// core/src/core.scala:16:22
+  wire        _exu2_io_next_bits_SLess;	// core/src/core.scala:16:22
+  wire        _exu2_io_next_bits_ULess;	// core/src/core.scala:16:22
+  wire        _exu2_io_next_bits_Zero;	// core/src/core.scala:16:22
+  wire [3:0]  _exu2_io_next_bits_memOp;	// core/src/core.scala:16:22
+  wire [3:0]  _exu2_io_next_bits_branch;	// core/src/core.scala:16:22
+  wire [1:0]  _exu2_io_next_bits_wbSel;	// core/src/core.scala:16:22
+  wire [1:0]  _exu2_io_next_bits_wbDst;	// core/src/core.scala:16:22
+  wire [31:0] _exu2_io_next_bits_Imm;	// core/src/core.scala:16:22
+  wire [4:0]  _exu2_io_next_bits_rd;	// core/src/core.scala:16:22
+  wire [31:0] _exu2_io_next_bits_rd_data;	// core/src/core.scala:16:22
+  wire [31:0] _exu2_io_next_bits_rj_data;	// core/src/core.scala:16:22
+  wire [31:0] _exu2_io_next_bits_pc;	// core/src/core.scala:16:22
+  wire        _exu1_exu2_io_next_valid;	// core/src/core.scala:15:27
+  wire [3:0]  _exu1_exu2_io_next_bits_aluOp;	// core/src/core.scala:15:27
+  wire [3:0]  _exu1_exu2_io_next_bits_memOp;	// core/src/core.scala:15:27
+  wire [3:0]  _exu1_exu2_io_next_bits_branch;	// core/src/core.scala:15:27
+  wire [1:0]  _exu1_exu2_io_next_bits_wbSel;	// core/src/core.scala:15:27
+  wire [1:0]  _exu1_exu2_io_next_bits_wbDst;	// core/src/core.scala:15:27
+  wire [31:0] _exu1_exu2_io_next_bits_Imm;	// core/src/core.scala:15:27
+  wire [4:0]  _exu1_exu2_io_next_bits_rd;	// core/src/core.scala:15:27
+  wire [31:0] _exu1_exu2_io_next_bits_rd_data;	// core/src/core.scala:15:27
+  wire [31:0] _exu1_exu2_io_next_bits_rj_data;	// core/src/core.scala:15:27
+  wire [31:0] _exu1_exu2_io_next_bits_pc;	// core/src/core.scala:15:27
+  wire [31:0] _exu1_exu2_io_next_bits_ALUA;	// core/src/core.scala:15:27
+  wire [31:0] _exu1_exu2_io_next_bits_ALUB;	// core/src/core.scala:15:27
+  wire [63:0] _exu1_exu2_io_next_bits_MulA;	// core/src/core.scala:15:27
+  wire [63:0] _exu1_exu2_io_next_bits_MulB;	// core/src/core.scala:15:27
+  wire        _exu1_io_next_valid;	// core/src/core.scala:14:22
+  wire [3:0]  _exu1_io_next_bits_aluOp;	// core/src/core.scala:14:22
+  wire [3:0]  _exu1_io_next_bits_memOp;	// core/src/core.scala:14:22
+  wire [3:0]  _exu1_io_next_bits_branch;	// core/src/core.scala:14:22
+  wire [1:0]  _exu1_io_next_bits_wbSel;	// core/src/core.scala:14:22
+  wire [1:0]  _exu1_io_next_bits_wbDst;	// core/src/core.scala:14:22
+  wire [31:0] _exu1_io_next_bits_Imm;	// core/src/core.scala:14:22
+  wire [4:0]  _exu1_io_next_bits_rd;	// core/src/core.scala:14:22
+  wire [31:0] _exu1_io_next_bits_rd_data;	// core/src/core.scala:14:22
+  wire [31:0] _exu1_io_next_bits_rj_data;	// core/src/core.scala:14:22
+  wire [31:0] _exu1_io_next_bits_pc;	// core/src/core.scala:14:22
+  wire [31:0] _exu1_io_next_bits_ALUA;	// core/src/core.scala:14:22
+  wire [31:0] _exu1_io_next_bits_ALUB;	// core/src/core.scala:14:22
+  wire [63:0] _exu1_io_next_bits_MulA;	// core/src/core.scala:14:22
+  wire [63:0] _exu1_io_next_bits_MulB;	// core/src/core.scala:14:22
   wire        _idu_exu_io_next_valid;	// core/src/core.scala:13:25
   wire [3:0]  _idu_exu_io_next_bits_aluOp;	// core/src/core.scala:13:25
   wire [1:0]  _idu_exu_io_next_bits_aluAsrc;	// core/src/core.scala:13:25
@@ -3353,19 +3570,19 @@ module core(	// core/src/core.scala:5:7
   wire        _ifu_io_next_valid;	// core/src/core.scala:10:21
   wire [31:0] _ifu_io_next_bits_pc;	// core/src/core.scala:10:21
   wire [31:0] _ifu_io_next_bits_inst;	// core/src/core.scala:10:21
-  reg  [1:0]  state;	// core/src/core.scala:20:24
-  reg         IFetch;	// core/src/core.scala:26:25
+  reg  [1:0]  state;	// core/src/core.scala:22:24
+  reg         IFetch;	// core/src/core.scala:28:25
   always @(posedge clock) begin	// core/src/core.scala:5:7
     if (reset) begin	// core/src/core.scala:5:7
-      state <= 2'h0;	// core/src/core.scala:20:24
-      IFetch <= 1'h0;	// core/src/core.scala:5:7, :26:25
+      state <= 2'h0;	// core/src/core.scala:22:24
+      IFetch <= 1'h0;	// core/src/core.scala:5:7, :28:25
     end
     else begin	// core/src/core.scala:5:7
-      if (state == 2'h2 | state == 2'h1)	// core/src/core.scala:20:24, :21:36
-        state <= 2'h2;	// core/src/core.scala:20:24, :21:36
-      else	// core/src/core.scala:21:36
-        state <= {1'h0, state == 2'h0};	// core/src/core.scala:5:7, :20:24, :21:36
-      IFetch <= _wbu_io_InstFetch | state == 2'h1;	// core/src/core.scala:18:21, :20:24, :21:36, :26:25, :27:{36,45}
+      if (state == 2'h2 | state == 2'h1)	// core/src/core.scala:22:24, :23:36
+        state <= 2'h2;	// core/src/core.scala:22:24, :23:36
+      else	// core/src/core.scala:23:36
+        state <= {1'h0, state == 2'h0};	// core/src/core.scala:5:7, :22:24, :23:36
+      IFetch <= _wbu_io_InstFetch | state == 2'h1;	// core/src/core.scala:20:21, :22:24, :23:36, :28:25, :29:{36,45}
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:5:7
@@ -3379,8 +3596,8 @@ module core(	// core/src/core.scala:5:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:5:7
         _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// core/src/core.scala:5:7
-        state = _RANDOM[/*Zero width*/ 1'b0][1:0];	// core/src/core.scala:5:7, :20:24
-        IFetch = _RANDOM[/*Zero width*/ 1'b0][2];	// core/src/core.scala:5:7, :20:24, :26:25
+        state = _RANDOM[/*Zero width*/ 1'b0][1:0];	// core/src/core.scala:5:7, :22:24
+        IFetch = _RANDOM[/*Zero width*/ 1'b0][2];	// core/src/core.scala:5:7, :22:24, :28:25
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:5:7
@@ -3388,13 +3605,13 @@ module core(	// core/src/core.scala:5:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   ifu ifu (	// core/src/core.scala:10:21
-    .io_base_in_bits_data_out (_abt_io_out_BusOut_0_bits_data_out),	// core/src/core.scala:29:21
+    .io_base_in_bits_data_out (_abt_io_out_BusOut_0_bits_data_out),	// core/src/core.scala:31:21
     .io_base_out_valid        (_ifu_io_base_out_valid),
     .io_base_out_bits_addr    (_ifu_io_base_out_bits_addr),
     .io_base_out_bits_ce_n    (_ifu_io_base_out_bits_ce_n),
     .io_base_out_bits_oe_n    (_ifu_io_base_out_bits_oe_n),
-    .io_InstFetch             (IFetch),	// core/src/core.scala:26:25
-    .io_pc                    (_wbu_io_pc),	// core/src/core.scala:18:21
+    .io_InstFetch             (IFetch),	// core/src/core.scala:28:25
+    .io_pc                    (_wbu_io_pc),	// core/src/core.scala:20:21
     .io_next_valid            (_ifu_io_next_valid),
     .io_next_bits_pc          (_ifu_io_next_bits_pc),
     .io_next_bits_inst        (_ifu_io_next_bits_inst)
@@ -3429,9 +3646,9 @@ module core(	// core/src/core.scala:5:7
     .io_next_bits_rj_data (_idu_io_next_bits_rj_data),
     .io_next_bits_rk_data (_idu_io_next_bits_rk_data),
     .io_next_bits_pc      (_idu_io_next_bits_pc),
-    .io_wen               (_wbu_io_wen),	// core/src/core.scala:18:21
-    .io_waddr             (_wbu_io_waddr),	// core/src/core.scala:18:21
-    .io_wdata             (_wbu_io_wdata)	// core/src/core.scala:18:21
+    .io_wen               (_wbu_io_wen),	// core/src/core.scala:20:21
+    .io_waddr             (_wbu_io_waddr),	// core/src/core.scala:20:21
+    .io_wdata             (_wbu_io_wdata)	// core/src/core.scala:20:21
   );
   buffer_1 idu_exu (	// core/src/core.scala:13:25
     .clock                (clock),
@@ -3465,7 +3682,7 @@ module core(	// core/src/core.scala:5:7
     .io_next_bits_rk_data (_idu_exu_io_next_bits_rk_data),
     .io_next_bits_pc      (_idu_exu_io_next_bits_pc)
   );
-  exu exu (	// core/src/core.scala:14:21
+  exu1 exu1 (	// core/src/core.scala:14:22
     .io_prev_valid        (_idu_exu_io_next_valid),	// core/src/core.scala:13:25
     .io_prev_bits_aluOp   (_idu_exu_io_next_bits_aluOp),	// core/src/core.scala:13:25
     .io_prev_bits_aluAsrc (_idu_exu_io_next_bits_aluAsrc),	// core/src/core.scala:13:25
@@ -3480,55 +3697,121 @@ module core(	// core/src/core.scala:5:7
     .io_prev_bits_rj_data (_idu_exu_io_next_bits_rj_data),	// core/src/core.scala:13:25
     .io_prev_bits_rk_data (_idu_exu_io_next_bits_rk_data),	// core/src/core.scala:13:25
     .io_prev_bits_pc      (_idu_exu_io_next_bits_pc),	// core/src/core.scala:13:25
-    .io_next_valid        (_exu_io_next_valid),
-    .io_next_bits_ALUOut  (_exu_io_next_bits_ALUOut),
-    .io_next_bits_SLess   (_exu_io_next_bits_SLess),
-    .io_next_bits_ULess   (_exu_io_next_bits_ULess),
-    .io_next_bits_Zero    (_exu_io_next_bits_Zero),
-    .io_next_bits_memOp   (_exu_io_next_bits_memOp),
-    .io_next_bits_branch  (_exu_io_next_bits_branch),
-    .io_next_bits_wbSel   (_exu_io_next_bits_wbSel),
-    .io_next_bits_wbDst   (_exu_io_next_bits_wbDst),
-    .io_next_bits_Imm     (_exu_io_next_bits_Imm),
-    .io_next_bits_rd      (_exu_io_next_bits_rd),
-    .io_next_bits_rd_data (_exu_io_next_bits_rd_data),
-    .io_next_bits_rj_data (_exu_io_next_bits_rj_data),
-    .io_next_bits_pc      (_exu_io_next_bits_pc)
+    .io_next_valid        (_exu1_io_next_valid),
+    .io_next_bits_aluOp   (_exu1_io_next_bits_aluOp),
+    .io_next_bits_memOp   (_exu1_io_next_bits_memOp),
+    .io_next_bits_branch  (_exu1_io_next_bits_branch),
+    .io_next_bits_wbSel   (_exu1_io_next_bits_wbSel),
+    .io_next_bits_wbDst   (_exu1_io_next_bits_wbDst),
+    .io_next_bits_Imm     (_exu1_io_next_bits_Imm),
+    .io_next_bits_rd      (_exu1_io_next_bits_rd),
+    .io_next_bits_rd_data (_exu1_io_next_bits_rd_data),
+    .io_next_bits_rj_data (_exu1_io_next_bits_rj_data),
+    .io_next_bits_pc      (_exu1_io_next_bits_pc),
+    .io_next_bits_ALUA    (_exu1_io_next_bits_ALUA),
+    .io_next_bits_ALUB    (_exu1_io_next_bits_ALUB),
+    .io_next_bits_MulA    (_exu1_io_next_bits_MulA),
+    .io_next_bits_MulB    (_exu1_io_next_bits_MulB)
   );
-  buffer_2 exu_lsu (	// core/src/core.scala:15:25
+  buffer_2 exu1_exu2 (	// core/src/core.scala:15:27
     .clock                (clock),
     .reset                (reset),
-    .io_prev_valid        (_exu_io_next_valid),	// core/src/core.scala:14:21
-    .io_prev_bits_ALUOut  (_exu_io_next_bits_ALUOut),	// core/src/core.scala:14:21
-    .io_prev_bits_SLess   (_exu_io_next_bits_SLess),	// core/src/core.scala:14:21
-    .io_prev_bits_ULess   (_exu_io_next_bits_ULess),	// core/src/core.scala:14:21
-    .io_prev_bits_Zero    (_exu_io_next_bits_Zero),	// core/src/core.scala:14:21
-    .io_prev_bits_memOp   (_exu_io_next_bits_memOp),	// core/src/core.scala:14:21
-    .io_prev_bits_branch  (_exu_io_next_bits_branch),	// core/src/core.scala:14:21
-    .io_prev_bits_wbSel   (_exu_io_next_bits_wbSel),	// core/src/core.scala:14:21
-    .io_prev_bits_wbDst   (_exu_io_next_bits_wbDst),	// core/src/core.scala:14:21
-    .io_prev_bits_Imm     (_exu_io_next_bits_Imm),	// core/src/core.scala:14:21
-    .io_prev_bits_rd      (_exu_io_next_bits_rd),	// core/src/core.scala:14:21
-    .io_prev_bits_rd_data (_exu_io_next_bits_rd_data),	// core/src/core.scala:14:21
-    .io_prev_bits_rj_data (_exu_io_next_bits_rj_data),	// core/src/core.scala:14:21
-    .io_prev_bits_pc      (_exu_io_next_bits_pc),	// core/src/core.scala:14:21
-    .io_next_valid        (_exu_lsu_io_next_valid),
-    .io_next_bits_ALUOut  (_exu_lsu_io_next_bits_ALUOut),
-    .io_next_bits_SLess   (_exu_lsu_io_next_bits_SLess),
-    .io_next_bits_ULess   (_exu_lsu_io_next_bits_ULess),
-    .io_next_bits_Zero    (_exu_lsu_io_next_bits_Zero),
-    .io_next_bits_memOp   (_exu_lsu_io_next_bits_memOp),
-    .io_next_bits_branch  (_exu_lsu_io_next_bits_branch),
-    .io_next_bits_wbSel   (_exu_lsu_io_next_bits_wbSel),
-    .io_next_bits_wbDst   (_exu_lsu_io_next_bits_wbDst),
-    .io_next_bits_Imm     (_exu_lsu_io_next_bits_Imm),
-    .io_next_bits_rd      (_exu_lsu_io_next_bits_rd),
-    .io_next_bits_rd_data (_exu_lsu_io_next_bits_rd_data),
-    .io_next_bits_rj_data (_exu_lsu_io_next_bits_rj_data),
-    .io_next_bits_pc      (_exu_lsu_io_next_bits_pc)
+    .io_prev_valid        (_exu1_io_next_valid),	// core/src/core.scala:14:22
+    .io_prev_bits_aluOp   (_exu1_io_next_bits_aluOp),	// core/src/core.scala:14:22
+    .io_prev_bits_memOp   (_exu1_io_next_bits_memOp),	// core/src/core.scala:14:22
+    .io_prev_bits_branch  (_exu1_io_next_bits_branch),	// core/src/core.scala:14:22
+    .io_prev_bits_wbSel   (_exu1_io_next_bits_wbSel),	// core/src/core.scala:14:22
+    .io_prev_bits_wbDst   (_exu1_io_next_bits_wbDst),	// core/src/core.scala:14:22
+    .io_prev_bits_Imm     (_exu1_io_next_bits_Imm),	// core/src/core.scala:14:22
+    .io_prev_bits_rd      (_exu1_io_next_bits_rd),	// core/src/core.scala:14:22
+    .io_prev_bits_rd_data (_exu1_io_next_bits_rd_data),	// core/src/core.scala:14:22
+    .io_prev_bits_rj_data (_exu1_io_next_bits_rj_data),	// core/src/core.scala:14:22
+    .io_prev_bits_pc      (_exu1_io_next_bits_pc),	// core/src/core.scala:14:22
+    .io_prev_bits_ALUA    (_exu1_io_next_bits_ALUA),	// core/src/core.scala:14:22
+    .io_prev_bits_ALUB    (_exu1_io_next_bits_ALUB),	// core/src/core.scala:14:22
+    .io_prev_bits_MulA    (_exu1_io_next_bits_MulA),	// core/src/core.scala:14:22
+    .io_prev_bits_MulB    (_exu1_io_next_bits_MulB),	// core/src/core.scala:14:22
+    .io_next_valid        (_exu1_exu2_io_next_valid),
+    .io_next_bits_aluOp   (_exu1_exu2_io_next_bits_aluOp),
+    .io_next_bits_memOp   (_exu1_exu2_io_next_bits_memOp),
+    .io_next_bits_branch  (_exu1_exu2_io_next_bits_branch),
+    .io_next_bits_wbSel   (_exu1_exu2_io_next_bits_wbSel),
+    .io_next_bits_wbDst   (_exu1_exu2_io_next_bits_wbDst),
+    .io_next_bits_Imm     (_exu1_exu2_io_next_bits_Imm),
+    .io_next_bits_rd      (_exu1_exu2_io_next_bits_rd),
+    .io_next_bits_rd_data (_exu1_exu2_io_next_bits_rd_data),
+    .io_next_bits_rj_data (_exu1_exu2_io_next_bits_rj_data),
+    .io_next_bits_pc      (_exu1_exu2_io_next_bits_pc),
+    .io_next_bits_ALUA    (_exu1_exu2_io_next_bits_ALUA),
+    .io_next_bits_ALUB    (_exu1_exu2_io_next_bits_ALUB),
+    .io_next_bits_MulA    (_exu1_exu2_io_next_bits_MulA),
+    .io_next_bits_MulB    (_exu1_exu2_io_next_bits_MulB)
   );
-  lsu lsu (	// core/src/core.scala:16:21
-    .io_ext_in_bits_data_out  (_abt_io_out_BusOut_1_bits_data_out),	// core/src/core.scala:29:21
+  exu2 exu2 (	// core/src/core.scala:16:22
+    .io_prev_valid        (_exu1_exu2_io_next_valid),	// core/src/core.scala:15:27
+    .io_prev_bits_aluOp   (_exu1_exu2_io_next_bits_aluOp),	// core/src/core.scala:15:27
+    .io_prev_bits_memOp   (_exu1_exu2_io_next_bits_memOp),	// core/src/core.scala:15:27
+    .io_prev_bits_branch  (_exu1_exu2_io_next_bits_branch),	// core/src/core.scala:15:27
+    .io_prev_bits_wbSel   (_exu1_exu2_io_next_bits_wbSel),	// core/src/core.scala:15:27
+    .io_prev_bits_wbDst   (_exu1_exu2_io_next_bits_wbDst),	// core/src/core.scala:15:27
+    .io_prev_bits_Imm     (_exu1_exu2_io_next_bits_Imm),	// core/src/core.scala:15:27
+    .io_prev_bits_rd      (_exu1_exu2_io_next_bits_rd),	// core/src/core.scala:15:27
+    .io_prev_bits_rd_data (_exu1_exu2_io_next_bits_rd_data),	// core/src/core.scala:15:27
+    .io_prev_bits_rj_data (_exu1_exu2_io_next_bits_rj_data),	// core/src/core.scala:15:27
+    .io_prev_bits_pc      (_exu1_exu2_io_next_bits_pc),	// core/src/core.scala:15:27
+    .io_prev_bits_ALUA    (_exu1_exu2_io_next_bits_ALUA),	// core/src/core.scala:15:27
+    .io_prev_bits_ALUB    (_exu1_exu2_io_next_bits_ALUB),	// core/src/core.scala:15:27
+    .io_prev_bits_MulA    (_exu1_exu2_io_next_bits_MulA),	// core/src/core.scala:15:27
+    .io_prev_bits_MulB    (_exu1_exu2_io_next_bits_MulB),	// core/src/core.scala:15:27
+    .io_next_valid        (_exu2_io_next_valid),
+    .io_next_bits_ALUOut  (_exu2_io_next_bits_ALUOut),
+    .io_next_bits_SLess   (_exu2_io_next_bits_SLess),
+    .io_next_bits_ULess   (_exu2_io_next_bits_ULess),
+    .io_next_bits_Zero    (_exu2_io_next_bits_Zero),
+    .io_next_bits_memOp   (_exu2_io_next_bits_memOp),
+    .io_next_bits_branch  (_exu2_io_next_bits_branch),
+    .io_next_bits_wbSel   (_exu2_io_next_bits_wbSel),
+    .io_next_bits_wbDst   (_exu2_io_next_bits_wbDst),
+    .io_next_bits_Imm     (_exu2_io_next_bits_Imm),
+    .io_next_bits_rd      (_exu2_io_next_bits_rd),
+    .io_next_bits_rd_data (_exu2_io_next_bits_rd_data),
+    .io_next_bits_rj_data (_exu2_io_next_bits_rj_data),
+    .io_next_bits_pc      (_exu2_io_next_bits_pc)
+  );
+  buffer_3 exu2_lsu (	// core/src/core.scala:17:26
+    .clock                (clock),
+    .reset                (reset),
+    .io_prev_valid        (_exu2_io_next_valid),	// core/src/core.scala:16:22
+    .io_prev_bits_ALUOut  (_exu2_io_next_bits_ALUOut),	// core/src/core.scala:16:22
+    .io_prev_bits_SLess   (_exu2_io_next_bits_SLess),	// core/src/core.scala:16:22
+    .io_prev_bits_ULess   (_exu2_io_next_bits_ULess),	// core/src/core.scala:16:22
+    .io_prev_bits_Zero    (_exu2_io_next_bits_Zero),	// core/src/core.scala:16:22
+    .io_prev_bits_memOp   (_exu2_io_next_bits_memOp),	// core/src/core.scala:16:22
+    .io_prev_bits_branch  (_exu2_io_next_bits_branch),	// core/src/core.scala:16:22
+    .io_prev_bits_wbSel   (_exu2_io_next_bits_wbSel),	// core/src/core.scala:16:22
+    .io_prev_bits_wbDst   (_exu2_io_next_bits_wbDst),	// core/src/core.scala:16:22
+    .io_prev_bits_Imm     (_exu2_io_next_bits_Imm),	// core/src/core.scala:16:22
+    .io_prev_bits_rd      (_exu2_io_next_bits_rd),	// core/src/core.scala:16:22
+    .io_prev_bits_rd_data (_exu2_io_next_bits_rd_data),	// core/src/core.scala:16:22
+    .io_prev_bits_rj_data (_exu2_io_next_bits_rj_data),	// core/src/core.scala:16:22
+    .io_prev_bits_pc      (_exu2_io_next_bits_pc),	// core/src/core.scala:16:22
+    .io_next_valid        (_exu2_lsu_io_next_valid),
+    .io_next_bits_ALUOut  (_exu2_lsu_io_next_bits_ALUOut),
+    .io_next_bits_SLess   (_exu2_lsu_io_next_bits_SLess),
+    .io_next_bits_ULess   (_exu2_lsu_io_next_bits_ULess),
+    .io_next_bits_Zero    (_exu2_lsu_io_next_bits_Zero),
+    .io_next_bits_memOp   (_exu2_lsu_io_next_bits_memOp),
+    .io_next_bits_branch  (_exu2_lsu_io_next_bits_branch),
+    .io_next_bits_wbSel   (_exu2_lsu_io_next_bits_wbSel),
+    .io_next_bits_wbDst   (_exu2_lsu_io_next_bits_wbDst),
+    .io_next_bits_Imm     (_exu2_lsu_io_next_bits_Imm),
+    .io_next_bits_rd      (_exu2_lsu_io_next_bits_rd),
+    .io_next_bits_rd_data (_exu2_lsu_io_next_bits_rd_data),
+    .io_next_bits_rj_data (_exu2_lsu_io_next_bits_rj_data),
+    .io_next_bits_pc      (_exu2_lsu_io_next_bits_pc)
+  );
+  lsu lsu (	// core/src/core.scala:18:21
+    .io_ext_in_bits_data_out  (_abt_io_out_BusOut_1_bits_data_out),	// core/src/core.scala:31:21
     .io_ext_out_valid         (_lsu_io_ext_out_valid),
     .io_ext_out_bits_data_wen (_lsu_io_ext_out_bits_data_wen),
     .io_ext_out_bits_data_in  (_lsu_io_ext_out_bits_data_in),
@@ -3537,20 +3820,20 @@ module core(	// core/src/core.scala:5:7
     .io_ext_out_bits_ce_n     (_lsu_io_ext_out_bits_ce_n),
     .io_ext_out_bits_oe_n     (_lsu_io_ext_out_bits_oe_n),
     .io_ext_out_bits_we_n     (_lsu_io_ext_out_bits_we_n),
-    .io_prev_valid            (_exu_lsu_io_next_valid),	// core/src/core.scala:15:25
-    .io_prev_bits_ALUOut      (_exu_lsu_io_next_bits_ALUOut),	// core/src/core.scala:15:25
-    .io_prev_bits_SLess       (_exu_lsu_io_next_bits_SLess),	// core/src/core.scala:15:25
-    .io_prev_bits_ULess       (_exu_lsu_io_next_bits_ULess),	// core/src/core.scala:15:25
-    .io_prev_bits_Zero        (_exu_lsu_io_next_bits_Zero),	// core/src/core.scala:15:25
-    .io_prev_bits_memOp       (_exu_lsu_io_next_bits_memOp),	// core/src/core.scala:15:25
-    .io_prev_bits_branch      (_exu_lsu_io_next_bits_branch),	// core/src/core.scala:15:25
-    .io_prev_bits_wbSel       (_exu_lsu_io_next_bits_wbSel),	// core/src/core.scala:15:25
-    .io_prev_bits_wbDst       (_exu_lsu_io_next_bits_wbDst),	// core/src/core.scala:15:25
-    .io_prev_bits_Imm         (_exu_lsu_io_next_bits_Imm),	// core/src/core.scala:15:25
-    .io_prev_bits_rd          (_exu_lsu_io_next_bits_rd),	// core/src/core.scala:15:25
-    .io_prev_bits_rd_data     (_exu_lsu_io_next_bits_rd_data),	// core/src/core.scala:15:25
-    .io_prev_bits_rj_data     (_exu_lsu_io_next_bits_rj_data),	// core/src/core.scala:15:25
-    .io_prev_bits_pc          (_exu_lsu_io_next_bits_pc),	// core/src/core.scala:15:25
+    .io_prev_valid            (_exu2_lsu_io_next_valid),	// core/src/core.scala:17:26
+    .io_prev_bits_ALUOut      (_exu2_lsu_io_next_bits_ALUOut),	// core/src/core.scala:17:26
+    .io_prev_bits_SLess       (_exu2_lsu_io_next_bits_SLess),	// core/src/core.scala:17:26
+    .io_prev_bits_ULess       (_exu2_lsu_io_next_bits_ULess),	// core/src/core.scala:17:26
+    .io_prev_bits_Zero        (_exu2_lsu_io_next_bits_Zero),	// core/src/core.scala:17:26
+    .io_prev_bits_memOp       (_exu2_lsu_io_next_bits_memOp),	// core/src/core.scala:17:26
+    .io_prev_bits_branch      (_exu2_lsu_io_next_bits_branch),	// core/src/core.scala:17:26
+    .io_prev_bits_wbSel       (_exu2_lsu_io_next_bits_wbSel),	// core/src/core.scala:17:26
+    .io_prev_bits_wbDst       (_exu2_lsu_io_next_bits_wbDst),	// core/src/core.scala:17:26
+    .io_prev_bits_Imm         (_exu2_lsu_io_next_bits_Imm),	// core/src/core.scala:17:26
+    .io_prev_bits_rd          (_exu2_lsu_io_next_bits_rd),	// core/src/core.scala:17:26
+    .io_prev_bits_rd_data     (_exu2_lsu_io_next_bits_rd_data),	// core/src/core.scala:17:26
+    .io_prev_bits_rj_data     (_exu2_lsu_io_next_bits_rj_data),	// core/src/core.scala:17:26
+    .io_prev_bits_pc          (_exu2_lsu_io_next_bits_pc),	// core/src/core.scala:17:26
     .io_next_valid            (_lsu_io_next_valid),
     .io_next_bits_MemOut      (_lsu_io_next_bits_MemOut),
     .io_next_bits_ALUOut      (_lsu_io_next_bits_ALUOut),
@@ -3565,22 +3848,22 @@ module core(	// core/src/core.scala:5:7
     .io_next_bits_rj_data     (_lsu_io_next_bits_rj_data),
     .io_next_bits_pc          (_lsu_io_next_bits_pc)
   );
-  buffer_3 lsu_wbu (	// core/src/core.scala:17:25
+  buffer_4 lsu_wbu (	// core/src/core.scala:19:25
     .clock                (clock),
     .reset                (reset),
-    .io_prev_valid        (_lsu_io_next_valid),	// core/src/core.scala:16:21
-    .io_prev_bits_MemOut  (_lsu_io_next_bits_MemOut),	// core/src/core.scala:16:21
-    .io_prev_bits_ALUOut  (_lsu_io_next_bits_ALUOut),	// core/src/core.scala:16:21
-    .io_prev_bits_SLess   (_lsu_io_next_bits_SLess),	// core/src/core.scala:16:21
-    .io_prev_bits_ULess   (_lsu_io_next_bits_ULess),	// core/src/core.scala:16:21
-    .io_prev_bits_Zero    (_lsu_io_next_bits_Zero),	// core/src/core.scala:16:21
-    .io_prev_bits_branch  (_lsu_io_next_bits_branch),	// core/src/core.scala:16:21
-    .io_prev_bits_wbSel   (_lsu_io_next_bits_wbSel),	// core/src/core.scala:16:21
-    .io_prev_bits_wbDst   (_lsu_io_next_bits_wbDst),	// core/src/core.scala:16:21
-    .io_prev_bits_Imm     (_lsu_io_next_bits_Imm),	// core/src/core.scala:16:21
-    .io_prev_bits_rd      (_lsu_io_next_bits_rd),	// core/src/core.scala:16:21
-    .io_prev_bits_rj_data (_lsu_io_next_bits_rj_data),	// core/src/core.scala:16:21
-    .io_prev_bits_pc      (_lsu_io_next_bits_pc),	// core/src/core.scala:16:21
+    .io_prev_valid        (_lsu_io_next_valid),	// core/src/core.scala:18:21
+    .io_prev_bits_MemOut  (_lsu_io_next_bits_MemOut),	// core/src/core.scala:18:21
+    .io_prev_bits_ALUOut  (_lsu_io_next_bits_ALUOut),	// core/src/core.scala:18:21
+    .io_prev_bits_SLess   (_lsu_io_next_bits_SLess),	// core/src/core.scala:18:21
+    .io_prev_bits_ULess   (_lsu_io_next_bits_ULess),	// core/src/core.scala:18:21
+    .io_prev_bits_Zero    (_lsu_io_next_bits_Zero),	// core/src/core.scala:18:21
+    .io_prev_bits_branch  (_lsu_io_next_bits_branch),	// core/src/core.scala:18:21
+    .io_prev_bits_wbSel   (_lsu_io_next_bits_wbSel),	// core/src/core.scala:18:21
+    .io_prev_bits_wbDst   (_lsu_io_next_bits_wbDst),	// core/src/core.scala:18:21
+    .io_prev_bits_Imm     (_lsu_io_next_bits_Imm),	// core/src/core.scala:18:21
+    .io_prev_bits_rd      (_lsu_io_next_bits_rd),	// core/src/core.scala:18:21
+    .io_prev_bits_rj_data (_lsu_io_next_bits_rj_data),	// core/src/core.scala:18:21
+    .io_prev_bits_pc      (_lsu_io_next_bits_pc),	// core/src/core.scala:18:21
     .io_next_valid        (_lsu_wbu_io_next_valid),
     .io_next_bits_MemOut  (_lsu_wbu_io_next_bits_MemOut),
     .io_next_bits_ALUOut  (_lsu_wbu_io_next_bits_ALUOut),
@@ -3595,42 +3878,42 @@ module core(	// core/src/core.scala:5:7
     .io_next_bits_rj_data (_lsu_wbu_io_next_bits_rj_data),
     .io_next_bits_pc      (_lsu_wbu_io_next_bits_pc)
   );
-  wbu wbu (	// core/src/core.scala:18:21
+  wbu wbu (	// core/src/core.scala:20:21
     .clock                (clock),
     .reset                (reset),
-    .io_prev_valid        (_lsu_wbu_io_next_valid),	// core/src/core.scala:17:25
-    .io_prev_bits_MemOut  (_lsu_wbu_io_next_bits_MemOut),	// core/src/core.scala:17:25
-    .io_prev_bits_ALUOut  (_lsu_wbu_io_next_bits_ALUOut),	// core/src/core.scala:17:25
-    .io_prev_bits_SLess   (_lsu_wbu_io_next_bits_SLess),	// core/src/core.scala:17:25
-    .io_prev_bits_ULess   (_lsu_wbu_io_next_bits_ULess),	// core/src/core.scala:17:25
-    .io_prev_bits_Zero    (_lsu_wbu_io_next_bits_Zero),	// core/src/core.scala:17:25
-    .io_prev_bits_branch  (_lsu_wbu_io_next_bits_branch),	// core/src/core.scala:17:25
-    .io_prev_bits_wbSel   (_lsu_wbu_io_next_bits_wbSel),	// core/src/core.scala:17:25
-    .io_prev_bits_wbDst   (_lsu_wbu_io_next_bits_wbDst),	// core/src/core.scala:17:25
-    .io_prev_bits_Imm     (_lsu_wbu_io_next_bits_Imm),	// core/src/core.scala:17:25
-    .io_prev_bits_rd      (_lsu_wbu_io_next_bits_rd),	// core/src/core.scala:17:25
-    .io_prev_bits_rj_data (_lsu_wbu_io_next_bits_rj_data),	// core/src/core.scala:17:25
-    .io_prev_bits_pc      (_lsu_wbu_io_next_bits_pc),	// core/src/core.scala:17:25
+    .io_prev_valid        (_lsu_wbu_io_next_valid),	// core/src/core.scala:19:25
+    .io_prev_bits_MemOut  (_lsu_wbu_io_next_bits_MemOut),	// core/src/core.scala:19:25
+    .io_prev_bits_ALUOut  (_lsu_wbu_io_next_bits_ALUOut),	// core/src/core.scala:19:25
+    .io_prev_bits_SLess   (_lsu_wbu_io_next_bits_SLess),	// core/src/core.scala:19:25
+    .io_prev_bits_ULess   (_lsu_wbu_io_next_bits_ULess),	// core/src/core.scala:19:25
+    .io_prev_bits_Zero    (_lsu_wbu_io_next_bits_Zero),	// core/src/core.scala:19:25
+    .io_prev_bits_branch  (_lsu_wbu_io_next_bits_branch),	// core/src/core.scala:19:25
+    .io_prev_bits_wbSel   (_lsu_wbu_io_next_bits_wbSel),	// core/src/core.scala:19:25
+    .io_prev_bits_wbDst   (_lsu_wbu_io_next_bits_wbDst),	// core/src/core.scala:19:25
+    .io_prev_bits_Imm     (_lsu_wbu_io_next_bits_Imm),	// core/src/core.scala:19:25
+    .io_prev_bits_rd      (_lsu_wbu_io_next_bits_rd),	// core/src/core.scala:19:25
+    .io_prev_bits_rj_data (_lsu_wbu_io_next_bits_rj_data),	// core/src/core.scala:19:25
+    .io_prev_bits_pc      (_lsu_wbu_io_next_bits_pc),	// core/src/core.scala:19:25
     .io_InstFetch         (_wbu_io_InstFetch),
     .io_pc                (_wbu_io_pc),
     .io_wen               (_wbu_io_wen),
     .io_waddr             (_wbu_io_waddr),
     .io_wdata             (_wbu_io_wdata)
   );
-  abt abt (	// core/src/core.scala:29:21
+  abt abt (	// core/src/core.scala:31:21
     .clock                         (clock),
     .io_in_DataIn_0_valid          (_ifu_io_base_out_valid),	// core/src/core.scala:10:21
     .io_in_DataIn_0_bits_addr      (_ifu_io_base_out_bits_addr),	// core/src/core.scala:10:21
     .io_in_DataIn_0_bits_ce_n      (_ifu_io_base_out_bits_ce_n),	// core/src/core.scala:10:21
     .io_in_DataIn_0_bits_oe_n      (_ifu_io_base_out_bits_oe_n),	// core/src/core.scala:10:21
-    .io_in_DataIn_1_valid          (_lsu_io_ext_out_valid),	// core/src/core.scala:16:21
-    .io_in_DataIn_1_bits_data_wen  (_lsu_io_ext_out_bits_data_wen),	// core/src/core.scala:16:21
-    .io_in_DataIn_1_bits_data_in   (_lsu_io_ext_out_bits_data_in),	// core/src/core.scala:16:21
-    .io_in_DataIn_1_bits_addr      (_lsu_io_ext_out_bits_addr),	// core/src/core.scala:16:21
-    .io_in_DataIn_1_bits_be_n      (_lsu_io_ext_out_bits_be_n),	// core/src/core.scala:16:21
-    .io_in_DataIn_1_bits_ce_n      (_lsu_io_ext_out_bits_ce_n),	// core/src/core.scala:16:21
-    .io_in_DataIn_1_bits_oe_n      (_lsu_io_ext_out_bits_oe_n),	// core/src/core.scala:16:21
-    .io_in_DataIn_1_bits_we_n      (_lsu_io_ext_out_bits_we_n),	// core/src/core.scala:16:21
+    .io_in_DataIn_1_valid          (_lsu_io_ext_out_valid),	// core/src/core.scala:18:21
+    .io_in_DataIn_1_bits_data_wen  (_lsu_io_ext_out_bits_data_wen),	// core/src/core.scala:18:21
+    .io_in_DataIn_1_bits_data_in   (_lsu_io_ext_out_bits_data_in),	// core/src/core.scala:18:21
+    .io_in_DataIn_1_bits_addr      (_lsu_io_ext_out_bits_addr),	// core/src/core.scala:18:21
+    .io_in_DataIn_1_bits_be_n      (_lsu_io_ext_out_bits_be_n),	// core/src/core.scala:18:21
+    .io_in_DataIn_1_bits_ce_n      (_lsu_io_ext_out_bits_ce_n),	// core/src/core.scala:18:21
+    .io_in_DataIn_1_bits_oe_n      (_lsu_io_ext_out_bits_oe_n),	// core/src/core.scala:18:21
+    .io_in_DataIn_1_bits_we_n      (_lsu_io_ext_out_bits_we_n),	// core/src/core.scala:18:21
     .io_in_BusIn_bits_data_out     (io_bus_in_bits_data_out),
     .io_out_DataOut_ready          (io_bus_out_ready),
     .io_out_DataOut_valid          (io_bus_out_valid),

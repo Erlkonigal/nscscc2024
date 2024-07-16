@@ -10,9 +10,11 @@ class core extends Module {
     val ifu = Module(new ifu())
     val ifu_idu = Module(new buffer(new ifu_idu()))
     val idu = Module(new idu())
-    val idu_exu = Module(new buffer(new idu_exu()))
-    val exu = Module(new exu())
-    val exu_lsu = Module(new buffer(new exu_lsu()))
+    val idu_exu = Module(new buffer(new idu_exu1()))
+    val exu1 = Module(new exu1())
+    val exu1_exu2 = Module(new buffer(new exu1_exu2()))
+    val exu2 = Module(new exu2())
+    val exu2_lsu = Module(new buffer(new exu2_lsu()))
     val lsu = Module(new lsu())
     val lsu_wbu = Module(new buffer(new lsu_wbu()))
     val wbu = Module(new wbu())
@@ -43,9 +45,11 @@ class core extends Module {
     ifu.io.next <> ifu_idu.io.prev
     ifu_idu.io.next <> idu.io.prev
     idu.io.next <> idu_exu.io.prev
-    idu_exu.io.next <> exu.io.prev
-    exu.io.next <> exu_lsu.io.prev
-    exu_lsu.io.next <> lsu.io.prev
+    idu_exu.io.next <> exu1.io.prev
+    exu1.io.next <> exu1_exu2.io.prev
+    exu1_exu2.io.next <> exu2.io.prev
+    exu2.io.next <> exu2_lsu.io.prev
+    exu2_lsu.io.next <> lsu.io.prev
     lsu.io.next <> lsu_wbu.io.prev
     lsu_wbu.io.next <> wbu.io.prev
 }

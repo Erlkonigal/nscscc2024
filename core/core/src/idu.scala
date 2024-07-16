@@ -5,7 +5,7 @@ import chisel3.util._
 class idu extends Module {
     val io = IO(new Bundle {
         val prev = Flipped(Decoupled(new ifu_idu()))
-        val next = Decoupled(new idu_exu())
+        val next = Decoupled(new idu_exu1())
 
         // writeback to register file
         val wen = Input(UInt(1.W))

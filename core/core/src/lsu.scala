@@ -6,7 +6,7 @@ class lsu extends Module {
     val io = IO(new Bundle {
         val ext_in = Flipped(Decoupled(new bus_in()))
         val ext_out = Decoupled(new bus_out())
-        val prev = Flipped(Decoupled(new exu_lsu()))
+        val prev = Flipped(Decoupled(new exu2_lsu()))
         val next = Decoupled(new lsu_wbu())
     })
     val Address = io.prev.bits.ALUOut

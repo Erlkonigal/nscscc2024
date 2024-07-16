@@ -78,7 +78,7 @@ class ifu_idu extends Bundle {
     val inst = Output(UInt(32.W))
 }
 
-class idu_exu extends Bundle {
+class idu_exu1 extends Bundle {
 // Controller
     val aluOp = Output(ALUOp())
     val aluAsrc = Output(ALUAsrc())
@@ -144,7 +144,30 @@ object PCBsrc extends ChiselEnum {
     val four, imm, other = Value
 }
 
-class exu_lsu extends Bundle {
+class exu1_exu2 extends Bundle {
+// Controller
+    val aluOp = Output(ALUOp())
+    val memOp = Output(MemOp())
+    val branch = Output(Branch())
+    val wbSel = Output(WBSel())
+    val wbDst = Output(WBDst())
+// ImmGen
+    val Imm = Output(UInt(32.W))
+// RegFile
+    val rd = Output(UInt(5.W))
+    val rd_data = Output(UInt(32.W))
+    val rj_data = Output(UInt(32.W))
+// PC
+    val pc = Output(UInt(32.W))
+// ALUSrc
+    val ALUA = Output(UInt(32.W))
+    val ALUB = Output(UInt(32.W))
+
+    val MulA = Output(UInt(64.W))
+    val MulB = Output(UInt(64.W))
+}
+
+class exu2_lsu extends Bundle {
 // ALU
     val ALUOut = Output(UInt(32.W))
     val SLess = Output(UInt(1.W))
