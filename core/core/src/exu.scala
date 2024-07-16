@@ -81,6 +81,7 @@ class alu extends Module {
         ALUOp.sll -> Shifter.io.Out,
         ALUOp.srl -> Shifter.io.Out,
         ALUOp.sra -> Shifter.io.Out,
+        ALUOp.mul -> (io.A * io.B)(31, 0),
     ))
 
     io.SLess := SLess

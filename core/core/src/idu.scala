@@ -24,6 +24,7 @@ class idu extends Module {
     def SLL_W     = BitPat("b00000000000101110_?????_?????_?????")
     def SRL_W     = BitPat("b00000000000101111_?????_?????_?????")
     def SRA_W     = BitPat("b00000000000110000_?????_?????_?????")
+    def MUL_W     = BitPat("b00000000000111000_?????_?????_?????")
 
     def SLLI_W    = BitPat("b00000000010000001_?????_?????_?????")
     def SRLI_W    = BitPat("b00000000010001001_?????_?????_?????")
@@ -70,6 +71,7 @@ class idu extends Module {
         SLL_W     -> List(ALUOp.sll  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
         SRL_W     -> List(ALUOp.srl  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
         SRA_W     -> List(ALUOp.sra  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
+        MUL_W     -> List(ALUOp.mul  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
 
         SLLI_W    -> List(ALUOp.sll  , ALUAsrc.rj   , ALUBsrc.imm  , ImmType.type2RI5U , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
         SRLI_W    -> List(ALUOp.srl  , ALUAsrc.rj   , ALUBsrc.imm  , ImmType.type2RI5U , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),

@@ -104,7 +104,8 @@ object ALUOp extends ChiselEnum {
         and, or, 
         xor, nor,
         sll, srl, 
-        sra, other = Value
+        sra, mul,
+        other = Value
 }
 object ALUAsrc extends ChiselEnum {
     val rj, pc, other = Value
