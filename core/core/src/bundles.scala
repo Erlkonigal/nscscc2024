@@ -144,6 +144,30 @@ object PCBsrc extends ChiselEnum {
     val four, imm, other = Value
 }
 
+class exu_inner extends Bundle {
+// ALU
+    val ALUOut = Output(UInt(32.W))
+    val SLess = Output(UInt(1.W))
+    val ULess = Output(UInt(1.W))
+    val Zero = Output(UInt(1.W))
+// Controller
+    val aluOp = Output(ALUOp())
+    val memOp = Output(MemOp())
+    val branch = Output(Branch())
+    val wbSel = Output(WBSel())
+    val wbDst = Output(WBDst())
+// ImmGen
+    val Imm = Output(UInt(32.W))
+// RegFile
+    val rd = Output(UInt(5.W))
+    val rd_data = Output(UInt(32.W))
+    val rj_data = Output(UInt(32.W))
+// PC
+    val pc = Output(UInt(32.W))
+// valid
+    val valid = Output(UInt(1.W))
+}
+
 class exu_lsu extends Bundle {
 // ALU
     val ALUOut = Output(UInt(32.W))

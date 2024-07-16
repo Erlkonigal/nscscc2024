@@ -8,34 +8,73 @@ class exu extends Module {
         val next = Decoupled(new exu_lsu())
     })
     val ALU = Module(new alu())
-    ALU.io.A := MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
+    val ALUA = MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
         ALUAsrc.rj -> io.prev.bits.rj_data,
         ALUAsrc.pc -> io.prev.bits.pc,
     ))
-    ALU.io.B := MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
+    val ALUB = MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
         ALUBsrc.rk -> io.prev.bits.rk_data,
         ALUBsrc.rd -> io.prev.bits.rd_data,
         ALUBsrc.imm -> io.prev.bits.Imm,
         ALUBsrc.four -> 4.U,
     ))
+    ALU.io.A := ALUA
+    ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
-    io.next.bits.ALUOut := ALU.io.Out
-    io.next.bits.SLess := ALU.io.SLess
-    io.next.bits.ULess := ALU.io.ULess
-    io.next.bits.Zero := ALU.io.Zero
-    io.next.bits.memOp := io.prev.bits.memOp
-    io.next.bits.branch := io.prev.bits.branch
-    io.next.bits.wbSel := io.prev.bits.wbSel
-    io.next.bits.wbDst := io.prev.bits.wbDst
-    io.next.bits.Imm := io.prev.bits.Imm
-    io.next.bits.rd := io.prev.bits.rd
-    io.next.bits.rd_data := io.prev.bits.rd_data
-    io.next.bits.rj_data := io.prev.bits.rj_data
-    io.next.bits.pc := io.prev.bits.pc
+    val buf = Reg(Vec(5, new exu_inner()))
+    buf(0).ALUOut := ALU.io.Out
+    buf(0).SLess := ALU.io.SLess
+    buf(0).ULess := ALU.io.ULess
+    buf(0).Zero := ALU.io.Zero
+    buf(0).aluOp := io.prev.bits.aluOp
+    buf(0).memOp := io.prev.bits.memOp
+    buf(0).branch := io.prev.bits.branch
+    buf(0).wbSel := io.prev.bits.wbSel
+    buf(0).wbDst := io.prev.bits.wbDst
+    buf(0).Imm := io.prev.bits.Imm
+    buf(0).rd := io.prev.bits.rd
+    buf(0).rd_data := io.prev.bits.rd_data
+    buf(0).rj_data := io.prev.bits.rj_data
+    buf(0).pc := io.prev.bits.pc
+    buf(0).valid := io.prev.valid
 
-    io.next.valid := io.prev.valid
+    for(i <- 1 to 4) {
+        buf(i) := buf(i - 1)
+    }
+
+    val mult = Module(new mult_gen_0())
+    mult.io.CLK := clock.asBool
+    mult.io.A := ALUA
+    mult.io.B := ALUB
+
+    io.next.bits.ALUOut := MuxLookup(buf(4).aluOp, buf(4).ALUOut) (Seq(
+        ALUOp.mul -> mult.io.P,
+    ))
+    io.next.bits.SLess := buf(4).SLess
+    io.next.bits.ULess := buf(4).ULess
+    io.next.bits.Zero := buf(4).Zero
+    io.next.bits.memOp := buf(4).memOp
+    io.next.bits.branch := buf(4).branch
+    io.next.bits.wbSel := buf(4).wbSel
+    io.next.bits.wbDst := buf(4).wbDst
+    io.next.bits.Imm := buf(4).Imm
+    io.next.bits.rd := buf(4).rd
+    io.next.bits.rd_data := buf(4).rd_data
+    io.next.bits.rj_data := buf(4).rj_data
+    io.next.bits.pc := buf(4).pc
+
+    io.next.valid := buf(4).valid
     io.prev.ready := 1.B
+}
+
+class mult_gen_0 extends BlackBox {
+    val io = IO(new Bundle {
+        val CLK = Input(Bool())
+        val A = Input(UInt(32.W))
+        val B = Input(UInt(32.W))
+        val P = Output(UInt(32.W))
+    })
 }
 
 class alu extends Module {
@@ -68,10 +107,6 @@ class alu extends Module {
     Shifter.io.A := io.A
     Shifter.io.B := io.B(4, 0)
     Shifter.io.Op := io.Op
-
-    val Mul = Module(new mult_gen_0())
-    Mul.io.A := io.A
-    Mul.io.B := io.B
     
     io.Out := MuxLookup(io.Op, 0.U) (Seq(
         ALUOp.add -> FixSum,
@@ -85,20 +120,11 @@ class alu extends Module {
         ALUOp.sll -> Shifter.io.Out,
         ALUOp.srl -> Shifter.io.Out,
         ALUOp.sra -> Shifter.io.Out,
-        ALUOp.mul -> Mul.io.P,
     ))
 
     io.SLess := SLess
     io.ULess := ULess
     io.Zero := ZF
-}
-
-class mult_gen_0 extends BlackBox {
-    val io = IO(new Bundle {
-        val A = Input(UInt(32.W))
-        val B = Input(UInt(32.W))
-        val P = Output(UInt(32.W))
-    })
 }
 
 class bshifter extends Module {
