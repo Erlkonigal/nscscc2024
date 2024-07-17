@@ -22,60 +22,22 @@ class exu extends Module {
     ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
-    val pstage = 1
-    val buf = Reg(Vec(pstage, new exu_inner()))
-    buf(0).ALUOut := ALU.io.Out
-    buf(0).SLess := ALU.io.SLess
-    buf(0).ULess := ALU.io.ULess
-    buf(0).Zero := ALU.io.Zero
-    buf(0).aluOp := io.prev.bits.aluOp
-    buf(0).memOp := io.prev.bits.memOp
-    buf(0).branch := io.prev.bits.branch
-    buf(0).wbSel := io.prev.bits.wbSel
-    buf(0).wbDst := io.prev.bits.wbDst
-    buf(0).Imm := io.prev.bits.Imm
-    buf(0).rd := io.prev.bits.rd
-    buf(0).rd_data := io.prev.bits.rd_data
-    buf(0).rj_data := io.prev.bits.rj_data
-    buf(0).pc := io.prev.bits.pc
-    buf(0).valid := io.prev.valid
+    io.next.bits.ALUOut := ALU.io.Out
+    io.next.bits.SLess := ALU.io.SLess
+    io.next.bits.ULess := ALU.io.ULess
+    io.next.bits.Zero := ALU.io.Zero
+    io.next.bits.memOp := io.prev.bits.memOp
+    io.next.bits.branch := io.prev.bits.branch
+    io.next.bits.wbSel := io.prev.bits.wbSel
+    io.next.bits.wbDst := io.prev.bits.wbDst
+    io.next.bits.Imm := io.prev.bits.Imm
+    io.next.bits.rd := io.prev.bits.rd
+    io.next.bits.rd_data := io.prev.bits.rd_data
+    io.next.bits.rj_data := io.prev.bits.rj_data
+    io.next.bits.pc := io.prev.bits.pc
 
-    for(i <- 1 to pstage - 1) {
-        buf(i) := buf(i - 1)
-    }
-
-    val mult = Module(new mult_gen_0())
-    mult.io.CLK := clock.asBool
-    mult.io.A := ALUA
-    mult.io.B := ALUB
-
-    io.next.bits.ALUOut := MuxLookup(buf(pstage - 1).aluOp, buf(pstage - 1).ALUOut) (Seq(
-        ALUOp.mul -> mult.io.P,
-    ))
-    io.next.bits.SLess := buf(pstage - 1).SLess
-    io.next.bits.ULess := buf(pstage - 1).ULess
-    io.next.bits.Zero := buf(pstage - 1).Zero
-    io.next.bits.memOp := buf(pstage - 1).memOp
-    io.next.bits.branch := buf(pstage - 1).branch
-    io.next.bits.wbSel := buf(pstage - 1).wbSel
-    io.next.bits.wbDst := buf(pstage - 1).wbDst
-    io.next.bits.Imm := buf(pstage - 1).Imm
-    io.next.bits.rd := buf(pstage - 1).rd
-    io.next.bits.rd_data := buf(pstage - 1).rd_data
-    io.next.bits.rj_data := buf(pstage - 1).rj_data
-    io.next.bits.pc := buf(pstage - 1).pc
-
-    io.next.valid := buf(pstage - 1).valid
+    io.next.valid := io.prev.valid
     io.prev.ready := 1.B
-}
-
-class mult_gen_0 extends BlackBox {
-    val io = IO(new Bundle {
-        val CLK = Input(Bool())
-        val A = Input(UInt(32.W))
-        val B = Input(UInt(32.W))
-        val P = Output(UInt(32.W))
-    })
 }
 
 class alu extends Module {

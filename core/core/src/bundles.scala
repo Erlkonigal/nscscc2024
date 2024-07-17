@@ -132,7 +132,7 @@ object Branch extends ChiselEnum {
         jirl, other = Value
 }
 object WBSel extends ChiselEnum {
-    val alu, mem, other = Value
+    val alu, mem, mul, other = Value
 }
 object WBDst extends ChiselEnum {
     val rd, one, other = Value

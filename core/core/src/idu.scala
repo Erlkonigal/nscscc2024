@@ -71,7 +71,7 @@ class idu extends Module {
         SLL_W     -> List(ALUOp.sll  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
         SRL_W     -> List(ALUOp.srl  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
         SRA_W     -> List(ALUOp.sra  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
-        MUL_W     -> List(ALUOp.mul  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
+        MUL_W     -> List(ALUOp.mul  , ALUAsrc.rj   , ALUBsrc.rk   , ImmType.other     , MemOp.other, Branch.other, WBSel.mul  , WBDst.rd),
 
         SLLI_W    -> List(ALUOp.sll  , ALUAsrc.rj   , ALUBsrc.imm  , ImmType.type2RI5U , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),
         SRLI_W    -> List(ALUOp.srl  , ALUAsrc.rj   , ALUBsrc.imm  , ImmType.type2RI5U , MemOp.other, Branch.other, WBSel.alu  , WBDst.rd),

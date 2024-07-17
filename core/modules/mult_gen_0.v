@@ -16,6 +16,6 @@ always @(posedge CLK) begin
     buffer[3] <= buffer[2];
     buffer[4] <= buffer[3];
 end
-assign P = buffer[0];
+assign P = buffer[1];
 
 endmodule
