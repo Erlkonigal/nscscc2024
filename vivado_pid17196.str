@@ -110,3 +110,103 @@ Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // Tcl Message: Scanning sources... Finished scanning sources 
 // Tcl Message: INFO: [IP_Flow 19-234] Refreshing IP repositories INFO: [IP_Flow 19-1704] No user IP repositories specified INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2019.2/data/ip'. 
 // [Engine Memory]: 824 MB (+38035kb) [00:00:06]
+// Project name: thinpad_top; location: C:/Users/john/Desktop/nscscc/2024576; part: xc7a200tfbg676-2
+dismissDialog("Open Project"); // bB (cr)
+// [GUI Memory]: 121 MB (+10733kb) [00:00:08]
+// HMemoryUtils.trashcanNow. Engine heap size: 828 MB. GUI used memory: 54 MB. Current time: 7/17/24, 3:04:22 AM CST
+// Tcl Message: update_compile_order -fileset sources_1 
+selectTab(PAResourceEtoH.FileSetView_TABBED_PANE, (HResource) null, "IP Sources", 1); // i (N, cr)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, IP, mult_gen_0]", 1, true); // B (F, cr) - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, IP, mult_gen_0, Instantiation Template]", 2, true, false, false, false, false, true); // B (F, cr) - Double Click - Node
+// Run Command: PAResourceCommand.PACommandNames_RECUSTOMIZE_CORE
+// TclEventType: LOAD_FEATURE
+// r (cr): Re-customize IP: addNotify
+selectTab(PAResourceEtoH.HACGCTabbedPane_TABBED_PANE, (HResource) null, "Output and Control", 1); // bh (E, r)
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a (r)
+dismissDialog("Re-customize IP"); // r (cr)
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, Program and Debug, Generate Bitstream]", 20, false); // u (O, cr)
+// Run Command: PAResourceCommand.PACommandNames_RUN_BITGEN
+// A (cr): Synthesis is Out-of-date: addNotify
+selectButton(RDIResource.BaseDialog_YES, "Yes"); // a (A)
+// bB (cr):  Resetting Runs : addNotify
+// TclEventType: RUN_MODIFY
+dismissDialog("Synthesis is Out-of-date"); // A (cr)
+// TclEventType: RUN_RESET
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_RESET
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_RESET
+// TclEventType: RUN_MODIFY
+// Tcl Message: reset_run synth_1 
+// f (cr): Launch Runs: addNotify
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a (f)
+// 'cw' command handler elapsed time: 3 seconds
+// TclEventType: FILESET_TARGET_UCF_CHANGE
+dismissDialog("Launch Runs"); // f (cr)
+// TclEventType: RUN_LAUNCH
+// TclEventType: FILESET_TARGET_UCF_CHANGE
+// TclEventType: RUN_LAUNCH
+// TclEventType: RUN_MODIFY
+// Tcl Message: launch_runs impl_1 -to_step write_bitstream -jobs 8 
+// Tcl Message: [Wed Jul 17 03:04:38 2024] Launched synth_1... Run output will be captured here: C:/Users/john/Desktop/nscscc/2024576/thinpad_top.runs/synth_1/runme.log [Wed Jul 17 03:04:38 2024] Launched impl_1... Run output will be captured here: C:/Users/john/Desktop/nscscc/2024576/thinpad_top.runs/impl_1/runme.log 
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_COMPLETED
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_STEP_COMPLETED
+// TclEventType: RUN_STATUS_CHANGE
+// TclEventType: RUN_STEP_COMPLETED
+// TclEventType: RUN_COMPLETED
+// TclEventType: RUN_STATUS_CHANGE
+// aj (cr): Bitstream Generation Completed: addNotify
+// Elapsed time: 575 seconds
+selectRadioButton(PAResourceCommand.PACommandNames_REPORTS_WINDOW, "View Reports"); // a (Q, aj)
+selectButton(RDIResource.BaseDialog_CANCEL, "Cancel"); // a (aj)
+dismissDialog("Bitstream Generation Completed"); // aj (cr)
+selectTreeTable(PAResourceEtoH.ExpRunTreePanel_EXP_RUN_TREE_TABLE, "impl_1 ; constrs_1 ; write_bitstream Complete! ; 11.030476570129395 ; 0.0 ; 0.06627490371465683 ; 0.0 ; 0.0 ; 0.2515522837638855 ; 0 ; 2460 ; 2352 ; 0.0 ; 0 ; 0 ; Wed Jul 17 03:05:24 CST 2024 ; 00:01:38 ; Vivado Implementation Defaults (Vivado Implementation 2016) ; Vivado Implementation Default Reports ; xc7a200tfbg676-2 ; Default settings for Implementation.", 1, "100", 3, false); // az (O, cr)
+// PAPropertyPanels.initPanels (impl_1) elapsed time: 0.2s
+selectTreeTable(PAResourceEtoH.ExpRunTreePanel_EXP_RUN_TREE_TABLE, "impl_1 ; constrs_1 ; write_bitstream Complete! ; 11.030476570129395 ; 0.0 ; 0.06627490371465683 ; 0.0 ; 0.0 ; 0.2515522837638855 ; 0 ; 2460 ; 2352 ; 0.0 ; 0 ; 0 ; Wed Jul 17 03:05:24 CST 2024 ; 00:01:38 ; Vivado Implementation Defaults (Vivado Implementation 2016) ; Vivado Implementation Default Reports ; xc7a200tfbg676-2 ; Default settings for Implementation.", 1, "100", 3, false, false, false, false, false, true); // az (O, cr) - Double Click
+// bB (cr):  Open Implemented Design : addNotify
+// Tcl Message: open_run impl_1 
+// HMemoryUtils.trashcanNow. Engine heap size: 958 MB. GUI used memory: 64 MB. Current time: 7/17/24, 3:14:17 AM CST
+// TclEventType: SDC_CONSTRAINT_ADD
+// TclEventType: POWER_CNS_STALE
+// TclEventType: SDC_CONSTRAINT_ADD
+// TclEventType: FLOORPLAN_MODIFY
+// TclEventType: DESIGN_NEW
+// HMemoryUtils.trashcanNow. Engine heap size: 1,768 MB. GUI used memory: 64 MB. Current time: 7/17/24, 3:14:28 AM CST
+// [Engine Memory]: 1,768 MB (+946102kb) [00:10:14]
+// [Engine Memory]: 1,978 MB (+127885kb) [00:10:14]
+// TclEventType: DESIGN_NEW
+// TclEventType: HFED_INIT_ROUTE_STORAGE_COMPLETED
+// [GUI Memory]: 128 MB (+989kb) [00:10:15]
+// [GUI Memory]: 135 MB (+71kb) [00:10:15]
+// Device: addNotify
+// DeviceView Instantiated
+// WARNING: HEventQueue.dispatchEvent() is taking  1473 ms.
+// TclEventType: CURR_DESIGN_SET
+// Tcl Message: INFO: [Device 21-403] Loading part xc7a200tfbg676-2 
+// Tcl Message: Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.041 . Memory (MB): peak = 1159.637 ; gain = 0.000 
+// Tcl Message: INFO: [Netlist 29-17] Analyzing 597 Unisim elements for replacement INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds INFO: [Project 1-479] Netlist was created with Vivado 2019.2 INFO: [Project 1-570] Preparing netlist for logic optimization INFO: [Timing 38-478] Restoring timing data from binary archive. INFO: [Timing 38-479] Binary timing data restore complete. INFO: [Project 1-856] Restoring constraints from binary archive. INFO: [Project 1-853] Binary constraint restore complete. 
+// Tcl Message: Reading XDEF placement. Reading placer database... Reading XDEF routing. 
+// Tcl Message: Read XDEF File: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.287 . Memory (MB): peak = 1834.324 ; gain = 0.000 
+// Tcl Message: Restored from archive | CPU: 0.000000 secs | Memory: 0.000000 MB | 
+// Tcl Message: Finished XDEF File Restore: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.287 . Memory (MB): peak = 1834.324 ; gain = 0.000 Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1834.324 ; gain = 0.000 
+// Tcl Message: INFO: [Project 1-111] Unisim Transformation Summary:   A total of 36 instances were transformed.   IOBUF => IOBUF (IBUF, OBUFT): 32 instances   RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 4 instances  
+// TclEventType: DRC_ADDED
+// Device view-level: 0.0
+// [GUI Memory]: 144 MB (+2785kb) [00:10:17]
+// RouteApi: Init Delay Mediator Swing Worker Finished
+// Tcl Message: open_run: Time (s): cpu = 00:00:09 ; elapsed = 00:00:14 . Memory (MB): peak = 2057.184 ; gain = 1000.184 
+// TclEventType: DRC_ADDED
+// [GUI Memory]: 156 MB (+5009kb) [00:10:17]
+// TclEventType: METHODOLOGY_ADDED
+// TclEventType: POWER_UPDATED
+// WARNING: HEventQueue.dispatchEvent() is taking  1044 ms.
+// TclEventType: TIMING_SUMMARY_UPDATED
+// [GUI Memory]: 170 MB (+6360kb) [00:10:20]
+// Elapsed time: 17 seconds
+dismissDialog("Open Implemented Design"); // bB (cr)
+selectButton(PAResourceAtoD.DesignTimingSumSectionPanel_WORST_NEGATIVE_SLACK, "11.030 ns"); // h (Q, cr)
+// PAPropertyPanels.initPanels (Path 1) elapsed time: 0.6s
+selectTableHeader(PAResourceTtoZ.TimingItemFlatTablePanel_TABLE, "To", 5); // i (O, cr)
+selectTableHeader(PAResourceTtoZ.TimingItemFlatTablePanel_TABLE, "Total Delay", 6); // i (O, cr)

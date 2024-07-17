@@ -62,7 +62,7 @@ module ifu(	// core/src/ifu.scala:5:7
   output        io_base_out_bits_ce_n,	// core/src/ifu.scala:6:16
                 io_base_out_bits_oe_n,	// core/src/ifu.scala:6:16
   input         io_InstFetch,	// core/src/ifu.scala:6:16
-  input  [31:0] io_pc,	// core/src/ifu.scala:6:16
+  (*mark_debug="true"*)input  [31:0] io_pc,	// core/src/ifu.scala:6:16
   output        io_next_valid,	// core/src/ifu.scala:6:16
   output [31:0] io_next_bits_pc,	// core/src/ifu.scala:6:16
                 io_next_bits_inst	// core/src/ifu.scala:6:16
@@ -89,8 +89,8 @@ module buffer(	// core/src/core.scala:53:7
 );
 
   reg        state;	// core/src/core.scala:58:24
-  reg [31:0] regs_pc;	// core/src/core.scala:61:19
-  reg [31:0] regs_inst;	// core/src/core.scala:61:19
+  (*mark_debug="true"*)reg [31:0] regs_pc;	// core/src/core.scala:61:19
+  (*mark_debug="true"*)reg [31:0] regs_inst;	// core/src/core.scala:61:19
   always @(posedge clock) begin	// core/src/core.scala:53:7
     if (reset)	// core/src/core.scala:53:7
       state <= 1'h0;	// core/src/core.scala:58:24
