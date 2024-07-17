@@ -288,49 +288,8 @@ set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 
 
-create_debug_core u_ila_0 ila
-set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
-set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
-set_property C_ADV_TRIGGER false [get_debug_cores u_ila_0]
-set_property C_DATA_DEPTH 4096 [get_debug_cores u_ila_0]
-set_property C_EN_STRG_QUAL false [get_debug_cores u_ila_0]
-set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
-set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
-set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
-set_property port_width 1 [get_debug_ports u_ila_0/clk]
-connect_debug_port u_ila_0/clk [get_nets [list clock_gen/inst/clk_out3]]
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
-set_property port_width 32 [get_debug_ports u_ila_0/probe0]
-connect_debug_port u_ila_0/probe0 [get_nets [list {subtop/core/ifu_idu/regs_inst[0]} {subtop/core/ifu_idu/regs_inst[1]} {subtop/core/ifu_idu/regs_inst[2]} {subtop/core/ifu_idu/regs_inst[3]} {subtop/core/ifu_idu/regs_inst[4]} {subtop/core/ifu_idu/regs_inst[5]} {subtop/core/ifu_idu/regs_inst[6]} {subtop/core/ifu_idu/regs_inst[7]} {subtop/core/ifu_idu/regs_inst[8]} {subtop/core/ifu_idu/regs_inst[9]} {subtop/core/ifu_idu/regs_inst[10]} {subtop/core/ifu_idu/regs_inst[11]} {subtop/core/ifu_idu/regs_inst[12]} {subtop/core/ifu_idu/regs_inst[13]} {subtop/core/ifu_idu/regs_inst[14]} {subtop/core/ifu_idu/regs_inst[15]} {subtop/core/ifu_idu/regs_inst[16]} {subtop/core/ifu_idu/regs_inst[17]} {subtop/core/ifu_idu/regs_inst[18]} {subtop/core/ifu_idu/regs_inst[19]} {subtop/core/ifu_idu/regs_inst[20]} {subtop/core/ifu_idu/regs_inst[21]} {subtop/core/ifu_idu/regs_inst[22]} {subtop/core/ifu_idu/regs_inst[23]} {subtop/core/ifu_idu/regs_inst[24]} {subtop/core/ifu_idu/regs_inst[25]} {subtop/core/ifu_idu/regs_inst[26]} {subtop/core/ifu_idu/regs_inst[27]} {subtop/core/ifu_idu/regs_inst[28]} {subtop/core/ifu_idu/regs_inst[29]} {subtop/core/ifu_idu/regs_inst[30]} {subtop/core/ifu_idu/regs_inst[31]}]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe1]
-set_property port_width 32 [get_debug_ports u_ila_0/probe1]
-connect_debug_port u_ila_0/probe1 [get_nets [list {subtop/core/ifu_idu/regs_pc[0]} {subtop/core/ifu_idu/regs_pc[1]} {subtop/core/ifu_idu/regs_pc[2]} {subtop/core/ifu_idu/regs_pc[3]} {subtop/core/ifu_idu/regs_pc[4]} {subtop/core/ifu_idu/regs_pc[5]} {subtop/core/ifu_idu/regs_pc[6]} {subtop/core/ifu_idu/regs_pc[7]} {subtop/core/ifu_idu/regs_pc[8]} {subtop/core/ifu_idu/regs_pc[9]} {subtop/core/ifu_idu/regs_pc[10]} {subtop/core/ifu_idu/regs_pc[11]} {subtop/core/ifu_idu/regs_pc[12]} {subtop/core/ifu_idu/regs_pc[13]} {subtop/core/ifu_idu/regs_pc[14]} {subtop/core/ifu_idu/regs_pc[15]} {subtop/core/ifu_idu/regs_pc[16]} {subtop/core/ifu_idu/regs_pc[17]} {subtop/core/ifu_idu/regs_pc[18]} {subtop/core/ifu_idu/regs_pc[19]} {subtop/core/ifu_idu/regs_pc[20]} {subtop/core/ifu_idu/regs_pc[21]} {subtop/core/ifu_idu/regs_pc[22]} {subtop/core/ifu_idu/regs_pc[23]} {subtop/core/ifu_idu/regs_pc[24]} {subtop/core/ifu_idu/regs_pc[25]} {subtop/core/ifu_idu/regs_pc[26]} {subtop/core/ifu_idu/regs_pc[27]} {subtop/core/ifu_idu/regs_pc[28]} {subtop/core/ifu_idu/regs_pc[29]} {subtop/core/ifu_idu/regs_pc[30]} {subtop/core/ifu_idu/regs_pc[31]}]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe2]
-set_property port_width 32 [get_debug_ports u_ila_0/probe2]
 connect_debug_port u_ila_0/probe2 [get_nets [list {subtop/core/ifu/io_pc[0]} {subtop/core/ifu/io_pc[1]} {subtop/core/ifu/io_pc[2]} {subtop/core/ifu/io_pc[3]} {subtop/core/ifu/io_pc[4]} {subtop/core/ifu/io_pc[5]} {subtop/core/ifu/io_pc[6]} {subtop/core/ifu/io_pc[7]} {subtop/core/ifu/io_pc[8]} {subtop/core/ifu/io_pc[9]} {subtop/core/ifu/io_pc[10]} {subtop/core/ifu/io_pc[11]} {subtop/core/ifu/io_pc[12]} {subtop/core/ifu/io_pc[13]} {subtop/core/ifu/io_pc[14]} {subtop/core/ifu/io_pc[15]} {subtop/core/ifu/io_pc[16]} {subtop/core/ifu/io_pc[17]} {subtop/core/ifu/io_pc[18]} {subtop/core/ifu/io_pc[19]} {subtop/core/ifu/io_pc[20]} {subtop/core/ifu/io_pc[21]} {subtop/core/ifu/io_pc[22]} {subtop/core/ifu/io_pc[23]} {subtop/core/ifu/io_pc[24]} {subtop/core/ifu/io_pc[25]} {subtop/core/ifu/io_pc[26]} {subtop/core/ifu/io_pc[27]} {subtop/core/ifu/io_pc[28]} {subtop/core/ifu/io_pc[29]} {subtop/core/ifu/io_pc[30]} {subtop/core/ifu/io_pc[31]}]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
-set_property port_width 20 [get_debug_ports u_ila_0/probe3]
-connect_debug_port u_ila_0/probe3 [get_nets [list {base_ram_addr_OBUF[0]} {base_ram_addr_OBUF[1]} {base_ram_addr_OBUF[2]} {base_ram_addr_OBUF[3]} {base_ram_addr_OBUF[4]} {base_ram_addr_OBUF[5]} {base_ram_addr_OBUF[6]} {base_ram_addr_OBUF[7]} {base_ram_addr_OBUF[8]} {base_ram_addr_OBUF[9]} {base_ram_addr_OBUF[10]} {base_ram_addr_OBUF[11]} {base_ram_addr_OBUF[12]} {base_ram_addr_OBUF[13]} {base_ram_addr_OBUF[14]} {base_ram_addr_OBUF[15]} {base_ram_addr_OBUF[16]} {base_ram_addr_OBUF[17]} {base_ram_addr_OBUF[18]} {base_ram_addr_OBUF[19]}]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe4]
-set_property port_width 32 [get_debug_ports u_ila_0/probe4]
-connect_debug_port u_ila_0/probe4 [get_nets [list {base_ram_data_out[0]} {base_ram_data_out[1]} {base_ram_data_out[2]} {base_ram_data_out[3]} {base_ram_data_out[4]} {base_ram_data_out[5]} {base_ram_data_out[6]} {base_ram_data_out[7]} {base_ram_data_out[8]} {base_ram_data_out[9]} {base_ram_data_out[10]} {base_ram_data_out[11]} {base_ram_data_out[12]} {base_ram_data_out[13]} {base_ram_data_out[14]} {base_ram_data_out[15]} {base_ram_data_out[16]} {base_ram_data_out[17]} {base_ram_data_out[18]} {base_ram_data_out[19]} {base_ram_data_out[20]} {base_ram_data_out[21]} {base_ram_data_out[22]} {base_ram_data_out[23]} {base_ram_data_out[24]} {base_ram_data_out[25]} {base_ram_data_out[26]} {base_ram_data_out[27]} {base_ram_data_out[28]} {base_ram_data_out[29]} {base_ram_data_out[30]} {base_ram_data_out[31]}]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
-set_property port_width 1 [get_debug_ports u_ila_0/probe5]
-connect_debug_port u_ila_0/probe5 [get_nets [list base_ram_ce_n_OBUF]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe6]
-set_property port_width 1 [get_debug_ports u_ila_0/probe6]
-connect_debug_port u_ila_0/probe6 [get_nets [list base_ram_oe_n_OBUF]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe7]
-set_property port_width 1 [get_debug_ports u_ila_0/probe7]
-connect_debug_port u_ila_0/probe7 [get_nets [list base_ram_we_n_OBUF]]
-set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
-set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
-set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
-connect_debug_port dbg_hub/clk [get_nets clk]
+
+connect_debug_port u_ila_0/probe0 [get_nets [list {base_ram_data_out[0]} {base_ram_data_out[1]} {base_ram_data_out[2]} {base_ram_data_out[3]} {base_ram_data_out[4]} {base_ram_data_out[5]} {base_ram_data_out[6]} {base_ram_data_out[7]} {base_ram_data_out[8]} {base_ram_data_out[9]} {base_ram_data_out[10]} {base_ram_data_out[11]} {base_ram_data_out[12]} {base_ram_data_out[13]} {base_ram_data_out[14]} {base_ram_data_out[15]} {base_ram_data_out[16]} {base_ram_data_out[17]} {base_ram_data_out[18]} {base_ram_data_out[19]} {base_ram_data_out[20]} {base_ram_data_out[21]} {base_ram_data_out[22]} {base_ram_data_out[23]} {base_ram_data_out[24]} {base_ram_data_out[25]} {base_ram_data_out[26]} {base_ram_data_out[27]} {base_ram_data_out[28]} {base_ram_data_out[29]} {base_ram_data_out[30]} {base_ram_data_out[31]}]]
+connect_debug_port u_ila_0/probe8 [get_nets [list subtop/core/ifu_idu/state]]
+

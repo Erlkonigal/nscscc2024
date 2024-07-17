@@ -15,11 +15,11 @@ module thinpad_top(
 
     //BaseRAM信号
     inout wire[31:0] base_ram_data,  //BaseRAM数据，低8位与CPLD串口控制器共�?
-    (*mark_debug="true"*)output wire[19:0] base_ram_addr, //BaseRAM地址
+    output wire[19:0] base_ram_addr, //BaseRAM地址
     output wire[3:0] base_ram_be_n,  //BaseRAM字节使能，低有效。如果不使用字节使能，请保持�?0
-    (*mark_debug="true"*)output wire base_ram_ce_n,       //BaseRAM片�?�，低有�?
-    (*mark_debug="true"*)output wire base_ram_oe_n,       //BaseRAM读使能，低有�?
-    (*mark_debug="true"*)output wire base_ram_we_n,       //BaseRAM写使能，低有�?
+    output wire base_ram_ce_n,       //BaseRAM片�?�，低有�?
+    output wire base_ram_oe_n,       //BaseRAM读使能，低有�?
+    output wire base_ram_we_n,       //BaseRAM写使能，低有�?
 
     //ExtRAM信号
     inout wire[31:0] ext_ram_data,  //ExtRAM数据
@@ -57,7 +57,7 @@ module thinpad_top(
 
 // PLL分频示例
 wire locked, clk_10M, clk_20M;
-(*mark_debug="true"*)wire clk;
+wire clk;
 pll_example clock_gen 
  (
   // Clock in ports
@@ -82,7 +82,7 @@ end
 
 wire base_ram_data_wen;
 wire [31:0] base_ram_data_in;
-(*mark_debug="true"*)wire [31:0] base_ram_data_out;
+wire [31:0] base_ram_data_out;
 
 wire ext_ram_data_wen;
 wire [31:0] ext_ram_data_in;

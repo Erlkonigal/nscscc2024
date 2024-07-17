@@ -88,9 +88,9 @@ module buffer(	// core/src/core.scala:59:7
                 io_next_bits_inst	// core/src/core.scala:60:16
 );
 
-  (*mark_debug="true"*)reg        state;	// core/src/core.scala:64:24
-  (*mark_debug="true"*)reg [31:0] regs_pc;	// core/src/core.scala:67:19
-  (*mark_debug="true"*)reg [31:0] regs_inst;	// core/src/core.scala:67:19
+  reg        state;	// core/src/core.scala:64:24
+  (*DONT_TOUCH="YES"*)reg [31:0] regs_pc;	// core/src/core.scala:67:19
+  (*DONT_TOUCH="YES"*)reg [31:0] regs_inst;	// core/src/core.scala:67:19
   always @(posedge clock) begin	// core/src/core.scala:59:7
     if (reset)	// core/src/core.scala:59:7
       state <= 1'h0;	// core/src/core.scala:64:24
