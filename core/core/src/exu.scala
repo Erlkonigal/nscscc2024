@@ -22,7 +22,8 @@ class exu extends Module {
     ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
-    val buf = Reg(Vec(5, new exu_inner()))
+    val pstage = 5
+    val buf = Reg(Vec(pstage, new exu_inner()))
     buf(0).ALUOut := ALU.io.Out
     buf(0).SLess := ALU.io.SLess
     buf(0).ULess := ALU.io.ULess
@@ -39,7 +40,7 @@ class exu extends Module {
     buf(0).pc := io.prev.bits.pc
     buf(0).valid := io.prev.valid
 
-    for(i <- 1 to 4) {
+    for(i <- 1 to pstage - 1) {
         buf(i) := buf(i - 1)
     }
 
@@ -48,23 +49,23 @@ class exu extends Module {
     mult.io.A := ALUA
     mult.io.B := ALUB
 
-    io.next.bits.ALUOut := MuxLookup(buf(4).aluOp, buf(4).ALUOut) (Seq(
+    io.next.bits.ALUOut := MuxLookup(buf(pstage - 1).aluOp, buf(pstage - 1).ALUOut) (Seq(
         ALUOp.mul -> mult.io.P,
     ))
-    io.next.bits.SLess := buf(4).SLess
-    io.next.bits.ULess := buf(4).ULess
-    io.next.bits.Zero := buf(4).Zero
-    io.next.bits.memOp := buf(4).memOp
-    io.next.bits.branch := buf(4).branch
-    io.next.bits.wbSel := buf(4).wbSel
-    io.next.bits.wbDst := buf(4).wbDst
-    io.next.bits.Imm := buf(4).Imm
-    io.next.bits.rd := buf(4).rd
-    io.next.bits.rd_data := buf(4).rd_data
-    io.next.bits.rj_data := buf(4).rj_data
-    io.next.bits.pc := buf(4).pc
+    io.next.bits.SLess := buf(pstage - 1).SLess
+    io.next.bits.ULess := buf(pstage - 1).ULess
+    io.next.bits.Zero := buf(pstage - 1).Zero
+    io.next.bits.memOp := buf(pstage - 1).memOp
+    io.next.bits.branch := buf(pstage - 1).branch
+    io.next.bits.wbSel := buf(pstage - 1).wbSel
+    io.next.bits.wbDst := buf(pstage - 1).wbDst
+    io.next.bits.Imm := buf(pstage - 1).Imm
+    io.next.bits.rd := buf(pstage - 1).rd
+    io.next.bits.rd_data := buf(pstage - 1).rd_data
+    io.next.bits.rj_data := buf(pstage - 1).rj_data
+    io.next.bits.pc := buf(pstage - 1).pc
 
-    io.next.valid := buf(4).valid
+    io.next.valid := buf(pstage - 1).valid
     io.prev.ready := 1.B
 }
 
