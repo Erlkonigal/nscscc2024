@@ -6,7 +6,7 @@ OBJCOPY = $(COMPILER)objcopy
 OBJDUMP = $(COMPILER)objdump
 
 CFLAGS = -mstrict-align -nostdinc -nostdlib -fno-builtin -mabi=ilp32s -Iinclude
-LDFLAGS = -Tlinker.ld --print-map
+LDFLAGS = -Tlinker.ld
 
 BSP = ../bsp/build/bsp.a
 

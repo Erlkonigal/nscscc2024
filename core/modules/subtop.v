@@ -88,9 +88,9 @@ module buffer(	// core/src/core.scala:59:7
                 io_next_bits_inst	// core/src/core.scala:60:16
 );
 
-  reg        state;	// core/src/core.scala:64:24
-  reg [31:0] regs_pc;	// core/src/core.scala:67:19
-  reg [31:0] regs_inst;	// core/src/core.scala:67:19
+  (*mark_debug="true"*)reg        state;	// core/src/core.scala:64:24
+  (*mark_debug="true"*)reg [31:0] regs_pc;	// core/src/core.scala:67:19
+  (*mark_debug="true"*)reg [31:0] regs_inst;	// core/src/core.scala:67:19
   always @(posedge clock) begin	// core/src/core.scala:59:7
     if (reset)	// core/src/core.scala:59:7
       state <= 1'h0;	// core/src/core.scala:64:24
@@ -2298,71 +2298,41 @@ module wbu(	// core/src/wbu.scala:5:7
   assign io_wdata = _GEN[io_prev_bits_wbSel];	// core/src/wbu.scala:5:7, :40:52
 endmodule
 
-module RRArbiter(	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-  input         clock,	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-                io_in_0_valid,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  input  [31:0] io_in_0_bits_addr,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  input         io_in_0_bits_ce_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_in_0_bits_oe_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_in_1_valid,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_in_1_bits_data_wen,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  input  [31:0] io_in_1_bits_data_in,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_in_1_bits_addr,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  input  [3:0]  io_in_1_bits_be_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  input         io_in_1_bits_ce_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_in_1_bits_oe_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_in_1_bits_we_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_out_ready,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  output        io_out_valid,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_out_bits_data_wen,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  output [31:0] io_out_bits_data_in,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_out_bits_addr,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  output [3:0]  io_out_bits_be_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-  output        io_out_bits_ce_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_out_bits_oe_n,	// src/main/scala/chisel3/util/Arbiter.scala:52:14
-                io_out_bits_we_n	// src/main/scala/chisel3/util/Arbiter.scala:52:14
+module Arbiter2_bus_out(	// src/main/scala/chisel3/util/Arbiter.scala:133:7
+  input         io_in_0_valid,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  input  [31:0] io_in_0_bits_addr,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  input         io_in_0_bits_ce_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_in_0_bits_oe_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_in_1_valid,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_in_1_bits_data_wen,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  input  [31:0] io_in_1_bits_data_in,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_in_1_bits_addr,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  input  [3:0]  io_in_1_bits_be_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  input         io_in_1_bits_ce_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_in_1_bits_oe_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_in_1_bits_we_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  output        io_out_valid,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_out_bits_data_wen,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  output [31:0] io_out_bits_data_in,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_out_bits_addr,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  output [3:0]  io_out_bits_be_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+  output        io_out_bits_ce_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_out_bits_oe_n,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
+                io_out_bits_we_n	// src/main/scala/chisel3/util/Arbiter.scala:140:14
 );
 
-  wire io_chosen_choice;	// src/main/scala/chisel3/util/Arbiter.scala:92:26, :94:{24,33}
-  wire io_out_valid_0 = io_chosen_choice ? io_in_1_valid : io_in_0_valid;	// src/main/scala/chisel3/util/Arbiter.scala:55:16, :92:26, :94:{24,33}
-  reg  ctrl_validMask_grantMask_lastGrant;	// src/main/scala/chisel3/util/Arbiter.scala:81:33
-  assign io_chosen_choice =
-    io_in_1_valid & ~ctrl_validMask_grantMask_lastGrant | ~io_in_0_valid;	// src/main/scala/chisel3/util/Arbiter.scala:81:33, :82:49, :83:76, :90:41, :92:{26,35}, :94:{24,33}
-  always @(posedge clock) begin	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-    if (io_out_ready & io_out_valid_0)	// src/main/scala/chisel3/util/Arbiter.scala:55:16, src/main/scala/chisel3/util/Decoupled.scala:51:35
-      ctrl_validMask_grantMask_lastGrant <= io_chosen_choice;	// src/main/scala/chisel3/util/Arbiter.scala:81:33, :92:26, :94:{24,33}
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-    `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-      `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-        ctrl_validMask_grantMask_lastGrant = _RANDOM[/*Zero width*/ 1'b0][0];	// src/main/scala/chisel3/util/Arbiter.scala:81:33, :118:7
-      `endif // RANDOMIZE_REG_INIT
-    end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Arbiter.scala:118:7
-    `endif // FIRRTL_AFTER_INITIAL
-  `endif // ENABLE_INITIAL_REG_
-  assign io_out_valid = io_out_valid_0;	// src/main/scala/chisel3/util/Arbiter.scala:55:16, :118:7
-  assign io_out_bits_data_wen = io_chosen_choice & io_in_1_bits_data_wen;	// src/main/scala/chisel3/util/Arbiter.scala:55:16, :92:26, :94:{24,33}, :118:7
-  assign io_out_bits_data_in = io_chosen_choice ? io_in_1_bits_data_in : 32'h0;	// src/main/scala/chisel3/util/Arbiter.scala:52:14, :55:16, :92:26, :94:{24,33}, :118:7
-  assign io_out_bits_addr = io_chosen_choice ? io_in_1_bits_addr : io_in_0_bits_addr;	// src/main/scala/chisel3/util/Arbiter.scala:55:16, :92:26, :94:{24,33}, :118:7
-  assign io_out_bits_be_n = io_chosen_choice ? io_in_1_bits_be_n : 4'h0;	// src/main/scala/chisel3/util/Arbiter.scala:52:14, :55:16, :92:26, :94:{24,33}, :118:7
-  assign io_out_bits_ce_n = io_chosen_choice ? io_in_1_bits_ce_n : io_in_0_bits_ce_n;	// src/main/scala/chisel3/util/Arbiter.scala:55:16, :92:26, :94:{24,33}, :118:7
-  assign io_out_bits_oe_n = io_chosen_choice ? io_in_1_bits_oe_n : io_in_0_bits_oe_n;	// src/main/scala/chisel3/util/Arbiter.scala:55:16, :92:26, :94:{24,33}, :118:7
-  assign io_out_bits_we_n = ~io_chosen_choice | io_in_1_bits_we_n;	// src/main/scala/chisel3/util/Arbiter.scala:55:16, :92:26, :94:{24,33}, :118:7
+  assign io_out_valid = io_in_0_valid | io_in_1_valid;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :154:31
+  assign io_out_bits_data_wen = ~io_in_0_valid & io_in_1_bits_data_wen;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :143:15, :145:26, :147:19
+  assign io_out_bits_data_in = io_in_0_valid ? 32'h0 : io_in_1_bits_data_in;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :140:14, :143:15, :145:26, :147:19
+  assign io_out_bits_addr = io_in_0_valid ? io_in_0_bits_addr : io_in_1_bits_addr;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :143:15, :145:26, :147:19
+  assign io_out_bits_be_n = io_in_0_valid ? 4'h0 : io_in_1_bits_be_n;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :140:14, :143:15, :145:26, :147:19
+  assign io_out_bits_ce_n = io_in_0_valid ? io_in_0_bits_ce_n : io_in_1_bits_ce_n;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :143:15, :145:26, :147:19
+  assign io_out_bits_oe_n = io_in_0_valid ? io_in_0_bits_oe_n : io_in_1_bits_oe_n;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :143:15, :145:26, :147:19
+  assign io_out_bits_we_n = io_in_0_valid | io_in_1_bits_we_n;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :143:15, :145:26, :147:19
 endmodule
 
 module abt(	// core/src/abt.scala:5:7
-  input         clock,	// core/src/abt.scala:5:7
-                io_in_DataIn_0_valid,	// core/src/abt.scala:6:16
+  input         io_in_DataIn_0_valid,	// core/src/abt.scala:6:16
   input  [31:0] io_in_DataIn_0_bits_addr,	// core/src/abt.scala:6:16
   input         io_in_DataIn_0_bits_ce_n,	// core/src/abt.scala:6:16
                 io_in_DataIn_0_bits_oe_n,	// core/src/abt.scala:6:16
@@ -2375,7 +2345,6 @@ module abt(	// core/src/abt.scala:5:7
                 io_in_DataIn_1_bits_oe_n,	// core/src/abt.scala:6:16
                 io_in_DataIn_1_bits_we_n,	// core/src/abt.scala:6:16
   input  [31:0] io_in_BusIn_bits_data_out,	// core/src/abt.scala:6:16
-  input         io_out_DataOut_ready,	// core/src/abt.scala:6:16
   output        io_out_DataOut_valid,	// core/src/abt.scala:6:16
                 io_out_DataOut_bits_data_wen,	// core/src/abt.scala:6:16
   output [31:0] io_out_DataOut_bits_data_in,	// core/src/abt.scala:6:16
@@ -2388,8 +2357,7 @@ module abt(	// core/src/abt.scala:5:7
                 io_out_BusOut_1_bits_data_out	// core/src/abt.scala:6:16
 );
 
-  RRArbiter arbiter (	// core/src/abt.scala:17:25
-    .clock                 (clock),
+  Arbiter2_bus_out arbiter (	// core/src/abt.scala:17:25
     .io_in_0_valid         (io_in_DataIn_0_valid),
     .io_in_0_bits_addr     (io_in_DataIn_0_bits_addr),
     .io_in_0_bits_ce_n     (io_in_DataIn_0_bits_ce_n),
@@ -2402,7 +2370,6 @@ module abt(	// core/src/abt.scala:5:7
     .io_in_1_bits_ce_n     (io_in_DataIn_1_bits_ce_n),
     .io_in_1_bits_oe_n     (io_in_DataIn_1_bits_oe_n),
     .io_in_1_bits_we_n     (io_in_DataIn_1_bits_we_n),
-    .io_out_ready          (io_out_DataOut_ready),
     .io_out_valid          (io_out_DataOut_valid),
     .io_out_bits_data_wen  (io_out_DataOut_bits_data_wen),
     .io_out_bits_data_in   (io_out_DataOut_bits_data_in),
@@ -2420,7 +2387,6 @@ module core(	// core/src/core.scala:5:7
   input         clock,	// core/src/core.scala:5:7
                 reset,	// core/src/core.scala:5:7
   input  [31:0] io_bus_in_bits_data_out,	// core/src/core.scala:6:16
-  input         io_bus_out_ready,	// core/src/core.scala:6:16
   output        io_bus_out_valid,	// core/src/core.scala:6:16
                 io_bus_out_bits_data_wen,	// core/src/core.scala:6:16
   output [31:0] io_bus_out_bits_data_in,	// core/src/core.scala:6:16
@@ -2811,7 +2777,6 @@ module core(	// core/src/core.scala:5:7
     .io_P                 (_mul_P)	// core/src/core.scala:15:21
   );
   abt abt (	// core/src/core.scala:30:21
-    .clock                         (clock),
     .io_in_DataIn_0_valid          (_ifu_io_base_out_valid),	// core/src/core.scala:10:21
     .io_in_DataIn_0_bits_addr      (_ifu_io_base_out_bits_addr),	// core/src/core.scala:10:21
     .io_in_DataIn_0_bits_ce_n      (_ifu_io_base_out_bits_ce_n),	// core/src/core.scala:10:21
@@ -2825,7 +2790,6 @@ module core(	// core/src/core.scala:5:7
     .io_in_DataIn_1_bits_oe_n      (_lsu_io_ext_out_bits_oe_n),	// core/src/core.scala:17:21
     .io_in_DataIn_1_bits_we_n      (_lsu_io_ext_out_bits_we_n),	// core/src/core.scala:17:21
     .io_in_BusIn_bits_data_out     (io_bus_in_bits_data_out),
-    .io_out_DataOut_ready          (io_bus_out_ready),
     .io_out_DataOut_valid          (io_bus_out_valid),
     .io_out_DataOut_bits_data_wen  (io_bus_out_bits_data_wen),
     .io_out_DataOut_bits_data_in   (io_bus_out_bits_data_in),
@@ -2840,7 +2804,6 @@ module core(	// core/src/core.scala:5:7
 endmodule
 
 module xbar(	// core/src/xbar.scala:5:7
-  output        io_in_DataIn_ready,	// core/src/xbar.scala:6:16
   input         io_in_DataIn_valid,	// core/src/xbar.scala:6:16
                 io_in_DataIn_bits_data_wen,	// core/src/xbar.scala:6:16
   input  [31:0] io_in_DataIn_bits_data_in,	// core/src/xbar.scala:6:16
@@ -2877,13 +2840,13 @@ module xbar(	// core/src/xbar.scala:5:7
   output [31:0] io_out_BusOut_bits_data_out	// core/src/xbar.scala:6:16
 );
 
-  wire _GEN = io_in_DataIn_bits_addr[31] & io_in_DataIn_bits_addr < 32'h80400000;	// core/src/bundles.scala:8:{14,23,31}
-  wire _GEN_0 =
+  wire _GEN =
     io_in_DataIn_bits_addr > 32'h803FFFFF & io_in_DataIn_bits_addr < 32'h80800000;	// core/src/bundles.scala:8:{14,23,31}
-  wire _GEN_1 =
+  wire _GEN_0 =
     io_in_DataIn_bits_addr > 32'hBFD003F7 & io_in_DataIn_bits_addr < 32'hBFD003FD;	// core/src/bundles.scala:8:{14,23,31}
-  assign io_in_DataIn_ready = _GEN_1 | _GEN_0 | _GEN;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :26:56, :27:31
-  assign io_out_DataOut_0_valid = _GEN & io_in_DataIn_valid;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :17:33, :26:56, :27:31
+  assign io_out_DataOut_0_valid =
+    io_in_DataIn_bits_addr[31] & io_in_DataIn_bits_addr < 32'h80400000
+    & io_in_DataIn_valid;	// core/src/bundles.scala:8:{14,31}, core/src/xbar.scala:5:7, :17:33, :26:56, :27:31
   assign io_out_DataOut_0_bits_data_wen = io_in_DataIn_bits_data_wen;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_0_bits_data_in = io_in_DataIn_bits_data_in;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_0_bits_addr = io_in_DataIn_bits_addr - 32'h80000000;	// core/src/xbar.scala:5:7, :28:67
@@ -2891,7 +2854,7 @@ module xbar(	// core/src/xbar.scala:5:7
   assign io_out_DataOut_0_bits_ce_n = io_in_DataIn_bits_ce_n;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_0_bits_oe_n = io_in_DataIn_bits_oe_n;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_0_bits_we_n = io_in_DataIn_bits_we_n;	// core/src/xbar.scala:5:7
-  assign io_out_DataOut_1_valid = _GEN_0 & io_in_DataIn_valid;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :17:33, :26:56, :27:31
+  assign io_out_DataOut_1_valid = _GEN & io_in_DataIn_valid;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :17:33, :26:56, :27:31
   assign io_out_DataOut_1_bits_data_wen = io_in_DataIn_bits_data_wen;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_1_bits_data_in = io_in_DataIn_bits_data_in;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_1_bits_addr = io_in_DataIn_bits_addr + 32'h7FC00000;	// core/src/xbar.scala:5:7, :28:67
@@ -2899,16 +2862,16 @@ module xbar(	// core/src/xbar.scala:5:7
   assign io_out_DataOut_1_bits_ce_n = io_in_DataIn_bits_ce_n;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_1_bits_oe_n = io_in_DataIn_bits_oe_n;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_1_bits_we_n = io_in_DataIn_bits_we_n;	// core/src/xbar.scala:5:7
-  assign io_out_DataOut_2_valid = _GEN_1 & io_in_DataIn_valid;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :17:33, :26:56, :27:31
+  assign io_out_DataOut_2_valid = _GEN_0 & io_in_DataIn_valid;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :17:33, :26:56, :27:31
   assign io_out_DataOut_2_bits_data_in = io_in_DataIn_bits_data_in;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_2_bits_addr = io_in_DataIn_bits_addr + 32'h402FFC08;	// core/src/xbar.scala:5:7, :28:67
   assign io_out_DataOut_2_bits_ce_n = io_in_DataIn_bits_ce_n;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_2_bits_oe_n = io_in_DataIn_bits_oe_n;	// core/src/xbar.scala:5:7
   assign io_out_DataOut_2_bits_we_n = io_in_DataIn_bits_we_n;	// core/src/xbar.scala:5:7
   assign io_out_BusOut_bits_data_out =
-    _GEN_1
+    _GEN_0
       ? io_in_BusIn_2_bits_data_out
-      : _GEN_0 ? io_in_BusIn_1_bits_data_out : io_in_BusIn_0_bits_data_out;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :26:56, :29:27
+      : _GEN ? io_in_BusIn_1_bits_data_out : io_in_BusIn_0_bits_data_out;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :26:56, :29:27
 endmodule
 
 module sram_ctrl(	// core/src/sram_ctrl.scala:5:7
@@ -3146,7 +3109,6 @@ module subtop(	// core/src/subtop.scala:5:7
   wire [31:0] _uart_ctrl_io_out_bits_data_out;	// core/src/subtop.scala:20:27
   wire [31:0] _ext_ram_ctrl_io_out_bits_data_out;	// core/src/subtop.scala:19:30
   wire [31:0] _base_ram_ctrl_io_out_bits_data_out;	// core/src/subtop.scala:18:31
-  wire        _xbar_io_in_DataIn_ready;	// core/src/subtop.scala:12:22
   wire        _xbar_io_out_DataOut_0_valid;	// core/src/subtop.scala:12:22
   wire        _xbar_io_out_DataOut_0_bits_data_wen;	// core/src/subtop.scala:12:22
   wire [31:0] _xbar_io_out_DataOut_0_bits_data_in;	// core/src/subtop.scala:12:22
@@ -3182,7 +3144,6 @@ module subtop(	// core/src/subtop.scala:5:7
     .clock                    (clock),
     .reset                    (reset),
     .io_bus_in_bits_data_out  (_xbar_io_out_BusOut_bits_data_out),	// core/src/subtop.scala:12:22
-    .io_bus_out_ready         (_xbar_io_in_DataIn_ready),	// core/src/subtop.scala:12:22
     .io_bus_out_valid         (_core_io_bus_out_valid),
     .io_bus_out_bits_data_wen (_core_io_bus_out_bits_data_wen),
     .io_bus_out_bits_data_in  (_core_io_bus_out_bits_data_in),
@@ -3193,7 +3154,6 @@ module subtop(	// core/src/subtop.scala:5:7
     .io_bus_out_bits_we_n     (_core_io_bus_out_bits_we_n)
   );
   xbar xbar (	// core/src/subtop.scala:12:22
-    .io_in_DataIn_ready             (_xbar_io_in_DataIn_ready),
     .io_in_DataIn_valid             (_core_io_bus_out_valid),	// core/src/subtop.scala:11:22
     .io_in_DataIn_bits_data_wen     (_core_io_bus_out_bits_data_wen),	// core/src/subtop.scala:11:22
     .io_in_DataIn_bits_data_in      (_core_io_bus_out_bits_data_in),	// core/src/subtop.scala:11:22

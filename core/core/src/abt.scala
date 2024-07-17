@@ -14,7 +14,7 @@ class abt(n: Int) extends Module {
         }
         val chosen = Output(UInt(log2Ceil(n).W))
     })
-    val arbiter = Module(new RRArbiter(new bus_out, n))
+    val arbiter = Module(new Arbiter(new bus_out, n))
     arbiter.io.in <> io.in.DataIn
     io.out.DataOut <> arbiter.io.out
     io.chosen := arbiter.io.chosen
