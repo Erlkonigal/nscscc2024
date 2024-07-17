@@ -8,11 +8,12 @@ class wbu extends Module {
         // signal to ifu
         val InstFetch = Output(Bool())
         val pc = Output(UInt(32.W))
-
         // writeback
         val wen = Output(UInt(1.W))
         val waddr = Output(UInt(5.W))
         val wdata = Output(UInt(32.W))
+        // mult
+        val P = Input(UInt(32.W))
     })
 
     val BranchContr = Module(new branchContr())
@@ -39,6 +40,7 @@ class wbu extends Module {
     io.wdata := MuxLookup(io.prev.bits.wbSel, 0.U) (Seq(
         WBSel.alu -> io.prev.bits.ALUOut,
         WBSel.mem -> io.prev.bits.MemOut,
+        WBSel.mul -> io.P,
     ))
 
     io.prev.ready := 1.B

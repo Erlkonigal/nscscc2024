@@ -2,12 +2,12 @@ import chisel3._
 import chisel3.util._
 import bundles._
 
-class exu1 extends Module {
+class exu extends Module {
     val io = IO(new Bundle {
-        val prev = Flipped(Decoupled(new idu_exu1()))
-        val next = Decoupled(new exu1_exu2())
+        val prev = Flipped(Decoupled(new idu_exu()))
+        val next = Decoupled(new exu_lsu())
     })
-
+    val ALU = Module(new alu())
     val ALUA = MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
         ALUAsrc.rj -> io.prev.bits.rj_data,
         ALUAsrc.pc -> io.prev.bits.pc,
@@ -18,61 +18,11 @@ class exu1 extends Module {
         ALUBsrc.imm -> io.prev.bits.Imm,
         ALUBsrc.four -> 4.U,
     ))
-
-    val Wallace32 = Module(new wallace(32))
-    val Wallace33 = Module(new wallace(33))
-
-    Wallace32.io.A := ALUA
-    Wallace32.io.B := ALUB // signed
-    Wallace33.io.A := 0.B ## ALUA
-    Wallace33.io.B := 0.B ## ALUB // unsigned
-
-    val MULA = MuxLookup(io.prev.bits.aluOp, Wallace32.io.S1) (Seq(
-        ALUOp.mulhu -> Wallace33.io.S1,
-    ))
-    val MULB = MuxLookup(io.prev.bits.aluOp, Wallace32.io.S2) (Seq(
-        ALUOp.mulhu -> Wallace33.io.S2,
-    ))
-
-    io.next.bits.aluOp := io.prev.bits.aluOp
-    io.next.bits.memOp := io.prev.bits.memOp
-    io.next.bits.branch := io.prev.bits.branch
-    io.next.bits.wbSel := io.prev.bits.wbSel
-    io.next.bits.wbDst := io.prev.bits.wbDst
-    io.next.bits.Imm := io.prev.bits.Imm
-    io.next.bits.rd := io.prev.bits.rd
-    io.next.bits.rd_data := io.prev.bits.rd_data
-    io.next.bits.rj_data := io.prev.bits.rj_data
-    io.next.bits.pc := io.prev.bits.pc
-    io.next.bits.ALUA := ALUA
-    io.next.bits.ALUB := ALUB
-    io.next.bits.MulA := MULA
-    io.next.bits.MulB := MULB
-
-    io.next.valid := io.prev.valid
-    io.prev.ready := 1.B
-}
-
-class exu2 extends Module {
-    val io = IO(new Bundle {
-        val prev = Flipped(Decoupled(new exu1_exu2()))
-        val next = Decoupled(new exu2_lsu())
-    })
-
-    val ALU = Module(new alu())
-    ALU.io.A := io.prev.bits.ALUA
-    ALU.io.B := io.prev.bits.ALUB
+    ALU.io.A := ALUA
+    ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
-    val WallaceOut = io.prev.bits.MulA + io.prev.bits.MulB
-
-    val ALUOut = MuxLookup(io.prev.bits.aluOp, ALU.io.Out) (Seq(
-        ALUOp.mul -> WallaceOut(31, 0),
-        ALUOp.mulh -> WallaceOut(63, 32),
-        ALUOp.mulhu -> WallaceOut(63, 32),
-    ))
-
-    io.next.bits.ALUOut := ALUOut
+    io.next.bits.ALUOut := ALU.io.Out
     io.next.bits.SLess := ALU.io.SLess
     io.next.bits.ULess := ALU.io.ULess
     io.next.bits.Zero := ALU.io.Zero
@@ -179,117 +129,4 @@ class bshifter extends Module {
         }
     }
     io.Out := Shifter(5).asUInt
-}
-
-import chisel3.simulator.EphemeralSimulator._
-import org.scalatest.flatspec.AnyFlatSpec
-
-class WallaceSpec extends AnyFlatSpec {
-    behavior of "Wallace"
-    it should "work" in {
-        simulate(new wallace(8)) { dut =>
-            dut.io.A.poke(255)
-            dut.io.B.poke(255)
-            dut.clock.step(1)
-        }
-    }
-}
-
-object WallaceMain extends App {
-    org.scalatest.nocolor.run(new WallaceSpec)
-}
-
-class wallace(n: Int) extends Module {
-    val io = IO(new Bundle {
-        val A = Input(UInt(n.W))
-        val B = Input(UInt(n.W))
-        val S1 = Output(UInt((2 * n).W))
-        val S2 = Output(UInt((2 * n).W))
-    })
-    val odd = n % 2
-    val booths = Seq.fill(n / 2)(Module(new booth2(n)))
-    
-    for(i <- (n - 1) to (3 - odd) by -2) {
-        booths(i / 2 - odd).io.A := io.A
-        booths(i / 2 - odd).io.B := io.B(i, i - 2)
-    }
-    if(odd == 0) {
-        booths(0).io.A := io.A
-        booths(0).io.B := Cat(io.B(1, 0), 0.B) // B1, B0, (B-1)
-    }
-
-    val output = Wire(Vec(n / 2 + odd, UInt((n * 2).W)))
-    for(i <- 0 until n / 2) {
-        output(i) := booths(i).io.S << (i * 2 + odd).U
-    } // calculate the partial products
-    if(odd == 1) {
-        output(n / 2) := Mux(io.B(0), -Cat(Fill(n, io.A(n - 1)), io.A), 0.U)
-    }
-
-    var length = output.length
-    var cur = output
-    while(length > 2) {
-        val tmp = Wire(Vec(n / 2 + odd, UInt((n * 2).W)))
-        for(i <- 0 until n / 2 + odd) tmp(i) := 0.U
-
-        val csas = Seq.fill(length / 3)(Module(new csa(n * 2)))
-        var i = 0
-        var next_length = 0
-        while(i < length / 3) {
-            csas(i).io.A := cur(i * 3)
-            csas(i).io.B := cur(i * 3 + 1)
-            csas(i).io.Cin := cur(i * 3 + 2)
-            tmp(next_length) := csas(i).io.S
-            tmp(next_length + 1) := csas(i).io.Cout << 1.U
-            i += 1
-            next_length += 2
-        }
-        var cnt = i * 3
-        while(cnt < length) {
-            tmp(next_length) := cur(cnt)
-            next_length += 1
-            cnt += 1
-        }
-        length = next_length
-        cur = tmp
-    }
-    io.S1 := cur(0)
-    io.S2 := cur(1)
-}
-
-class booth2(n: Int) extends Module {
-    val io = IO(new Bundle {
-        val A = Input(UInt(n.W))
-        val B = Input(UInt(3.W)) // Bi+1, Bi, Bi-1
-        val S = Output(UInt((n * 2).W))
-    })
-    val SignExtA = Cat(Fill(n, io.A(n - 1)), io.A)
-    io.S := MuxLookup(io.B, 0.U) (Seq(
-        "b000".U -> 0.U,
-        "b001".U -> SignExtA,
-        "b010".U -> SignExtA,
-        "b011".U -> (SignExtA << 1.U),
-        "b100".U -> -(SignExtA << 1.U),
-        "b101".U -> -(SignExtA),
-        "b110".U -> -(SignExtA),
-        "b111".U -> 0.U
-    ))
-}
-
-class csa(n: Int) extends Module {
-    val io = IO(new Bundle {
-        val A = Input(UInt(n.W))
-        val B = Input(UInt(n.W))
-        val Cin = Input(UInt(n.W))
-        val S = Output(UInt(n.W))
-        val Cout = Output(UInt(n.W))
-    })
-    val S = Wire(Vec(n, Bool()))
-    val Cout = Wire(Vec(n, Bool()))
-    for(i <- 0 until n) {
-        S(i) := io.A(i) ^ io.B(i) ^ io.Cin(i)
-        Cout(i) := (io.A(i) & io.B(i)) | (io.A(i) & io.Cin(i)) | (io.B(i) & io.Cin(i))
-    }
-    io.S := S.asUInt
-    io.Cout := Cout.asUInt
 }

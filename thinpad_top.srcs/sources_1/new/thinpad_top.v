@@ -56,7 +56,8 @@ module thinpad_top(
 /* =========== Demo code begin =========== */
 
 // PLL分频示例
-wire locked, clk_10M, clk_20M, clk;
+wire locked, clk_10M, clk_20M;
+wire clk;
 pll_example clock_gen 
  (
   // Clock in ports

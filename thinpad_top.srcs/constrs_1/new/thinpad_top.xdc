@@ -1,21 +1,21 @@
 #Clock
-set_property -dict {PACKAGE_PIN K21 IOSTANDARD LVCMOS33} [get_ports clk_50M] ;#50MHz main clock in
-set_property -dict {PACKAGE_PIN H21 IOSTANDARD LVCMOS33} [get_ports clk_11M0592] ;#11.0592MHz clock for UART
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_11M0592_IBUF]
+set_property -dict {PACKAGE_PIN K21 IOSTANDARD LVCMOS33} [get_ports clk_50M]
+set_property -dict {PACKAGE_PIN H21 IOSTANDARD LVCMOS33} [get_ports clk_11M0592]
+#set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_11M0592_IBUF]
 
-create_clock -period 20.000 -name clk_50M -waveform {0.000 10.000} [get_ports clk_50M]
-create_clock -period 90.422 -name clk_11M0592 -waveform {0.000 45.211} [get_ports clk_11M0592]
+#create_clock -period 20.000 -name clk_50M -waveform {0.000 10.000} [get_ports clk_50M]
+#create_clock -period 90.422 -name clk_11M0592 -waveform {0.000 45.211} [get_ports clk_11M0592]
 
 #Touch Button
-set_property -dict {PACKAGE_PIN T2 IOSTANDARD LVCMOS33} [get_ports touch_btn[0]] ;#BTN1
-set_property -dict {PACKAGE_PIN M1 IOSTANDARD LVCMOS33} [get_ports touch_btn[1]] ;#BTN2
-set_property -dict {PACKAGE_PIN P3 IOSTANDARD LVCMOS33} [get_ports touch_btn[2]] ;#BTN3
-set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports touch_btn[3]] ;#BTN4
-set_property -dict {PACKAGE_PIN U1 IOSTANDARD LVCMOS33} [get_ports clock_btn] ;#BTN5
-set_property -dict {PACKAGE_PIN U5 IOSTANDARD LVCMOS33} [get_ports reset_btn] ;#BTN6
+set_property -dict {PACKAGE_PIN T2 IOSTANDARD LVCMOS33} [get_ports {touch_btn[0]}]
+set_property -dict {PACKAGE_PIN M1 IOSTANDARD LVCMOS33} [get_ports {touch_btn[1]}]
+set_property -dict {PACKAGE_PIN P3 IOSTANDARD LVCMOS33} [get_ports {touch_btn[2]}]
+set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports {touch_btn[3]}]
+set_property -dict {PACKAGE_PIN U1 IOSTANDARD LVCMOS33} [get_ports clock_btn]
+set_property -dict {PACKAGE_PIN U5 IOSTANDARD LVCMOS33} [get_ports reset_btn]
 
 #required if touch button used as manual clock source
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clock_btn_IBUF]
+#set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clock_btn_IBUF]
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets reset_btn_IBUF]
 
 #CPLD GPIO 12-16
@@ -26,8 +26,8 @@ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets reset_btn_IBUF]
 #set_property -dict {PACKAGE_PIN L15 IOSTANDARD LVCMOS33} [get_ports {uart_dataready}]
 
 #Ext serial
-set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN H18} [get_ports txd] ;#GPIO5
-set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN J20} [get_ports rxd] ;#GPIO6
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN H18} [get_ports txd]
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN J20} [get_ports rxd]
 
 #Digital Video
 set_property -dict {PACKAGE_PIN H22 IOSTANDARD LVCMOS33} [get_ports video_clk]
@@ -115,7 +115,7 @@ set_property -dict {PACKAGE_PIN T5 IOSTANDARD LVCMOS33} [get_ports {dip_sw[29]}]
 set_property -dict {PACKAGE_PIN R6 IOSTANDARD LVCMOS33} [get_ports {dip_sw[30]}]
 set_property -dict {PACKAGE_PIN R2 IOSTANDARD LVCMOS33} [get_ports {dip_sw[31]}]
 
-set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33}  [get_ports {flash_a[0]}]
+set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33} [get_ports {flash_a[0]}]
 set_property -dict {PACKAGE_PIN H9 IOSTANDARD LVCMOS33} [get_ports {flash_a[1]}]
 set_property -dict {PACKAGE_PIN H8 IOSTANDARD LVCMOS33} [get_ports {flash_a[2]}]
 set_property -dict {PACKAGE_PIN G9 IOSTANDARD LVCMOS33} [get_ports {flash_a[3]}]
@@ -156,12 +156,12 @@ set_property -dict {PACKAGE_PIN B2 IOSTANDARD LVCMOS33} [get_ports {flash_d[13]}
 set_property -dict {PACKAGE_PIN A3 IOSTANDARD LVCMOS33} [get_ports {flash_d[14]}]
 set_property -dict {PACKAGE_PIN A4 IOSTANDARD LVCMOS33} [get_ports {flash_d[15]}]
 
-set_property -dict {PACKAGE_PIN B1 IOSTANDARD LVCMOS33}  [get_ports flash_byte_n]
-set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS33} [get_ports flash_ce_n  ]
-set_property -dict {PACKAGE_PIN A5 IOSTANDARD LVCMOS33}  [get_ports flash_oe_n  ]
-set_property -dict {PACKAGE_PIN G6 IOSTANDARD LVCMOS33} [get_ports flash_rp_n  ]
-set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports flash_vpen  ]
-set_property -dict {PACKAGE_PIN B5 IOSTANDARD LVCMOS33}  [get_ports flash_we_n  ]
+set_property -dict {PACKAGE_PIN B1 IOSTANDARD LVCMOS33} [get_ports flash_byte_n]
+set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS33} [get_ports flash_ce_n]
+set_property -dict {PACKAGE_PIN A5 IOSTANDARD LVCMOS33} [get_ports flash_oe_n]
+set_property -dict {PACKAGE_PIN G6 IOSTANDARD LVCMOS33} [get_ports flash_rp_n]
+set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports flash_vpen]
+set_property -dict {PACKAGE_PIN B5 IOSTANDARD LVCMOS33} [get_ports flash_we_n]
 
 set_property -dict {PACKAGE_PIN T19 IOSTANDARD LVCMOS33} [get_ports {base_ram_addr[0]}]
 set_property -dict {PACKAGE_PIN V18 IOSTANDARD LVCMOS33} [get_ports {base_ram_addr[1]}]
@@ -286,4 +286,10 @@ set_property -dict {PACKAGE_PIN AD19 IOSTANDARD LVCMOS33} [get_ports ext_ram_we_
 set_property CFGBVS VCCO [current_design]
 set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
+
+
+connect_debug_port u_ila_0/probe2 [get_nets [list {subtop/core/ifu/io_pc[0]} {subtop/core/ifu/io_pc[1]} {subtop/core/ifu/io_pc[2]} {subtop/core/ifu/io_pc[3]} {subtop/core/ifu/io_pc[4]} {subtop/core/ifu/io_pc[5]} {subtop/core/ifu/io_pc[6]} {subtop/core/ifu/io_pc[7]} {subtop/core/ifu/io_pc[8]} {subtop/core/ifu/io_pc[9]} {subtop/core/ifu/io_pc[10]} {subtop/core/ifu/io_pc[11]} {subtop/core/ifu/io_pc[12]} {subtop/core/ifu/io_pc[13]} {subtop/core/ifu/io_pc[14]} {subtop/core/ifu/io_pc[15]} {subtop/core/ifu/io_pc[16]} {subtop/core/ifu/io_pc[17]} {subtop/core/ifu/io_pc[18]} {subtop/core/ifu/io_pc[19]} {subtop/core/ifu/io_pc[20]} {subtop/core/ifu/io_pc[21]} {subtop/core/ifu/io_pc[22]} {subtop/core/ifu/io_pc[23]} {subtop/core/ifu/io_pc[24]} {subtop/core/ifu/io_pc[25]} {subtop/core/ifu/io_pc[26]} {subtop/core/ifu/io_pc[27]} {subtop/core/ifu/io_pc[28]} {subtop/core/ifu/io_pc[29]} {subtop/core/ifu/io_pc[30]} {subtop/core/ifu/io_pc[31]}]]
+
+connect_debug_port u_ila_0/probe0 [get_nets [list {base_ram_data_out[0]} {base_ram_data_out[1]} {base_ram_data_out[2]} {base_ram_data_out[3]} {base_ram_data_out[4]} {base_ram_data_out[5]} {base_ram_data_out[6]} {base_ram_data_out[7]} {base_ram_data_out[8]} {base_ram_data_out[9]} {base_ram_data_out[10]} {base_ram_data_out[11]} {base_ram_data_out[12]} {base_ram_data_out[13]} {base_ram_data_out[14]} {base_ram_data_out[15]} {base_ram_data_out[16]} {base_ram_data_out[17]} {base_ram_data_out[18]} {base_ram_data_out[19]} {base_ram_data_out[20]} {base_ram_data_out[21]} {base_ram_data_out[22]} {base_ram_data_out[23]} {base_ram_data_out[24]} {base_ram_data_out[25]} {base_ram_data_out[26]} {base_ram_data_out[27]} {base_ram_data_out[28]} {base_ram_data_out[29]} {base_ram_data_out[30]} {base_ram_data_out[31]}]]
+connect_debug_port u_ila_0/probe8 [get_nets [list subtop/core/ifu_idu/state]]
 

@@ -78,7 +78,7 @@ class ifu_idu extends Bundle {
     val inst = Output(UInt(32.W))
 }
 
-class idu_exu1 extends Bundle {
+class idu_exu extends Bundle {
 // Controller
     val aluOp = Output(ALUOp())
     val aluAsrc = Output(ALUAsrc())
@@ -103,9 +103,9 @@ object ALUOp extends ChiselEnum {
         slt, sltu,
         and, or, 
         xor, nor,
-        mul, mulh, mulhu,
-        sll, srl,
-        sra, other = Value
+        sll, srl, 
+        sra, mul,
+        other = Value
 }
 object ALUAsrc extends ChiselEnum {
     val rj, pc, other = Value
@@ -132,7 +132,7 @@ object Branch extends ChiselEnum {
         jirl, other = Value
 }
 object WBSel extends ChiselEnum {
-    val alu, mem, other = Value
+    val alu, mem, mul, other = Value
 }
 object WBDst extends ChiselEnum {
     val rd, one, other = Value
@@ -144,7 +144,12 @@ object PCBsrc extends ChiselEnum {
     val four, imm, other = Value
 }
 
-class exu1_exu2 extends Bundle {
+class exu_inner extends Bundle {
+// ALU
+    val ALUOut = Output(UInt(32.W))
+    val SLess = Output(UInt(1.W))
+    val ULess = Output(UInt(1.W))
+    val Zero = Output(UInt(1.W))
 // Controller
     val aluOp = Output(ALUOp())
     val memOp = Output(MemOp())
@@ -159,15 +164,11 @@ class exu1_exu2 extends Bundle {
     val rj_data = Output(UInt(32.W))
 // PC
     val pc = Output(UInt(32.W))
-// ALUSrc
-    val ALUA = Output(UInt(32.W))
-    val ALUB = Output(UInt(32.W))
-
-    val MulA = Output(UInt(64.W))
-    val MulB = Output(UInt(64.W))
+// valid
+    val valid = Output(UInt(1.W))
 }
 
-class exu2_lsu extends Bundle {
+class exu_lsu extends Bundle {
 // ALU
     val ALUOut = Output(UInt(32.W))
     val SLess = Output(UInt(1.W))
