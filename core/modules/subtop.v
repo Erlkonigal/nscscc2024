@@ -1815,7 +1815,7 @@ module exu(	// core/src/exu.scala:5:7
           ? io_prev_bits_Imm
           : io_prev_bits_aluBsrc == 3'h1
               ? io_prev_bits_rd_data
-              : io_prev_bits_aluBsrc == 3'h0 ? io_prev_bits_rk_data : 32'h0;	// core/src/exu.scala:11:53, :15:53
+              : io_prev_bits_aluBsrc == 3'h0 ? io_prev_bits_rk_data : 32'h0;	// core/src/exu.scala:5:7, :11:53, :15:53
   reg  [31:0] buf_0_ALUOut;	// core/src/exu.scala:26:18
   reg         buf_0_SLess;	// core/src/exu.scala:26:18
   reg         buf_0_ULess;	// core/src/exu.scala:26:18
@@ -1831,66 +1831,6 @@ module exu(	// core/src/exu.scala:5:7
   reg  [31:0] buf_0_rj_data;	// core/src/exu.scala:26:18
   reg  [31:0] buf_0_pc;	// core/src/exu.scala:26:18
   reg         buf_0_valid;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_1_ALUOut;	// core/src/exu.scala:26:18
-  reg         buf_1_SLess;	// core/src/exu.scala:26:18
-  reg         buf_1_ULess;	// core/src/exu.scala:26:18
-  reg         buf_1_Zero;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_1_aluOp;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_1_memOp;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_1_branch;	// core/src/exu.scala:26:18
-  reg  [1:0]  buf_1_wbSel;	// core/src/exu.scala:26:18
-  reg  [1:0]  buf_1_wbDst;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_1_Imm;	// core/src/exu.scala:26:18
-  reg  [4:0]  buf_1_rd;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_1_rd_data;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_1_rj_data;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_1_pc;	// core/src/exu.scala:26:18
-  reg         buf_1_valid;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_2_ALUOut;	// core/src/exu.scala:26:18
-  reg         buf_2_SLess;	// core/src/exu.scala:26:18
-  reg         buf_2_ULess;	// core/src/exu.scala:26:18
-  reg         buf_2_Zero;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_2_aluOp;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_2_memOp;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_2_branch;	// core/src/exu.scala:26:18
-  reg  [1:0]  buf_2_wbSel;	// core/src/exu.scala:26:18
-  reg  [1:0]  buf_2_wbDst;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_2_Imm;	// core/src/exu.scala:26:18
-  reg  [4:0]  buf_2_rd;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_2_rd_data;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_2_rj_data;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_2_pc;	// core/src/exu.scala:26:18
-  reg         buf_2_valid;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_3_ALUOut;	// core/src/exu.scala:26:18
-  reg         buf_3_SLess;	// core/src/exu.scala:26:18
-  reg         buf_3_ULess;	// core/src/exu.scala:26:18
-  reg         buf_3_Zero;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_3_aluOp;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_3_memOp;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_3_branch;	// core/src/exu.scala:26:18
-  reg  [1:0]  buf_3_wbSel;	// core/src/exu.scala:26:18
-  reg  [1:0]  buf_3_wbDst;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_3_Imm;	// core/src/exu.scala:26:18
-  reg  [4:0]  buf_3_rd;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_3_rd_data;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_3_rj_data;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_3_pc;	// core/src/exu.scala:26:18
-  reg         buf_3_valid;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_4_ALUOut;	// core/src/exu.scala:26:18
-  reg         buf_4_SLess;	// core/src/exu.scala:26:18
-  reg         buf_4_ULess;	// core/src/exu.scala:26:18
-  reg         buf_4_Zero;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_4_aluOp;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_4_memOp;	// core/src/exu.scala:26:18
-  reg  [3:0]  buf_4_branch;	// core/src/exu.scala:26:18
-  reg  [1:0]  buf_4_wbSel;	// core/src/exu.scala:26:18
-  reg  [1:0]  buf_4_wbDst;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_4_Imm;	// core/src/exu.scala:26:18
-  reg  [4:0]  buf_4_rd;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_4_rd_data;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_4_rj_data;	// core/src/exu.scala:26:18
-  reg  [31:0] buf_4_pc;	// core/src/exu.scala:26:18
-  reg         buf_4_valid;	// core/src/exu.scala:26:18
   always @(posedge clock) begin	// core/src/exu.scala:5:7
     buf_0_ALUOut <= _ALU_io_Out;	// core/src/exu.scala:10:21, :26:18
     buf_0_SLess <= _ALU_io_SLess;	// core/src/exu.scala:10:21, :26:18
@@ -1907,155 +1847,35 @@ module exu(	// core/src/exu.scala:5:7
     buf_0_rj_data <= io_prev_bits_rj_data;	// core/src/exu.scala:26:18
     buf_0_pc <= io_prev_bits_pc;	// core/src/exu.scala:26:18
     buf_0_valid <= io_prev_valid;	// core/src/exu.scala:26:18
-    buf_1_ALUOut <= buf_0_ALUOut;	// core/src/exu.scala:26:18
-    buf_1_SLess <= buf_0_SLess;	// core/src/exu.scala:26:18
-    buf_1_ULess <= buf_0_ULess;	// core/src/exu.scala:26:18
-    buf_1_Zero <= buf_0_Zero;	// core/src/exu.scala:26:18
-    buf_1_aluOp <= buf_0_aluOp;	// core/src/exu.scala:26:18
-    buf_1_memOp <= buf_0_memOp;	// core/src/exu.scala:26:18
-    buf_1_branch <= buf_0_branch;	// core/src/exu.scala:26:18
-    buf_1_wbSel <= buf_0_wbSel;	// core/src/exu.scala:26:18
-    buf_1_wbDst <= buf_0_wbDst;	// core/src/exu.scala:26:18
-    buf_1_Imm <= buf_0_Imm;	// core/src/exu.scala:26:18
-    buf_1_rd <= buf_0_rd;	// core/src/exu.scala:26:18
-    buf_1_rd_data <= buf_0_rd_data;	// core/src/exu.scala:26:18
-    buf_1_rj_data <= buf_0_rj_data;	// core/src/exu.scala:26:18
-    buf_1_pc <= buf_0_pc;	// core/src/exu.scala:26:18
-    buf_1_valid <= buf_0_valid;	// core/src/exu.scala:26:18
-    buf_2_ALUOut <= buf_1_ALUOut;	// core/src/exu.scala:26:18
-    buf_2_SLess <= buf_1_SLess;	// core/src/exu.scala:26:18
-    buf_2_ULess <= buf_1_ULess;	// core/src/exu.scala:26:18
-    buf_2_Zero <= buf_1_Zero;	// core/src/exu.scala:26:18
-    buf_2_aluOp <= buf_1_aluOp;	// core/src/exu.scala:26:18
-    buf_2_memOp <= buf_1_memOp;	// core/src/exu.scala:26:18
-    buf_2_branch <= buf_1_branch;	// core/src/exu.scala:26:18
-    buf_2_wbSel <= buf_1_wbSel;	// core/src/exu.scala:26:18
-    buf_2_wbDst <= buf_1_wbDst;	// core/src/exu.scala:26:18
-    buf_2_Imm <= buf_1_Imm;	// core/src/exu.scala:26:18
-    buf_2_rd <= buf_1_rd;	// core/src/exu.scala:26:18
-    buf_2_rd_data <= buf_1_rd_data;	// core/src/exu.scala:26:18
-    buf_2_rj_data <= buf_1_rj_data;	// core/src/exu.scala:26:18
-    buf_2_pc <= buf_1_pc;	// core/src/exu.scala:26:18
-    buf_2_valid <= buf_1_valid;	// core/src/exu.scala:26:18
-    buf_3_ALUOut <= buf_2_ALUOut;	// core/src/exu.scala:26:18
-    buf_3_SLess <= buf_2_SLess;	// core/src/exu.scala:26:18
-    buf_3_ULess <= buf_2_ULess;	// core/src/exu.scala:26:18
-    buf_3_Zero <= buf_2_Zero;	// core/src/exu.scala:26:18
-    buf_3_aluOp <= buf_2_aluOp;	// core/src/exu.scala:26:18
-    buf_3_memOp <= buf_2_memOp;	// core/src/exu.scala:26:18
-    buf_3_branch <= buf_2_branch;	// core/src/exu.scala:26:18
-    buf_3_wbSel <= buf_2_wbSel;	// core/src/exu.scala:26:18
-    buf_3_wbDst <= buf_2_wbDst;	// core/src/exu.scala:26:18
-    buf_3_Imm <= buf_2_Imm;	// core/src/exu.scala:26:18
-    buf_3_rd <= buf_2_rd;	// core/src/exu.scala:26:18
-    buf_3_rd_data <= buf_2_rd_data;	// core/src/exu.scala:26:18
-    buf_3_rj_data <= buf_2_rj_data;	// core/src/exu.scala:26:18
-    buf_3_pc <= buf_2_pc;	// core/src/exu.scala:26:18
-    buf_3_valid <= buf_2_valid;	// core/src/exu.scala:26:18
-    buf_4_ALUOut <= buf_3_ALUOut;	// core/src/exu.scala:26:18
-    buf_4_SLess <= buf_3_SLess;	// core/src/exu.scala:26:18
-    buf_4_ULess <= buf_3_ULess;	// core/src/exu.scala:26:18
-    buf_4_Zero <= buf_3_Zero;	// core/src/exu.scala:26:18
-    buf_4_aluOp <= buf_3_aluOp;	// core/src/exu.scala:26:18
-    buf_4_memOp <= buf_3_memOp;	// core/src/exu.scala:26:18
-    buf_4_branch <= buf_3_branch;	// core/src/exu.scala:26:18
-    buf_4_wbSel <= buf_3_wbSel;	// core/src/exu.scala:26:18
-    buf_4_wbDst <= buf_3_wbDst;	// core/src/exu.scala:26:18
-    buf_4_Imm <= buf_3_Imm;	// core/src/exu.scala:26:18
-    buf_4_rd <= buf_3_rd;	// core/src/exu.scala:26:18
-    buf_4_rd_data <= buf_3_rd_data;	// core/src/exu.scala:26:18
-    buf_4_rj_data <= buf_3_rj_data;	// core/src/exu.scala:26:18
-    buf_4_pc <= buf_3_pc;	// core/src/exu.scala:26:18
-    buf_4_valid <= buf_3_valid;	// core/src/exu.scala:26:18
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// core/src/exu.scala:5:7
     `ifdef FIRRTL_BEFORE_INITIAL	// core/src/exu.scala:5:7
       `FIRRTL_BEFORE_INITIAL	// core/src/exu.scala:5:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// core/src/exu.scala:5:7
-      automatic logic [31:0] _RANDOM[0:28];	// core/src/exu.scala:5:7
+      automatic logic [31:0] _RANDOM[0:5];	// core/src/exu.scala:5:7
       `ifdef INIT_RANDOM_PROLOG_	// core/src/exu.scala:5:7
         `INIT_RANDOM_PROLOG_	// core/src/exu.scala:5:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// core/src/exu.scala:5:7
-        for (logic [4:0] i = 5'h0; i < 5'h1D; i += 5'h1) begin
+        for (logic [2:0] i = 3'h0; i < 3'h6; i += 3'h1) begin
           _RANDOM[i] = `RANDOM;	// core/src/exu.scala:5:7
         end	// core/src/exu.scala:5:7
-        buf_0_ALUOut = _RANDOM[5'h0];	// core/src/exu.scala:5:7, :26:18
-        buf_0_SLess = _RANDOM[5'h1][0];	// core/src/exu.scala:5:7, :26:18
-        buf_0_ULess = _RANDOM[5'h1][1];	// core/src/exu.scala:5:7, :26:18
-        buf_0_Zero = _RANDOM[5'h1][2];	// core/src/exu.scala:5:7, :26:18
-        buf_0_aluOp = _RANDOM[5'h1][6:3];	// core/src/exu.scala:5:7, :26:18
-        buf_0_memOp = _RANDOM[5'h1][10:7];	// core/src/exu.scala:5:7, :26:18
-        buf_0_branch = _RANDOM[5'h1][14:11];	// core/src/exu.scala:5:7, :26:18
-        buf_0_wbSel = _RANDOM[5'h1][16:15];	// core/src/exu.scala:5:7, :26:18
-        buf_0_wbDst = _RANDOM[5'h1][18:17];	// core/src/exu.scala:5:7, :26:18
-        buf_0_Imm = {_RANDOM[5'h1][31:19], _RANDOM[5'h2][18:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_0_rd = _RANDOM[5'h2][23:19];	// core/src/exu.scala:5:7, :26:18
-        buf_0_rd_data = {_RANDOM[5'h2][31:24], _RANDOM[5'h3][23:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_0_rj_data = {_RANDOM[5'h3][31:24], _RANDOM[5'h4][23:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_0_pc = {_RANDOM[5'h4][31:24], _RANDOM[5'h5][23:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_0_valid = _RANDOM[5'h5][24];	// core/src/exu.scala:5:7, :26:18
-        buf_1_ALUOut = {_RANDOM[5'h5][31:25], _RANDOM[5'h6][24:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_1_SLess = _RANDOM[5'h6][25];	// core/src/exu.scala:5:7, :26:18
-        buf_1_ULess = _RANDOM[5'h6][26];	// core/src/exu.scala:5:7, :26:18
-        buf_1_Zero = _RANDOM[5'h6][27];	// core/src/exu.scala:5:7, :26:18
-        buf_1_aluOp = _RANDOM[5'h6][31:28];	// core/src/exu.scala:5:7, :26:18
-        buf_1_memOp = _RANDOM[5'h7][3:0];	// core/src/exu.scala:5:7, :26:18
-        buf_1_branch = _RANDOM[5'h7][7:4];	// core/src/exu.scala:5:7, :26:18
-        buf_1_wbSel = _RANDOM[5'h7][9:8];	// core/src/exu.scala:5:7, :26:18
-        buf_1_wbDst = _RANDOM[5'h7][11:10];	// core/src/exu.scala:5:7, :26:18
-        buf_1_Imm = {_RANDOM[5'h7][31:12], _RANDOM[5'h8][11:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_1_rd = _RANDOM[5'h8][16:12];	// core/src/exu.scala:5:7, :26:18
-        buf_1_rd_data = {_RANDOM[5'h8][31:17], _RANDOM[5'h9][16:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_1_rj_data = {_RANDOM[5'h9][31:17], _RANDOM[5'hA][16:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_1_pc = {_RANDOM[5'hA][31:17], _RANDOM[5'hB][16:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_1_valid = _RANDOM[5'hB][17];	// core/src/exu.scala:5:7, :26:18
-        buf_2_ALUOut = {_RANDOM[5'hB][31:18], _RANDOM[5'hC][17:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_2_SLess = _RANDOM[5'hC][18];	// core/src/exu.scala:5:7, :26:18
-        buf_2_ULess = _RANDOM[5'hC][19];	// core/src/exu.scala:5:7, :26:18
-        buf_2_Zero = _RANDOM[5'hC][20];	// core/src/exu.scala:5:7, :26:18
-        buf_2_aluOp = _RANDOM[5'hC][24:21];	// core/src/exu.scala:5:7, :26:18
-        buf_2_memOp = _RANDOM[5'hC][28:25];	// core/src/exu.scala:5:7, :26:18
-        buf_2_branch = {_RANDOM[5'hC][31:29], _RANDOM[5'hD][0]};	// core/src/exu.scala:5:7, :26:18
-        buf_2_wbSel = _RANDOM[5'hD][2:1];	// core/src/exu.scala:5:7, :26:18
-        buf_2_wbDst = _RANDOM[5'hD][4:3];	// core/src/exu.scala:5:7, :26:18
-        buf_2_Imm = {_RANDOM[5'hD][31:5], _RANDOM[5'hE][4:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_2_rd = _RANDOM[5'hE][9:5];	// core/src/exu.scala:5:7, :26:18
-        buf_2_rd_data = {_RANDOM[5'hE][31:10], _RANDOM[5'hF][9:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_2_rj_data = {_RANDOM[5'hF][31:10], _RANDOM[5'h10][9:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_2_pc = {_RANDOM[5'h10][31:10], _RANDOM[5'h11][9:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_2_valid = _RANDOM[5'h11][10];	// core/src/exu.scala:5:7, :26:18
-        buf_3_ALUOut = {_RANDOM[5'h11][31:11], _RANDOM[5'h12][10:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_3_SLess = _RANDOM[5'h12][11];	// core/src/exu.scala:5:7, :26:18
-        buf_3_ULess = _RANDOM[5'h12][12];	// core/src/exu.scala:5:7, :26:18
-        buf_3_Zero = _RANDOM[5'h12][13];	// core/src/exu.scala:5:7, :26:18
-        buf_3_aluOp = _RANDOM[5'h12][17:14];	// core/src/exu.scala:5:7, :26:18
-        buf_3_memOp = _RANDOM[5'h12][21:18];	// core/src/exu.scala:5:7, :26:18
-        buf_3_branch = _RANDOM[5'h12][25:22];	// core/src/exu.scala:5:7, :26:18
-        buf_3_wbSel = _RANDOM[5'h12][27:26];	// core/src/exu.scala:5:7, :26:18
-        buf_3_wbDst = _RANDOM[5'h12][29:28];	// core/src/exu.scala:5:7, :26:18
-        buf_3_Imm = {_RANDOM[5'h12][31:30], _RANDOM[5'h13][29:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_3_rd = {_RANDOM[5'h13][31:30], _RANDOM[5'h14][2:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_3_rd_data = {_RANDOM[5'h14][31:3], _RANDOM[5'h15][2:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_3_rj_data = {_RANDOM[5'h15][31:3], _RANDOM[5'h16][2:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_3_pc = {_RANDOM[5'h16][31:3], _RANDOM[5'h17][2:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_3_valid = _RANDOM[5'h17][3];	// core/src/exu.scala:5:7, :26:18
-        buf_4_ALUOut = {_RANDOM[5'h17][31:4], _RANDOM[5'h18][3:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_4_SLess = _RANDOM[5'h18][4];	// core/src/exu.scala:5:7, :26:18
-        buf_4_ULess = _RANDOM[5'h18][5];	// core/src/exu.scala:5:7, :26:18
-        buf_4_Zero = _RANDOM[5'h18][6];	// core/src/exu.scala:5:7, :26:18
-        buf_4_aluOp = _RANDOM[5'h18][10:7];	// core/src/exu.scala:5:7, :26:18
-        buf_4_memOp = _RANDOM[5'h18][14:11];	// core/src/exu.scala:5:7, :26:18
-        buf_4_branch = _RANDOM[5'h18][18:15];	// core/src/exu.scala:5:7, :26:18
-        buf_4_wbSel = _RANDOM[5'h18][20:19];	// core/src/exu.scala:5:7, :26:18
-        buf_4_wbDst = _RANDOM[5'h18][22:21];	// core/src/exu.scala:5:7, :26:18
-        buf_4_Imm = {_RANDOM[5'h18][31:23], _RANDOM[5'h19][22:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_4_rd = _RANDOM[5'h19][27:23];	// core/src/exu.scala:5:7, :26:18
-        buf_4_rd_data = {_RANDOM[5'h19][31:28], _RANDOM[5'h1A][27:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_4_rj_data = {_RANDOM[5'h1A][31:28], _RANDOM[5'h1B][27:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_4_pc = {_RANDOM[5'h1B][31:28], _RANDOM[5'h1C][27:0]};	// core/src/exu.scala:5:7, :26:18
-        buf_4_valid = _RANDOM[5'h1C][28];	// core/src/exu.scala:5:7, :26:18
+        buf_0_ALUOut = _RANDOM[3'h0];	// core/src/exu.scala:5:7, :26:18
+        buf_0_SLess = _RANDOM[3'h1][0];	// core/src/exu.scala:5:7, :26:18
+        buf_0_ULess = _RANDOM[3'h1][1];	// core/src/exu.scala:5:7, :26:18
+        buf_0_Zero = _RANDOM[3'h1][2];	// core/src/exu.scala:5:7, :26:18
+        buf_0_aluOp = _RANDOM[3'h1][6:3];	// core/src/exu.scala:5:7, :26:18
+        buf_0_memOp = _RANDOM[3'h1][10:7];	// core/src/exu.scala:5:7, :26:18
+        buf_0_branch = _RANDOM[3'h1][14:11];	// core/src/exu.scala:5:7, :26:18
+        buf_0_wbSel = _RANDOM[3'h1][16:15];	// core/src/exu.scala:5:7, :26:18
+        buf_0_wbDst = _RANDOM[3'h1][18:17];	// core/src/exu.scala:5:7, :26:18
+        buf_0_Imm = {_RANDOM[3'h1][31:19], _RANDOM[3'h2][18:0]};	// core/src/exu.scala:5:7, :26:18
+        buf_0_rd = _RANDOM[3'h2][23:19];	// core/src/exu.scala:5:7, :26:18
+        buf_0_rd_data = {_RANDOM[3'h2][31:24], _RANDOM[3'h3][23:0]};	// core/src/exu.scala:5:7, :26:18
+        buf_0_rj_data = {_RANDOM[3'h3][31:24], _RANDOM[3'h4][23:0]};	// core/src/exu.scala:5:7, :26:18
+        buf_0_pc = {_RANDOM[3'h4][31:24], _RANDOM[3'h5][23:0]};	// core/src/exu.scala:5:7, :26:18
+        buf_0_valid = _RANDOM[3'h5][24];	// core/src/exu.scala:5:7, :26:18
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// core/src/exu.scala:5:7
@@ -2077,20 +1897,20 @@ module exu(	// core/src/exu.scala:5:7
     .B   (ALUB),	// core/src/exu.scala:15:53
     .P   (_mult_P)
   );
-  assign io_next_valid = buf_4_valid;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_ALUOut = buf_4_aluOp == 4'hB ? _mult_P : buf_4_ALUOut;	// core/src/exu.scala:5:7, :26:18, :47:22, :52:85
-  assign io_next_bits_SLess = buf_4_SLess;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_ULess = buf_4_ULess;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_Zero = buf_4_Zero;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_memOp = buf_4_memOp;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_branch = buf_4_branch;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_wbSel = buf_4_wbSel;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_wbDst = buf_4_wbDst;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_Imm = buf_4_Imm;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_rd = buf_4_rd;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_rd_data = buf_4_rd_data;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_rj_data = buf_4_rj_data;	// core/src/exu.scala:5:7, :26:18
-  assign io_next_bits_pc = buf_4_pc;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_valid = buf_0_valid;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_ALUOut = buf_0_aluOp == 4'hB ? _mult_P : buf_0_ALUOut;	// core/src/exu.scala:5:7, :26:18, :47:22, :52:85
+  assign io_next_bits_SLess = buf_0_SLess;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_ULess = buf_0_ULess;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_Zero = buf_0_Zero;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_memOp = buf_0_memOp;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_branch = buf_0_branch;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_wbSel = buf_0_wbSel;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_wbDst = buf_0_wbDst;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_Imm = buf_0_Imm;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_rd = buf_0_rd;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_rd_data = buf_0_rd_data;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_rj_data = buf_0_rj_data;	// core/src/exu.scala:5:7, :26:18
+  assign io_next_bits_pc = buf_0_pc;	// core/src/exu.scala:5:7, :26:18
 endmodule
 
 module buffer_2(	// core/src/core.scala:53:7

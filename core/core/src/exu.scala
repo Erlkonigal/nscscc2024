@@ -22,7 +22,7 @@ class exu extends Module {
     ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
-    val pstage = 5
+    val pstage = 1
     val buf = Reg(Vec(pstage, new exu_inner()))
     buf(0).ALUOut := ALU.io.Out
     buf(0).SLess := ALU.io.SLess
