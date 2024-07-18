@@ -8,12 +8,15 @@ OBJDUMP = $(COMPILER)objdump
 CFLAGS = -mstrict-align -nostdinc -nostdlib -fno-builtin -mabi=ilp32s -Iinclude
 LDFLAGS = -Tlinker.ld
 
-BSP = ../bsp/build/bsp.a
+LIB = 
+#../bsp/build/bsp.a
 
 BUILD_DIR = build
 SRC_DIR = src
 
 IMAGE = 
+
+SRCS = $(shell find $(SRC_DIR) -name "$(IMAGE).*")
 
 all: $(BUILD_DIR)/$(IMAGE).bin $(BUILD_DIR)/$(IMAGE).txt
 
@@ -25,11 +28,11 @@ $(BUILD_DIR)/$(IMAGE).bin: $(BUILD_DIR)/$(IMAGE).elf
 	mkdir -p $(BUILD_DIR)
 	$(OBJCOPY) -O binary $< $@
 
-$(BUILD_DIR)/$(IMAGE).elf: $(BUILD_DIR)/$(IMAGE).o $(BSP)
+$(BUILD_DIR)/$(IMAGE).elf: $(BUILD_DIR)/$(IMAGE).o $(LIB)
 	mkdir -p $(BUILD_DIR)
 	$(LD) $(LDFLAGS) $^ -o $@
 
-$(BUILD_DIR)/$(IMAGE).o: $(SRC_DIR)/$(IMAGE).c
+$(BUILD_DIR)/$(IMAGE).o: $(SRCS)
 	mkdir -p $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 

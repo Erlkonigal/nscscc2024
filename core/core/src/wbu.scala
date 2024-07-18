@@ -6,7 +6,6 @@ class wbu extends Module {
     val io = IO(new Bundle {
         val prev = Flipped(Decoupled(new lsu_wbu()))
         // signal to ifu
-        val InstFetch = Output(Bool())
         val pc = Output(UInt(32.W))
         // writeback
         val wen = Output(UInt(1.W))
@@ -29,7 +28,6 @@ class wbu extends Module {
     PC.io.nextPC := BranchContr.io.nextPC
     PC.io.PCInc :=  io.prev.valid
 
-    io.InstFetch := io.prev.valid
     io.pc := PC.io.PC
 
     io.wen := io.prev.bits.wbSel =/= WBSel.other && io.prev.valid

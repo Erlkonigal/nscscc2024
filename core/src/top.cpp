@@ -99,7 +99,7 @@ void reset() {
 int main(int argc, char *argv[]) {
     init(argc, argv);
     reset();
-    for(int i = 0; i < 1000000; i++) {
+    for(int i = 0; i < 1000; i++) {
         singled_cycle();
     }
     clean();

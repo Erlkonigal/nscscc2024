@@ -91,6 +91,8 @@ class idu_exu extends Bundle {
     val Imm = Output(UInt(32.W))
 // RegFile
     val rd = Output(UInt(5.W))
+    val rj = Output(UInt(5.W))
+    val rk = Output(UInt(5.W))
     val rd_data = Output(UInt(32.W))
     val rj_data = Output(UInt(32.W))
     val rk_data = Output(UInt(32.W))
@@ -144,30 +146,6 @@ object PCBsrc extends ChiselEnum {
     val four, imm, other = Value
 }
 
-class exu_inner extends Bundle {
-// ALU
-    val ALUOut = Output(UInt(32.W))
-    val SLess = Output(UInt(1.W))
-    val ULess = Output(UInt(1.W))
-    val Zero = Output(UInt(1.W))
-// Controller
-    val aluOp = Output(ALUOp())
-    val memOp = Output(MemOp())
-    val branch = Output(Branch())
-    val wbSel = Output(WBSel())
-    val wbDst = Output(WBDst())
-// ImmGen
-    val Imm = Output(UInt(32.W))
-// RegFile
-    val rd = Output(UInt(5.W))
-    val rd_data = Output(UInt(32.W))
-    val rj_data = Output(UInt(32.W))
-// PC
-    val pc = Output(UInt(32.W))
-// valid
-    val valid = Output(UInt(1.W))
-}
-
 class exu_lsu extends Bundle {
 // ALU
     val ALUOut = Output(UInt(32.W))
@@ -208,6 +186,10 @@ class lsu_wbu extends Bundle {
     val rj_data = Output(UInt(32.W))
 // PC
     val pc = Output(UInt(32.W))
+}
+
+object ForwardSrc extends ChiselEnum {
+    val elALU, lwALU, lwMem, mulP, lastWB, stall, other = Value
 }
 
 }

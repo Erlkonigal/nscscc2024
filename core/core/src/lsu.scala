@@ -67,61 +67,49 @@ class lsu extends Module {
         MemOp.stw -> WordData,
     ))
 
-    when(io.prev.valid) {
-        io.ext_out.bits.addr := Address
-        io.ext_out.bits.ce_n := MuxLookup(Op, 1.U) (Seq(
-            MemOp.ldb -> 0.U,
-            MemOp.ldbu -> 0.U,
-            MemOp.ldh -> 0.U,
-            MemOp.ldhu -> 0.U,
-            MemOp.ldw -> 0.U,
-            MemOp.stb -> 0.U,
-            MemOp.sth -> 0.U,
-            MemOp.stw -> 0.U,
-        ))
-        io.ext_out.bits.oe_n := MuxLookup(Op, 1.U) (Seq(
-            MemOp.ldb -> 0.U,
-            MemOp.ldbu -> 0.U,
-            MemOp.ldh -> 0.U,
-            MemOp.ldhu -> 0.U,
-            MemOp.ldw -> 0.U,
-        ))
-        io.ext_out.bits.we_n := MuxLookup(Op, 1.U) (Seq(
-            MemOp.stb -> 0.U,
-            MemOp.sth -> 0.U,
-            MemOp.stw -> 0.U,
-        ))
-        io.ext_out.bits.data_wen := MuxLookup(Op, 0.U) (Seq(
-            MemOp.stb -> 1.U,
-            MemOp.sth -> 1.U,
-            MemOp.stw -> 1.U,
-        ))
-        io.ext_out.bits.data_in := MuxLookup(Op, 0.U) (Seq(
-            MemOp.stb -> GenData,
-            MemOp.sth -> GenData,
-            MemOp.stw -> GenData,
-        ))
-        io.ext_out.bits.be_n := MuxLookup(Op, 0.U) (Seq(
-            MemOp.stb -> GenMask,
-            MemOp.sth -> GenMask,
-            MemOp.stw -> GenMask,
-        ))
-        io.next.bits.MemOut := FixLoad
-    }
-    .otherwise {
-        io.ext_out.bits.addr := 0.U
-        io.ext_out.bits.ce_n := 1.U
-        io.ext_out.bits.oe_n := 1.U
-        io.ext_out.bits.we_n := 1.U
-        io.ext_out.bits.data_wen := 0.U
-        io.ext_out.bits.data_in := 0.U
-        io.ext_out.bits.be_n := 0.U
-        io.next.bits.MemOut := 0.U
-    }
-
-    io.ext_out.valid := io.prev.valid
+    io.ext_out.bits.addr := Address
+    io.ext_out.bits.ce_n := MuxLookup(Op, 1.U) (Seq(
+        MemOp.ldb -> 0.U,
+        MemOp.ldbu -> 0.U,
+        MemOp.ldh -> 0.U,
+        MemOp.ldhu -> 0.U,
+        MemOp.ldw -> 0.U,
+        MemOp.stb -> 0.U,
+        MemOp.sth -> 0.U,
+        MemOp.stw -> 0.U,
+    ))
+    io.ext_out.bits.oe_n := MuxLookup(Op, 1.U) (Seq(
+        MemOp.ldb -> 0.U,
+        MemOp.ldbu -> 0.U,
+        MemOp.ldh -> 0.U,
+        MemOp.ldhu -> 0.U,
+        MemOp.ldw -> 0.U,
+    ))
+    io.ext_out.bits.we_n := MuxLookup(Op, 1.U) (Seq(
+        MemOp.stb -> 0.U,
+        MemOp.sth -> 0.U,
+        MemOp.stw -> 0.U,
+    ))
+    io.ext_out.bits.data_wen := MuxLookup(Op, 0.U) (Seq(
+        MemOp.stb -> 1.U,
+        MemOp.sth -> 1.U,
+        MemOp.stw -> 1.U,
+    ))
+    io.ext_out.bits.data_in := MuxLookup(Op, 0.U) (Seq(
+        MemOp.stb -> GenData,
+        MemOp.sth -> GenData,
+        MemOp.stw -> GenData,
+    ))
+    io.ext_out.bits.be_n := MuxLookup(Op, 0.U) (Seq(
+        MemOp.stb -> GenMask,
+        MemOp.sth -> GenMask,
+        MemOp.stw -> GenMask,
+    ))
+    
+    io.ext_out.valid := io.prev.bits.memOp =/= MemOp.other && io.prev.valid
     io.ext_in.ready := 1.B
 
+    io.next.bits.MemOut := FixLoad
     io.next.bits.ALUOut := io.prev.bits.ALUOut
     io.next.bits.SLess := io.prev.bits.SLess
     io.next.bits.ULess := io.prev.bits.ULess

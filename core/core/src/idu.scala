@@ -11,6 +11,8 @@ class idu extends Module {
         val wen = Input(UInt(1.W))
         val waddr = Input(UInt(5.W))
         val wdata = Input(UInt(32.W))
+        // forwarding last writeback data
+        val wbdata = Output(UInt(32.W))
     })
 
     def ADD_W     = BitPat("b00000000000100000_?????_?????_?????")
@@ -132,9 +134,12 @@ class idu extends Module {
     io.next.bits.Imm := immGen.io.Imm
 
     io.next.bits.rd := io.prev.bits.inst(4, 0)
+    io.next.bits.rj := io.prev.bits.inst(9, 5)
+    io.next.bits.rk := io.prev.bits.inst(14, 10)
     io.next.bits.rd_data := regFile.io.rd_data
     io.next.bits.rj_data := regFile.io.rj_data
     io.next.bits.rk_data := regFile.io.rk_data
+    io.wbdata := regFile.io.wbdata
 
     io.next.bits.pc := io.prev.bits.pc
 
@@ -151,6 +156,8 @@ class RegFile extends Module {
         val rj_data = Output(UInt(32.W))
         val rk_data = Output(UInt(32.W))
 
+        val wbdata = Output(UInt(32.W))
+
         val wen = Input(UInt(1.W))
         val waddr = Input(UInt(5.W))
         val wdata = Input(UInt(32.W))
@@ -160,6 +167,10 @@ class RegFile extends Module {
     io.rd_data := Mux(io.rd === 0.U, 0.U, reg(io.rd))
     io.rj_data := Mux(io.rj === 0.U, 0.U, reg(io.rj))
     io.rk_data := Mux(io.rk === 0.U, 0.U, reg(io.rk))
+
+    val wbaddr = RegInit(0.U(5.W)) // last writeback addr for forwarding
+    wbaddr := Mux(io.wen === 1.U, io.waddr, wbaddr)
+    io.wbdata := reg(wbaddr)
 
     reg(io.waddr) := Mux(io.wen === 1.U, io.wdata, reg(io.waddr))
 }

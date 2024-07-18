@@ -20,13 +20,13 @@ class abt(n: Int) extends Module {
     io.chosen := arbiter.io.chosen
 
     for (i <- 0 until n) {
+        io.out.BusOut(i).valid := 0.U
+        io.out.BusOut(i).bits := DontCare
+        io.in.BusIn.ready := 0.U
+    }
+    for (i <- 0 until n) {
         when(io.chosen === i.U) {
             io.out.BusOut(i) <> io.in.BusIn
-            io.in.BusIn.ready := io.out.BusOut(i).ready
-        } .otherwise {
-            io.out.BusOut(i).valid := 0.U
-            io.out.BusOut(i).bits := DontCare
-            io.in.BusIn.ready := 0.U
         }
     }
 }

@@ -6,21 +6,68 @@ class exu extends Module {
     val io = IO(new Bundle {
         val prev = Flipped(Decoupled(new idu_exu()))
         val next = Decoupled(new exu_lsu())
+        val P = Output(UInt(32.W)) // multiplier
+        // forward control
+        val RA = Output(UInt(5.W))
+        val RB = Output(UInt(5.W))
+        val RDst = Output(UInt(5.W))
+        val RStore = Output(UInt(5.W))
+        val wbSel = Output(WBSel())
+        val FwASrc = Input(ForwardSrc())
+        val FwBSrc = Input(ForwardSrc())
+        val FwStore = Input(ForwardSrc())
+        // forward data
+        val ELALU = Input(UInt(32.W)) // EXU/LSU ALUOut
+        val LWALU = Input(UInt(32.W)) // LSU/WBU ALUOut
+        val LWMEM = Input(UInt(32.W)) // LSU/WBU MemOut
+        val MULP = Input(UInt(32.W)) // MUL P
+        val WBData = Input(UInt(32.W)) // WBU->Reg Data(Last write reg data)
     })
+    val FwSrcSeq = Seq(
+        ForwardSrc.elALU -> io.ELALU,
+        ForwardSrc.lwALU -> io.LWALU,
+        ForwardSrc.lwMem -> io.LWMEM,
+        ForwardSrc.mulP -> io.MULP,
+        ForwardSrc.lastWB -> io.WBData,
+    )
+    io.RA := MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
+        ALUAsrc.rj -> io.prev.bits.rj
+    ))
+    io.RB := MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
+        ALUBsrc.rk -> io.prev.bits.rk,
+        ALUBsrc.rd -> io.prev.bits.rd
+    ))
+    io.RDst := MuxLookup(io.prev.bits.wbDst, 0.U) (Seq(
+        WBDst.one -> 1.U,
+        WBDst.rd -> io.prev.bits.rd
+    ))
+    io.RStore := io.prev.bits.rd
+    io.wbSel := io.prev.bits.wbSel
+
     val ALU = Module(new alu())
     val ALUA = MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
-        ALUAsrc.rj -> io.prev.bits.rj_data,
+        ALUAsrc.rj -> MuxLookup(io.FwASrc, io.prev.bits.rj_data) (FwSrcSeq),
         ALUAsrc.pc -> io.prev.bits.pc,
     ))
     val ALUB = MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
-        ALUBsrc.rk -> io.prev.bits.rk_data,
-        ALUBsrc.rd -> io.prev.bits.rd_data,
+        ALUBsrc.rk -> MuxLookup(io.FwBSrc, io.prev.bits.rk_data) (FwSrcSeq),
+        ALUBsrc.rd -> MuxLookup(io.FwBSrc, io.prev.bits.rd_data) (FwSrcSeq),
         ALUBsrc.imm -> io.prev.bits.Imm,
         ALUBsrc.four -> 4.U,
     ))
+
+    // store data forwarding
+    io.next.bits.rd_data := MuxLookup(io.FwStore, io.prev.bits.rd_data) (FwSrcSeq)
+
     ALU.io.A := ALUA
     ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
+
+    val mult = Module(new mult_gen_0())
+    mult.io.CLK := clock
+    mult.io.A := ALUA
+    mult.io.B := ALUB
+    io.P := mult.io.P
 
     io.next.bits.ALUOut := ALU.io.Out
     io.next.bits.SLess := ALU.io.SLess
@@ -32,7 +79,6 @@ class exu extends Module {
     io.next.bits.wbDst := io.prev.bits.wbDst
     io.next.bits.Imm := io.prev.bits.Imm
     io.next.bits.rd := io.prev.bits.rd
-    io.next.bits.rd_data := io.prev.bits.rd_data
     io.next.bits.rj_data := io.prev.bits.rj_data
     io.next.bits.pc := io.prev.bits.pc
 
