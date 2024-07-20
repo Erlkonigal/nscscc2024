@@ -4,10 +4,15 @@ import bundles._
 
 class lsu extends Module {
     val io = IO(new Bundle {
+        // mem
         val ext_in = Flipped(Decoupled(new bus_in()))
         val ext_out = Decoupled(new bus_out())
+        // pipe
         val prev = Flipped(Decoupled(new exu_lsu()))
         val next = Decoupled(new lsu_wbu())
+        // pipe signal
+        val stall = Input(UInt(1.W))
+        val flush = Input(UInt(1.W))
     })
     val Address = io.prev.bits.ALUOut
     val Op = io.prev.bits.memOp
@@ -111,17 +116,10 @@ class lsu extends Module {
 
     io.next.bits.MemOut := FixLoad
     io.next.bits.ALUOut := io.prev.bits.ALUOut
-    io.next.bits.SLess := io.prev.bits.SLess
-    io.next.bits.ULess := io.prev.bits.ULess
-    io.next.bits.Zero := io.prev.bits.Zero
-    io.next.bits.branch := io.prev.bits.branch
     io.next.bits.wbSel := io.prev.bits.wbSel
     io.next.bits.wbDst := io.prev.bits.wbDst
-    io.next.bits.Imm := io.prev.bits.Imm
     io.next.bits.rd := io.prev.bits.rd
-    io.next.bits.rj_data := io.prev.bits.rj_data
-    io.next.bits.pc := io.prev.bits.pc
 
-    io.next.valid := io.prev.valid
-    io.prev.ready := 1.B
+    io.next.valid := io.prev.valid && io.stall === 0.U && io.flush === 0.U
+    io.prev.ready := io.next.ready
 }

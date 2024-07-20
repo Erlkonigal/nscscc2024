@@ -8,8 +8,7 @@ OBJDUMP = $(COMPILER)objdump
 CFLAGS = -mstrict-align -nostdinc -nostdlib -fno-builtin -mabi=ilp32s -Iinclude
 LDFLAGS = -Tlinker.ld
 
-LIB = 
-#../bsp/build/bsp.a
+LIB = ../bsp/build/bsp.a
 
 BUILD_DIR = build
 SRC_DIR = src

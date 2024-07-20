@@ -1,7 +1,6 @@
 import circt.stage._
 import chisel3._
 import bundles.AddrRange
-import firrtl.options.CustomFileEmission
 
 object Elaborate extends App {
     def top = new subtop()

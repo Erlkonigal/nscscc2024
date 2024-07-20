@@ -24,33 +24,51 @@ class core extends Module {
     io.base_out <> ifu.io.base_out
     io.ext_out <> lsu.io.ext_out
 
-    val fwctrl = Module(new fwctrl())
-    fwctrl.io.RA := exu.io.RA
-    fwctrl.io.RB := exu.io.RB
-    fwctrl.io.RDst := exu.io.RDst
-    fwctrl.io.RStore := exu.io.RStore
-    fwctrl.io.wbSel := exu.io.wbSel
-    ifu_idu.io.stall := fwctrl.io.stall(3)
-    idu_exu.io.stall := fwctrl.io.stall(2)
-    exu_lsu.io.stall := fwctrl.io.stall(1)
-    lsu_wbu.io.stall := fwctrl.io.stall(0)
-    ifu_idu.io.flush := fwctrl.io.flush(3)
-    idu_exu.io.flush := fwctrl.io.flush(2)
-    exu_lsu.io.flush := fwctrl.io.flush(1)
-    lsu_wbu.io.flush := fwctrl.io.flush(0)
-    exu.io.FwASrc := fwctrl.io.FwALUA
-    exu.io.FwBSrc := fwctrl.io.FwALUB
-    exu.io.FwStore := fwctrl.io.FwStore
-    exu.io.ELALU := exu_lsu.io.next.bits.ALUOut
-    exu.io.LWALU := lsu_wbu.io.next.bits.ALUOut
-    exu.io.LWMEM := lsu_wbu.io.next.bits.MemOut
-    exu.io.MULP := exu.io.P
-    exu.io.WBData := idu.io.wbdata
+    val flush = idu.io.prev.bits.pc =/= exu.io.nextPC &&
+                exu.io.prev.valid &&
+                exu.io.stall === 0.U
 
-    ifu.io.pc := wbu.io.pc
+    val fwctrl = Module(new forwarding())
+    fwctrl.io.RD := idu.io.RD
+    fwctrl.io.RJ := idu.io.RJ
+    fwctrl.io.RK := idu.io.RK
+    fwctrl.io.RDst := idu.io.RDst
+    fwctrl.io.RSel := idu.io.RSel
+    fwctrl.io.flush := flush
+
+    ifu.io.flush := flush
+    ifu_idu.io.stall := fwctrl.io.stall
+    ifu_idu.io.flush := flush
+    idu.io.stall := fwctrl.io.stall
+    idu.io.flush := flush
+    idu_exu.io.stall := 0.U
+    idu_exu.io.flush := 0.U
+    exu.io.stall := 0.U
+    exu.io.flush := 0.U
+    exu_lsu.io.stall := 0.U
+    exu_lsu.io.flush := 0.U
+    lsu.io.stall := 0.U
+    lsu.io.flush := 0.U
+    lsu_wbu.io.stall := 0.U
+    lsu_wbu.io.flush := 0.U
+
+    ifu.io.nextPC := exu.io.nextPC
     idu.io.wen := wbu.io.wen
     idu.io.waddr := wbu.io.waddr
     idu.io.wdata := wbu.io.wdata // write back
+    idu.io.FwID_RD := fwctrl.io.FwID_RD
+    idu.io.FwID_RJ := fwctrl.io.FwID_RJ
+    idu.io.FwID_RK := fwctrl.io.FwID_RK
+    idu.io.FwEX_RD := fwctrl.io.FwEX_RD
+    idu.io.FwEX_RJ := fwctrl.io.FwEX_RJ
+    idu.io.FwEX_RK := fwctrl.io.FwEX_RK
+    idu.io.ELALU := exu_lsu.io.next.bits.ALUOut
+    idu.io.LWALU := lsu_wbu.io.next.bits.ALUOut
+    idu.io.LWMEM := lsu_wbu.io.next.bits.MemOut
+    idu.io.MULP := exu.io.P
+    exu.io.ELALU := exu_lsu.io.next.bits.ALUOut
+    exu.io.LWALU := lsu_wbu.io.next.bits.ALUOut
+    exu.io.LWMEM := lsu_wbu.io.next.bits.MemOut
     wbu.io.P := exu.io.P
 
     ifu.io.next <> ifu_idu.io.prev
@@ -72,19 +90,26 @@ class buffer[T <: Bundle](gen: T) extends Module {
     })
     val state = RegInit(0.B) // 0: idle, 1: valid
     val regs = Reg(gen)
+    val ready = io.stall === 0.U && io.flush === 0.U
 
     when(io.flush === 1.U) {
+        state := 0.B
         regs := 0.U.asTypeOf(gen)
     }
     .elsewhen(io.stall === 1.U) {
+        state := state
         regs := regs
     }
     .elsewhen(io.prev.valid) {
         state := 1.B
         regs := io.prev.bits
     }
+    .otherwise {
+        state := 0.B
+        regs := 0.U.asTypeOf(gen)
+    }
 
     io.next.bits := regs
-    io.prev.ready := io.next.ready && io.stall === 0.U && io.flush === 0.U
-    io.next.valid := state === 1.B && io.stall === 0.U && io.flush === 0.U
+    io.prev.ready := ready
+    io.next.valid := state === 1.B
 }

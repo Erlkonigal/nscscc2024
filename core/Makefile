@@ -29,12 +29,17 @@ verilator:
 		-o $(BUILD_DIR)/$(TOP)
 
 verilog:
+	rm -rf out
 	mill -i __.runMain Elaborate --target-dir $(MODULES_DIR)
 
-run:
+run: verilator
 	make -C ../bsp
 	make -C ../program IMAGE=$(IMAGE)
 	$(BUILD_DIR)/$(TOP) ../program/build/$(IMAGE).bin
 
 clean:
-	@rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)
+
+copy:
+	sed -i 's/module/(*DONT_TOUCH="TRUE"*)module/g' $(MODULES_DIR)/subtop.v
+	cp -f $(MODULES_DIR)/subtop.v ../thinpad_top.srcs/sources_1/new/

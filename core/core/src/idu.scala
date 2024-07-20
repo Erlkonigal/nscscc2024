@@ -2,17 +2,165 @@ import bundles._
 import chisel3._
 import chisel3.util._
 
+class forwarding extends Module {
+    val io = IO(new Bundle {
+        val RJ = Input(UInt(5.W))
+        val RK = Input(UInt(5.W))
+        val RD = Input(UInt(5.W))
+        val RDst = Input(UInt(5.W))
+        val RSel = Input(WBSel())
+
+        val flush = Input(UInt(1.W))
+        val stall = Output(UInt(1.W))
+
+        val FwID_RJ = Output(ForwardSrc())
+        val FwID_RK = Output(ForwardSrc())
+        val FwID_RD = Output(ForwardSrc())
+
+        val FwEX_RJ = Output(ForwardSrc())
+        val FwEX_RK = Output(ForwardSrc())
+        val FwEX_RD = Output(ForwardSrc())
+    })
+    val RDstReg = Reg(Vec(3, UInt(5.W)))
+    val RSelReg = Reg(Vec(3, WBSel()))
+
+    val calcID = (src: UInt) => {
+        Mux(src === 0.U, ForwardSrc.other,
+            MuxCase(ForwardSrc.other, Seq(
+                (src === RDstReg(0)) -> MuxCase(ForwardSrc.other, Seq(
+                    (RSelReg(0) === WBSel.alu) -> ForwardSrc.stall,
+                    (RSelReg(0) === WBSel.mem) -> ForwardSrc.stall,
+                    (RSelReg(0) === WBSel.mul) -> ForwardSrc.stall
+                )),
+                (src === RDstReg(1)) -> MuxCase(ForwardSrc.other, Seq(
+                    (RSelReg(1) === WBSel.alu) -> ForwardSrc.elALU,
+                    (RSelReg(1) === WBSel.mem) -> ForwardSrc.stall,
+                    (RSelReg(1) === WBSel.mul) -> ForwardSrc.stall
+                )),
+                (src === RDstReg(2)) -> MuxCase(ForwardSrc.other, Seq(
+                    (RSelReg(2) === WBSel.alu) -> ForwardSrc.lwALU,
+                    (RSelReg(2) === WBSel.mem) -> ForwardSrc.lwMem,
+                    (RSelReg(2) === WBSel.mul) -> ForwardSrc.mulP
+                ))
+            ))
+        )
+    }
+    val calcEX = (src: UInt) => {
+        Mux(src === 0.U, ForwardSrc.other,
+            MuxCase(ForwardSrc.other, Seq(
+                (src === RDstReg(0)) -> MuxCase(ForwardSrc.other, Seq(
+                    (RSelReg(0) === WBSel.alu) -> ForwardSrc.elALU,
+                    (RSelReg(0) === WBSel.mem) -> ForwardSrc.stall,
+                    (RSelReg(0) === WBSel.mul) -> ForwardSrc.stall,
+                )),
+                (src === RDstReg(1)) -> MuxCase(ForwardSrc.other, Seq(
+                    (RSelReg(1) === WBSel.alu) -> ForwardSrc.lwALU,
+                    (RSelReg(1) === WBSel.mem) -> ForwardSrc.lwMem,
+                    (RSelReg(1) === WBSel.mul) -> ForwardSrc.mulP,
+                )),
+                (src === RDstReg(2)) -> MuxCase(ForwardSrc.other, Seq(
+                    (RSelReg(2) === WBSel.alu) -> ForwardSrc.stall,
+                    (RSelReg(2) === WBSel.mem) -> ForwardSrc.stall,
+                    (RSelReg(2) === WBSel.mul) -> ForwardSrc.stall,
+                )),
+            ))
+        )
+    }
+    val calcRetID = (srcID: ForwardSrc.Type, srcEX: ForwardSrc.Type) => {
+        val ret = Wire(ForwardSrc())
+        when(srcID === ForwardSrc.stall && srcEX === ForwardSrc.stall) {
+            ret := ForwardSrc.stall
+        }
+        .elsewhen(srcID === ForwardSrc.stall) {
+            ret := ForwardSrc.other
+        }
+        .otherwise {
+            ret := srcID
+        }
+        ret
+    }
+    val calcRetEX = (srcID: ForwardSrc.Type, srcEX: ForwardSrc.Type) => {
+        val ret = Wire(ForwardSrc())
+        when(srcID === ForwardSrc.stall && srcEX === ForwardSrc.stall) {
+            ret := ForwardSrc.stall
+        }
+        .elsewhen(srcID === ForwardSrc.stall) {
+            ret := srcEX
+        }
+        .otherwise {
+            ret := ForwardSrc.other
+        }
+        ret
+    }
+    val ID_RJ = calcID(io.RJ)
+    val ID_RK = calcID(io.RK)
+    val ID_RD = calcID(io.RD)
+    val EX_RJ = calcEX(io.RJ)
+    val EX_RK = calcEX(io.RK)
+    val EX_RD = calcEX(io.RD)
+
+    val RetID_RJ = calcRetID(ID_RJ, EX_RJ)
+    val RetID_RK = calcRetID(ID_RK, EX_RK)
+    val RetID_RD = calcRetID(ID_RD, EX_RD)
+    val RetEX_RJ = calcRetEX(ID_RJ, EX_RJ)
+    val RetEX_RK = calcRetEX(ID_RK, EX_RK)
+    val RetEX_RD = calcRetEX(ID_RD, EX_RD)
+
+    val StallID = RetID_RJ === ForwardSrc.stall || RetID_RK === ForwardSrc.stall || RetID_RD === ForwardSrc.stall
+    val StallEX = RetEX_RJ === ForwardSrc.stall || RetEX_RK === ForwardSrc.stall || RetEX_RD === ForwardSrc.stall
+    val Stall = StallID || StallEX
+
+    when(io.flush === 0.U) {
+        RDstReg(0) := Mux(Stall, 0.U, io.RDst)
+        RSelReg(0) := Mux(Stall, WBSel.other, io.RSel)
+        for(i <- 0 until RDstReg.length - 1) {
+            RDstReg(i + 1) := RDstReg(i)
+            RSelReg(i + 1) := RSelReg(i)
+        }
+    }
+    .otherwise {
+        RDstReg := VecInit(Seq.fill(3)(0.U))
+        RSelReg := VecInit(Seq.fill(3)(WBSel.other))
+    }
+
+    io.stall := Stall
+    io.FwID_RJ := RetID_RJ
+    io.FwID_RK := RetID_RK
+    io.FwID_RD := RetID_RD
+    io.FwEX_RJ := RetEX_RJ
+    io.FwEX_RK := RetEX_RK
+    io.FwEX_RD := RetEX_RD
+}
+
 class idu extends Module {
     val io = IO(new Bundle {
+        // pipe
         val prev = Flipped(Decoupled(new ifu_idu()))
         val next = Decoupled(new idu_exu())
-
+        // pipe signal
+        val stall = Input(UInt(1.W))
+        val flush = Input(UInt(1.W))
         // writeback to register file
         val wen = Input(UInt(1.W))
         val waddr = Input(UInt(5.W))
         val wdata = Input(UInt(32.W))
-        // forwarding last writeback data
-        val wbdata = Output(UInt(32.W))
+        // forwarding control
+        val RJ = Output(UInt(5.W))
+        val RK = Output(UInt(5.W))
+        val RD = Output(UInt(5.W))
+        val RDst = Output(UInt(5.W))
+        val RSel = Output(WBSel())
+        val FwID_RJ = Input(ForwardSrc())
+        val FwID_RK = Input(ForwardSrc())
+        val FwID_RD = Input(ForwardSrc())
+        val FwEX_RJ = Input(ForwardSrc())
+        val FwEX_RK = Input(ForwardSrc())
+        val FwEX_RD = Input(ForwardSrc())
+        // forwarding signal
+        val ELALU = Input(UInt(32.W))
+        val LWALU = Input(UInt(32.W))
+        val LWMEM = Input(UInt(32.W))
+        val MULP = Input(UInt(32.W))
     })
 
     def ADD_W     = BitPat("b00000000000100000_?????_?????_?????")
@@ -123,11 +271,30 @@ class idu extends Module {
     regFile.io.waddr := io.waddr
     regFile.io.wdata := io.wdata
 
+    io.RD := io.prev.bits.inst(4, 0)
+    io.RJ := io.prev.bits.inst(9, 5)
+    io.RK := io.prev.bits.inst(14, 10)
+    io.RSel := Decode(6)
+    io.RDst := MuxLookup(Decode(7), 0.U) (Seq(
+        WBDst.rd -> io.prev.bits.inst(4, 0),
+        WBDst.one -> 1.U
+    ))
+
+    val FwSrcSeq = Seq(
+        ForwardSrc.elALU -> io.ELALU,
+        ForwardSrc.lwALU -> io.LWALU,
+        ForwardSrc.lwMem -> io.LWMEM,
+        ForwardSrc.mulP -> io.MULP
+    )
+    val ForwardRD = MuxLookup(io.FwID_RD, regFile.io.rd_data) (FwSrcSeq)
+    val ForwardRJ = MuxLookup(io.FwID_RJ, regFile.io.rj_data) (FwSrcSeq)
+    val ForwardRK = MuxLookup(io.FwID_RK, regFile.io.rk_data) (FwSrcSeq)
+
     io.next.bits.aluOp := Decode(0)
     io.next.bits.aluAsrc := Decode(1)
     io.next.bits.aluBsrc := Decode(2)
     io.next.bits.memOp := Decode(4)
-    io.next.bits.branch := Decode(5)
+    io.next.bits.branchOp := Decode(5)
     io.next.bits.wbSel := Decode(6)
     io.next.bits.wbDst := Decode(7)
 
@@ -136,15 +303,17 @@ class idu extends Module {
     io.next.bits.rd := io.prev.bits.inst(4, 0)
     io.next.bits.rj := io.prev.bits.inst(9, 5)
     io.next.bits.rk := io.prev.bits.inst(14, 10)
-    io.next.bits.rd_data := regFile.io.rd_data
-    io.next.bits.rj_data := regFile.io.rj_data
-    io.next.bits.rk_data := regFile.io.rk_data
-    io.wbdata := regFile.io.wbdata
+    io.next.bits.rd_data := ForwardRD
+    io.next.bits.rj_data := ForwardRJ
+    io.next.bits.rk_data := ForwardRK
+    io.next.bits.FwEX_RD := io.FwEX_RD
+    io.next.bits.FwEX_RJ := io.FwEX_RJ
+    io.next.bits.FwEX_RK := io.FwEX_RK
 
     io.next.bits.pc := io.prev.bits.pc
 
-    io.next.valid := io.prev.valid
-    io.prev.ready := 1.U
+    io.next.valid := io.prev.valid && io.stall === 0.U && io.flush === 0.U
+    io.prev.ready := io.next.ready
 }
 
 class RegFile extends Module {
@@ -156,8 +325,6 @@ class RegFile extends Module {
         val rj_data = Output(UInt(32.W))
         val rk_data = Output(UInt(32.W))
 
-        val wbdata = Output(UInt(32.W))
-
         val wen = Input(UInt(1.W))
         val waddr = Input(UInt(5.W))
         val wdata = Input(UInt(32.W))
@@ -167,10 +334,6 @@ class RegFile extends Module {
     io.rd_data := Mux(io.rd === 0.U, 0.U, reg(io.rd))
     io.rj_data := Mux(io.rj === 0.U, 0.U, reg(io.rj))
     io.rk_data := Mux(io.rk === 0.U, 0.U, reg(io.rk))
-
-    val wbaddr = RegInit(0.U(5.W)) // last writeback addr for forwarding
-    wbaddr := Mux(io.wen === 1.U, io.waddr, wbaddr)
-    io.wbdata := reg(wbaddr)
 
     reg(io.waddr) := Mux(io.wen === 1.U, io.wdata, reg(io.waddr))
 }

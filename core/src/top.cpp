@@ -35,7 +35,7 @@ void read_img() {
         Log("Failed to open image file");
         exit(1);
     }
-    fread(base_sram, 1, SRAM_SIZE, img);
+    fread(sram, 1, SRAM_SIZE << 1, img);
     fseek(img, 0, SEEK_END);
     img_size = ftell(img);
     Log("Image size: %ld", img_size);
@@ -99,7 +99,7 @@ void reset() {
 int main(int argc, char *argv[]) {
     init(argc, argv);
     reset();
-    for(int i = 0; i < 1000; i++) {
+    for(int i = 0; i < 100000; i++) {
         singled_cycle();
     }
     clean();

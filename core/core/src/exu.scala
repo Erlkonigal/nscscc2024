@@ -4,86 +4,106 @@ import bundles._
 
 class exu extends Module {
     val io = IO(new Bundle {
+        // pipe
         val prev = Flipped(Decoupled(new idu_exu()))
         val next = Decoupled(new exu_lsu())
-        val P = Output(UInt(32.W)) // multiplier
-        // forward control
-        val RA = Output(UInt(5.W))
-        val RB = Output(UInt(5.W))
-        val RDst = Output(UInt(5.W))
-        val RStore = Output(UInt(5.W))
-        val wbSel = Output(WBSel())
-        val FwASrc = Input(ForwardSrc())
-        val FwBSrc = Input(ForwardSrc())
-        val FwStore = Input(ForwardSrc())
+        // pipe signal
+        val stall = Input(UInt(1.W))
+        val flush = Input(UInt(1.W))
+        // multiplier
+        val P = Output(UInt(32.W))
         // forward data
         val ELALU = Input(UInt(32.W)) // EXU/LSU ALUOut
         val LWALU = Input(UInt(32.W)) // LSU/WBU ALUOut
         val LWMEM = Input(UInt(32.W)) // LSU/WBU MemOut
-        val MULP = Input(UInt(32.W)) // MUL P
-        val WBData = Input(UInt(32.W)) // WBU->Reg Data(Last write reg data)
+        // branch control
+        val nextPC = Output(UInt(32.W))
     })
+    val mult = Module(new mult_gen_0())
+    val ALU = Module(new alu())
+    val brCtrl = Module(new branchContr())
+
     val FwSrcSeq = Seq(
         ForwardSrc.elALU -> io.ELALU,
         ForwardSrc.lwALU -> io.LWALU,
         ForwardSrc.lwMem -> io.LWMEM,
-        ForwardSrc.mulP -> io.MULP,
-        ForwardSrc.lastWB -> io.WBData,
+        ForwardSrc.mulP -> mult.io.P,
     )
-    io.RA := MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
-        ALUAsrc.rj -> io.prev.bits.rj
-    ))
-    io.RB := MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
-        ALUBsrc.rk -> io.prev.bits.rk,
-        ALUBsrc.rd -> io.prev.bits.rd
-    ))
-    io.RDst := MuxLookup(io.prev.bits.wbDst, 0.U) (Seq(
-        WBDst.one -> 1.U,
-        WBDst.rd -> io.prev.bits.rd
-    ))
-    io.RStore := io.prev.bits.rd
-    io.wbSel := io.prev.bits.wbSel
 
-    val ALU = Module(new alu())
+    val ForwardRD = MuxLookup(io.prev.bits.FwEX_RD, io.prev.bits.rd_data) (FwSrcSeq)
+    val ForwardRJ = MuxLookup(io.prev.bits.FwEX_RJ, io.prev.bits.rj_data) (FwSrcSeq)
+    val ForwardRK = MuxLookup(io.prev.bits.FwEX_RK, io.prev.bits.rk_data) (FwSrcSeq)
+
     val ALUA = MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
-        ALUAsrc.rj -> MuxLookup(io.FwASrc, io.prev.bits.rj_data) (FwSrcSeq),
+        ALUAsrc.rj -> ForwardRJ,
         ALUAsrc.pc -> io.prev.bits.pc,
     ))
     val ALUB = MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
-        ALUBsrc.rk -> MuxLookup(io.FwBSrc, io.prev.bits.rk_data) (FwSrcSeq),
-        ALUBsrc.rd -> MuxLookup(io.FwBSrc, io.prev.bits.rd_data) (FwSrcSeq),
+        ALUBsrc.rk -> ForwardRK,
+        ALUBsrc.rd -> ForwardRD,
         ALUBsrc.imm -> io.prev.bits.Imm,
         ALUBsrc.four -> 4.U,
     ))
-
-    // store data forwarding
-    io.next.bits.rd_data := MuxLookup(io.FwStore, io.prev.bits.rd_data) (FwSrcSeq)
 
     ALU.io.A := ALUA
     ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
-    val mult = Module(new mult_gen_0())
     mult.io.CLK := clock
     mult.io.A := ALUA
     mult.io.B := ALUB
     io.P := mult.io.P
 
+    brCtrl.io.pc := io.prev.bits.pc
+    brCtrl.io.rj_data := ForwardRJ
+    brCtrl.io.offset := io.prev.bits.Imm
+    brCtrl.io.branchOp := io.prev.bits.branchOp
+    brCtrl.io.SLess := ALU.io.SLess
+    brCtrl.io.ULess := ALU.io.ULess
+    brCtrl.io.Zero := ALU.io.Zero
+    io.nextPC := brCtrl.io.nextPC
+
     io.next.bits.ALUOut := ALU.io.Out
-    io.next.bits.SLess := ALU.io.SLess
-    io.next.bits.ULess := ALU.io.ULess
-    io.next.bits.Zero := ALU.io.Zero
     io.next.bits.memOp := io.prev.bits.memOp
-    io.next.bits.branch := io.prev.bits.branch
     io.next.bits.wbSel := io.prev.bits.wbSel
     io.next.bits.wbDst := io.prev.bits.wbDst
     io.next.bits.Imm := io.prev.bits.Imm
     io.next.bits.rd := io.prev.bits.rd
-    io.next.bits.rj_data := io.prev.bits.rj_data
-    io.next.bits.pc := io.prev.bits.pc
+    io.next.bits.rd_data := ForwardRD
 
-    io.next.valid := io.prev.valid
-    io.prev.ready := 1.B
+    io.next.valid := io.prev.valid && io.stall === 0.U && io.flush === 0.U
+    io.prev.ready := io.next.ready
+}
+
+class branchContr extends Module {
+    val io = IO(new Bundle {
+        val pc = Input(UInt(32.W))
+        val rj_data = Input(UInt(32.W))
+        val offset = Input(UInt(32.W))
+        val branchOp = Input(Branch())
+        val SLess = Input(UInt(1.W))
+        val ULess = Input(UInt(1.W))
+        val Zero = Input(UInt(1.W))
+        val nextPC = Output(UInt(32.W))
+    })
+
+    val PCAsrc = MuxLookup(io.branchOp, io.pc) (Seq(
+        Branch.jirl -> io.rj_data,
+    ))
+
+    val PCBsrc = MuxLookup(io.branchOp, 4.U) (Seq(
+        Branch.beq -> Mux(io.Zero === 1.U, io.offset, 4.U),
+        Branch.bne -> Mux(io.Zero === 0.U, io.offset, 4.U),
+        Branch.blt -> Mux(io.SLess === 1.U, io.offset, 4.U),
+        Branch.bge -> Mux(io.SLess === 0.U, io.offset, 4.U),
+        Branch.bltu -> Mux(io.ULess === 1.U, io.offset, 4.U),
+        Branch.bgeu -> Mux(io.ULess === 0.U, io.offset, 4.U),
+        Branch.b -> io.offset,
+        Branch.bl -> io.offset,
+        Branch.jirl -> io.offset,
+    ))
+
+    io.nextPC := PCAsrc + PCBsrc
 }
 
 class alu extends Module {
@@ -92,9 +112,9 @@ class alu extends Module {
         val B = Input(UInt(32.W))
         val Op = Input(ALUOp())
         val Out = Output(UInt(32.W))
-        val SLess = Output(Bool())
-        val ULess = Output(Bool())
-        val Zero = Output(Bool())
+        val ULess = Output(UInt(1.W))
+        val SLess = Output(UInt(1.W))
+        val Zero = Output(UInt(1.W))
     })
 
     val Sub = MuxLookup(io.Op, 0.B) (
@@ -130,9 +150,8 @@ class alu extends Module {
         ALUOp.srl -> Shifter.io.Out,
         ALUOp.sra -> Shifter.io.Out,
     ))
-
-    io.SLess := SLess
     io.ULess := ULess
+    io.SLess := SLess
     io.Zero := ZF
 }
 

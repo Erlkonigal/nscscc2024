@@ -6,8 +6,7 @@
 #define BASE 0x80000000
 #define EXT 0x80400000
 
-extern uint8_t base_sram[SRAM_SIZE];
-extern uint8_t ext_sram[SRAM_SIZE];
+extern uint8_t sram[SRAM_SIZE << 1];
 
 void sram_init();
 extern "C" void sram_read(char sel, int addr, int *data);
