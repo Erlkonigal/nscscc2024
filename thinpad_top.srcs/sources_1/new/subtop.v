@@ -17,7 +17,7 @@
 `endif // not def RANDOM
 
 // Users can define INIT_RANDOM as general code that gets injected into the
-// initializer block for (*DONT_TOUCH="TRUE"*)modules with registers.
+// initializer block for modules with registers.
 `ifndef INIT_RANDOM
   `define INIT_RANDOM
 `endif // not def INIT_RANDOM
@@ -28,7 +28,7 @@
   `define RANDOMIZE_DELAY 0.002
 `endif // not def RANDOMIZE_DELAY
 
-// Define INIT_RANDOM_PROLOG_ for use in our (*DONT_TOUCH="TRUE"*)modules below.
+// Define INIT_RANDOM_PROLOG_ for use in our modules below.
 `ifndef INIT_RANDOM_PROLOG_
   `ifdef RANDOMIZE
     `ifdef VERILATOR
@@ -103,7 +103,7 @@
   assign io_next_valid = io_base_out_ready;	// core/src/ifu.scala:5:7
   assign io_next_bits_pc = pc;	// core/src/ifu.scala:5:7, :17:21
   assign io_next_bits_inst = io_base_in_bits_data_out;	// core/src/ifu.scala:5:7
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module buffer(	// core/src/core.scala:84:7
   input         clock,	// core/src/core.scala:84:7
@@ -164,7 +164,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_next_valid = state;	// core/src/core.scala:84:7, :91:24
   assign io_next_bits_pc = regs_pc;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_inst = regs_inst;	// core/src/core.scala:84:7, :92:19
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module ImmGen(	// core/src/idu.scala:341:7
   input  [25:0] io_inst26,	// core/src/idu.scala:342:16
@@ -192,7 +192,7 @@ end(*DONT_TOUCH="TRUE"*)module
                                   : io_immType == 4'h0
                                       ? {27'h0, io_inst26[14:10]}
                                       : 32'h0;	// core/src/idu.scala:341:7, :348:42, :350:{37,42,62}, :351:{36,41,55,71}, :352:{37,42,56,72}, :353:38, :354:{37,42,56,72,86}, :355:{37,42,56,72}, :356:{37,47,60}, :357:{37,42,55,70}, :358:{35,40,53,68}
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module RegFile(	// core/src/idu.scala:319:7
   input         clock,	// core/src/idu.scala:319:7
@@ -557,7 +557,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_rd_data = io_rd == 5'h0 ? 32'h0 : _GEN[io_rd];	// core/src/idu.scala:319:7, :332:30, :334:{22,29}
   assign io_rj_data = io_rj == 5'h0 ? 32'h0 : _GEN[io_rj];	// core/src/idu.scala:319:7, :332:30, :334:22, :335:{22,29}
   assign io_rk_data = io_rk == 5'h0 ? 32'h0 : _GEN[io_rk];	// core/src/idu.scala:319:7, :332:30, :334:22, :336:{22,29}
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module idu(	// core/src/idu.scala:135:7
   input         clock,	// core/src/idu.scala:135:7
@@ -884,7 +884,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_RDst =
     Decode_7 == 2'h1 ? 5'h1 : Decode_7 == 2'h0 ? io_prev_bits_inst[4:0] : 5'h0;	// core/src/idu.scala:135:7, :267:39, :278:42, src/main/scala/chisel3/util/Lookup.scala:34:39
   assign io_RSel = io_RSel_0;	// core/src/idu.scala:135:7, src/main/scala/chisel3/util/Lookup.scala:34:39
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module buffer_1(	// core/src/core.scala:84:7
   input         clock,	// core/src/core.scala:84:7
@@ -1017,9 +1017,9 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_next_bits_FwEX_RJ = regs_FwEX_RJ;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_FwEX_RK = regs_FwEX_RK;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_pc = regs_pc;	// core/src/core.scala:84:7, :92:19
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
-// external (*DONT_TOUCH="TRUE"*)module mult_gen_0
+// external module mult_gen_0
 
 (*DONT_TOUCH="TRUE"*)module bshifter(	// core/src/exu.scala:158:7
   input  [31:0] io_A,	// core/src/exu.scala:159:16
@@ -1833,7 +1833,7 @@ end(*DONT_TOUCH="TRUE"*)module
      io_B[4]
        ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_4_16 : _GEN & Shifter_4_0)
        : Shifter_4_0};	// core/src/exu.scala:158:7, :167:24, :171:{37,43}, :172:53, :179:37, :180:53, :187:37, :196:26
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module alu(	// core/src/exu.scala:109:7
   input  [31:0] io_A,	// core/src/exu.scala:110:16
@@ -1879,7 +1879,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_ULess = ~(FixSum[32]);	// core/src/exu.scala:109:7, :129:31, :133:{17,24}
   assign io_SLess = SLess;	// core/src/exu.scala:109:7, :132:29
   assign io_Zero = FixSum[31:0] == 32'h0;	// core/src/exu.scala:109:7, :128:27, :129:31, :131:{21,29}
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module branchContr(	// core/src/exu.scala:78:7
   input  [31:0] io_pc,	// core/src/exu.scala:79:16
@@ -1907,7 +1907,7 @@ end(*DONT_TOUCH="TRUE"*)module
                          : io_branchOp == 4'h1
                              ? (io_Zero ? 32'h4 : io_offset)
                              : io_branchOp == 4'h0 & io_Zero ? io_offset : 32'h4);	// core/src/exu.scala:78:7, :90:48, :94:46, :95:26, :96:26, :97:26, :98:26, :99:27, :100:27, :106:25
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module exu(	// core/src/exu.scala:5:7
   input         clock,	// core/src/exu.scala:5:7
@@ -2016,7 +2016,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_next_bits_rd = io_prev_bits_rd;	// core/src/exu.scala:5:7
   assign io_next_bits_rd_data = ForwardRD;	// core/src/exu.scala:5:7, :33:75
   assign io_P = _mult_P;	// core/src/exu.scala:5:7, :22:22
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module buffer_2(	// core/src/core.scala:84:7
   input         clock,	// core/src/core.scala:84:7
@@ -2089,7 +2089,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_rd = regs_rd;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:84:7, :92:19
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module lsu(	// core/src/lsu.scala:5:7
   input  [31:0] io_ext_in_bits_data_out,	// core/src/lsu.scala:6:16
@@ -2178,7 +2178,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_next_bits_wbSel = io_prev_bits_wbSel;	// core/src/lsu.scala:5:7
   assign io_next_bits_wbDst = io_prev_bits_wbDst;	// core/src/lsu.scala:5:7
   assign io_next_bits_rd = io_prev_bits_rd;	// core/src/lsu.scala:5:7
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module buffer_3(	// core/src/core.scala:84:7
   input         clock,	// core/src/core.scala:84:7
@@ -2245,7 +2245,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_rd = regs_rd;	// core/src/core.scala:84:7, :92:19
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module wbu(	// core/src/wbu.scala:5:7
   input         io_prev_valid,	// core/src/wbu.scala:6:16
@@ -2267,7 +2267,7 @@ end(*DONT_TOUCH="TRUE"*)module
       ? 5'h1
       : io_prev_bits_wbDst == 2'h0 ? io_prev_bits_rd : 5'h0;	// core/src/wbu.scala:5:7, :17:52
   assign io_wdata = _GEN[io_prev_bits_wbSel];	// core/src/wbu.scala:5:7, :21:52
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module forwarding(	// core/src/idu.scala:5:7
   input        clock,	// core/src/idu.scala:5:7
@@ -2398,7 +2398,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_FwEX_RJ = RetEX_RJ;	// core/src/idu.scala:5:7, :84:72, :85:17, :87:47
   assign io_FwEX_RK = RetEX_RK;	// core/src/idu.scala:5:7, :84:72, :85:17, :87:47
   assign io_FwEX_RD = RetEX_RD;	// core/src/idu.scala:5:7, :84:72, :85:17, :87:47
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module core(	// core/src/core.scala:5:7
   input         clock,	// core/src/core.scala:5:7
@@ -2731,7 +2731,7 @@ end(*DONT_TOUCH="TRUE"*)module
     .io_FwEX_RK (_fwctrl_io_FwEX_RK),
     .io_FwEX_RD (_fwctrl_io_FwEX_RD)
   );
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module xbar(	// core/src/xbar.scala:5:7
   output        io_in_DataIn_ready,	// core/src/xbar.scala:6:16
@@ -2749,7 +2749,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_out_DataOut_0_valid = io_in_DataIn_ready_0 & io_in_DataIn_valid;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :17:33, :26:56, :27:31
   assign io_out_DataOut_0_bits_addr = io_in_DataIn_bits_addr - 32'h80000000;	// core/src/xbar.scala:5:7, :28:67
   assign io_out_BusOut_bits_data_out = io_in_BusIn_0_bits_data_out;	// core/src/xbar.scala:5:7
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module xbar_1(	// core/src/xbar.scala:5:7
   input         io_in_DataIn_valid,	// core/src/xbar.scala:6:16
@@ -2799,7 +2799,7 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_out_DataOut_1_bits_we_n = io_in_DataIn_bits_we_n;	// core/src/xbar.scala:5:7
   assign io_out_BusOut_bits_data_out =
     _GEN ? io_in_BusIn_1_bits_data_out : io_in_BusIn_0_bits_data_out;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :26:56, :29:27
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module sram_ctrl(	// core/src/sram_ctrl.scala:5:7
   input         io_in_valid,	// core/src/sram_ctrl.scala:6:16
@@ -2829,11 +2829,11 @@ end(*DONT_TOUCH="TRUE"*)module
   assign io_sram_ce_n = ~io_in_valid | io_in_bits_ce_n;	// core/src/sram_ctrl.scala:5:7, :11:23, :16:22, :26:22
   assign io_sram_oe_n = ~io_in_valid | io_in_bits_oe_n;	// core/src/sram_ctrl.scala:5:7, :11:23, :16:22, :17:22, :26:22, :27:22
   assign io_sram_we_n = ~io_in_valid | io_in_bits_we_n;	// core/src/sram_ctrl.scala:5:7, :11:23, :16:22, :18:22, :26:22, :28:22
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
-// external (*DONT_TOUCH="TRUE"*)module async_transmitter
+// external module async_transmitter
 
-// external (*DONT_TOUCH="TRUE"*)module async_receiver
+// external module async_receiver
 
 // VCS coverage exclude_file
 (*DONT_TOUCH="TRUE"*)module ram_16x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
@@ -2865,7 +2865,7 @@ end(*DONT_TOUCH="TRUE"*)module
     end // initial
   `endif // ENABLE_INITIAL_MEM_
   assign R0_data = R0_en ? Memory[R0_addr] : 8'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module Queue16_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   input        clock,	// src/main/scala/chisel3/util/Decoupled.scala:243:7
@@ -2933,7 +2933,7 @@ end(*DONT_TOUCH="TRUE"*)module
   );
   assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
   assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module uart_ctrl(	// core/src/uart_ctrl.scala:31:7
   input         clock,	// core/src/uart_ctrl.scala:31:7
@@ -3008,7 +3008,7 @@ end(*DONT_TOUCH="TRUE"*)module
     _GEN
       ? {24'h0, _recv_fifo_io_deq_bits}
       : {30'h0, _recv_fifo_io_deq_valid, _tran_fifo_io_enq_ready};	// core/src/uart_ctrl.scala:31:7, :40:27, :41:27, :62:{22,49}, :65:{30,36,41}, :67:54, :70:{36,41}
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 
 (*DONT_TOUCH="TRUE"*)module subtop(	// core/src/subtop.scala:5:7
   input         clock,	// core/src/subtop.scala:5:7
@@ -3169,5 +3169,5 @@ end(*DONT_TOUCH="TRUE"*)module
     .io_uart_rx           (io_uart_rx),
     .io_uart_tx           (io_uart_tx)
   );
-end(*DONT_TOUCH="TRUE"*)module
+endmodule
 

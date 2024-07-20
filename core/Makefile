@@ -41,5 +41,5 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 copy:
-	sed -i 's/module/(*DONT_TOUCH="TRUE"*)module/g' $(MODULES_DIR)/subtop.v
+	sed -i 's/^module/(*DONT_TOUCH="TRUE"*)module/' $(MODULES_DIR)/subtop.v
 	cp -f $(MODULES_DIR)/subtop.v ../thinpad_top.srcs/sources_1/new/
