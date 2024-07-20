@@ -13,6 +13,8 @@ class lsu extends Module {
         // pipe signal
         val stall = Input(UInt(1.W))
         val flush = Input(UInt(1.W))
+        // branch
+        val nextPC = Output(UInt(32.W))
     })
     val Address = io.prev.bits.ALUOut
     val Op = io.prev.bits.memOp
@@ -110,7 +112,8 @@ class lsu extends Module {
         MemOp.sth -> GenMask,
         MemOp.stw -> GenMask,
     ))
-    
+    io.nextPC := io.prev.bits.nextPC
+
     io.ext_out.valid := io.prev.bits.memOp =/= MemOp.other && io.prev.valid
     io.ext_in.ready := 1.B
 

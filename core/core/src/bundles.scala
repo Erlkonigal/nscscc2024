@@ -162,6 +162,8 @@ class exu_lsu extends Bundle {
 // RegFile
     val rd = Output(UInt(5.W))
     val rd_data = Output(UInt(32.W))
+// branch
+    val nextPC = Output(UInt(32.W))
 }
 
 class lsu_wbu extends Bundle {

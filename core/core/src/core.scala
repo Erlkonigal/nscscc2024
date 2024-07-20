@@ -24,9 +24,9 @@ class core extends Module {
     io.base_out <> ifu.io.base_out
     io.ext_out <> lsu.io.ext_out
 
-    val flush = idu.io.prev.bits.pc =/= exu.io.nextPC &&
-                exu.io.prev.valid &&
-                exu.io.stall === 0.U
+    val flush = exu.io.prev.bits.pc =/= lsu.io.nextPC &&
+                lsu.io.prev.valid &&
+                lsu.io.stall === 0.U
 
     val fwctrl = Module(new forwarding())
     fwctrl.io.RD := idu.io.RD
@@ -42,9 +42,9 @@ class core extends Module {
     idu.io.stall := fwctrl.io.stall
     idu.io.flush := flush
     idu_exu.io.stall := 0.U
-    idu_exu.io.flush := 0.U
+    idu_exu.io.flush := flush
     exu.io.stall := 0.U
-    exu.io.flush := 0.U
+    exu.io.flush := flush
     exu_lsu.io.stall := 0.U
     exu_lsu.io.flush := 0.U
     lsu.io.stall := 0.U
@@ -52,7 +52,7 @@ class core extends Module {
     lsu_wbu.io.stall := 0.U
     lsu_wbu.io.flush := 0.U
 
-    ifu.io.nextPC := exu.io.nextPC
+    ifu.io.nextPC := lsu.io.nextPC
     idu.io.wen := wbu.io.wen
     idu.io.waddr := wbu.io.waddr
     idu.io.wdata := wbu.io.wdata // write back

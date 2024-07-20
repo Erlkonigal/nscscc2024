@@ -922,7 +922,8 @@ endmodule
   output [2:0]  io_next_bits_FwEX_RD,	// core/src/core.scala:85:16
                 io_next_bits_FwEX_RJ,	// core/src/core.scala:85:16
                 io_next_bits_FwEX_RK,	// core/src/core.scala:85:16
-  output [31:0] io_next_bits_pc	// core/src/core.scala:85:16
+  output [31:0] io_next_bits_pc,	// core/src/core.scala:85:16
+  input         io_flush	// core/src/core.scala:85:16
 );
 
   reg        state;	// core/src/core.scala:91:24
@@ -946,23 +947,43 @@ endmodule
     if (reset)	// core/src/core.scala:84:7
       state <= 1'h0;	// core/src/core.scala:85:16, :91:24
     else	// core/src/core.scala:84:7
-      state <= io_prev_valid;	// core/src/core.scala:91:24
-    regs_aluOp <= io_prev_valid ? io_prev_bits_aluOp : 4'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_aluAsrc <= io_prev_valid ? io_prev_bits_aluAsrc : 2'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_aluBsrc <= io_prev_valid ? io_prev_bits_aluBsrc : 3'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
-    regs_branchOp <= io_prev_valid ? io_prev_bits_branchOp : 4'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_memOp <= io_prev_valid ? io_prev_bits_memOp : 4'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_wbSel <= io_prev_valid ? io_prev_bits_wbSel : 2'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_Imm <= io_prev_valid ? io_prev_bits_Imm : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_rd_data <= io_prev_valid ? io_prev_bits_rd_data : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_rj_data <= io_prev_valid ? io_prev_bits_rj_data : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_rk_data <= io_prev_valid ? io_prev_bits_rk_data : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
-    regs_FwEX_RD <= io_prev_valid ? io_prev_bits_FwEX_RD : 3'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
-    regs_FwEX_RJ <= io_prev_valid ? io_prev_bits_FwEX_RJ : 3'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
-    regs_FwEX_RK <= io_prev_valid ? io_prev_bits_FwEX_RK : 3'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
-    regs_pc <= io_prev_valid ? io_prev_bits_pc : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      state <= ~io_flush & io_prev_valid;	// core/src/core.scala:91:24, :95:28, :96:15, :99:33
+    if (io_flush) begin	// core/src/core.scala:84:7
+      regs_aluOp <= 4'h0;	// core/src/core.scala:92:19, :97:29
+      regs_aluAsrc <= 2'h0;	// core/src/core.scala:92:19, :97:29
+      regs_aluBsrc <= 3'h0;	// core/src/core.scala:84:7, :92:19
+      regs_branchOp <= 4'h0;	// core/src/core.scala:92:19, :97:29
+      regs_memOp <= 4'h0;	// core/src/core.scala:92:19, :97:29
+      regs_wbSel <= 2'h0;	// core/src/core.scala:92:19, :97:29
+      regs_wbDst <= 2'h0;	// core/src/core.scala:92:19, :97:29
+      regs_Imm <= 32'h0;	// core/src/core.scala:92:19, :97:29
+      regs_rd <= 5'h0;	// core/src/core.scala:92:19, :97:29
+      regs_rd_data <= 32'h0;	// core/src/core.scala:92:19, :97:29
+      regs_rj_data <= 32'h0;	// core/src/core.scala:92:19, :97:29
+      regs_rk_data <= 32'h0;	// core/src/core.scala:92:19, :97:29
+      regs_FwEX_RD <= 3'h0;	// core/src/core.scala:84:7, :92:19
+      regs_FwEX_RJ <= 3'h0;	// core/src/core.scala:84:7, :92:19
+      regs_FwEX_RK <= 3'h0;	// core/src/core.scala:84:7, :92:19
+      regs_pc <= 32'h0;	// core/src/core.scala:92:19, :97:29
+    end
+    else begin	// core/src/core.scala:84:7
+      regs_aluOp <= io_prev_valid ? io_prev_bits_aluOp : 4'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_aluAsrc <= io_prev_valid ? io_prev_bits_aluAsrc : 2'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_aluBsrc <= io_prev_valid ? io_prev_bits_aluBsrc : 3'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
+      regs_branchOp <= io_prev_valid ? io_prev_bits_branchOp : 4'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_memOp <= io_prev_valid ? io_prev_bits_memOp : 4'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_wbSel <= io_prev_valid ? io_prev_bits_wbSel : 2'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_Imm <= io_prev_valid ? io_prev_bits_Imm : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_rd_data <= io_prev_valid ? io_prev_bits_rd_data : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_rj_data <= io_prev_valid ? io_prev_bits_rj_data : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_rk_data <= io_prev_valid ? io_prev_bits_rk_data : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+      regs_FwEX_RD <= io_prev_valid ? io_prev_bits_FwEX_RD : 3'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
+      regs_FwEX_RJ <= io_prev_valid ? io_prev_bits_FwEX_RJ : 3'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
+      regs_FwEX_RK <= io_prev_valid ? io_prev_bits_FwEX_RK : 3'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
+      regs_pc <= io_prev_valid ? io_prev_bits_pc : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+    end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:84:7
     `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:84:7
@@ -987,13 +1008,13 @@ endmodule
         regs_wbDst = _RANDOM[3'h0][21:20];	// core/src/core.scala:84:7, :91:24, :92:19
         regs_Imm = {_RANDOM[3'h0][31:22], _RANDOM[3'h1][21:0]};	// core/src/core.scala:84:7, :91:24, :92:19
         regs_rd = _RANDOM[3'h1][26:22];	// core/src/core.scala:84:7, :92:19
-        regs_rd_data = {_RANDOM[3'h1][31:27], _RANDOM[3'h2][26:0]};	// core/src/core.scala:84:7, :92:19
-        regs_rj_data = {_RANDOM[3'h2][31:27], _RANDOM[3'h3][26:0]};	// core/src/core.scala:84:7, :92:19
-        regs_rk_data = {_RANDOM[3'h3][31:27], _RANDOM[3'h4][26:0]};	// core/src/core.scala:84:7, :92:19
-        regs_FwEX_RD = _RANDOM[3'h4][29:27];	// core/src/core.scala:84:7, :92:19
-        regs_FwEX_RJ = {_RANDOM[3'h4][31:30], _RANDOM[3'h5][0]};	// core/src/core.scala:84:7, :92:19
-        regs_FwEX_RK = _RANDOM[3'h5][3:1];	// core/src/core.scala:84:7, :92:19
-        regs_pc = {_RANDOM[3'h5][31:4], _RANDOM[3'h6][3:0]};	// core/src/core.scala:84:7, :92:19
+        regs_rd_data = {_RANDOM[3'h2][31:5], _RANDOM[3'h3][4:0]};	// core/src/core.scala:84:7, :92:19
+        regs_rj_data = {_RANDOM[3'h3][31:5], _RANDOM[3'h4][4:0]};	// core/src/core.scala:84:7, :92:19
+        regs_rk_data = {_RANDOM[3'h4][31:5], _RANDOM[3'h5][4:0]};	// core/src/core.scala:84:7, :92:19
+        regs_FwEX_RD = _RANDOM[3'h5][7:5];	// core/src/core.scala:84:7, :92:19
+        regs_FwEX_RJ = _RANDOM[3'h5][10:8];	// core/src/core.scala:84:7, :92:19
+        regs_FwEX_RK = _RANDOM[3'h5][13:11];	// core/src/core.scala:84:7, :92:19
+        regs_pc = {_RANDOM[3'h5][31:14], _RANDOM[3'h6][13:0]};	// core/src/core.scala:84:7, :92:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:84:7
@@ -1021,689 +1042,689 @@ endmodule
 
 // external module mult_gen_0
 
-(*DONT_TOUCH="TRUE"*)module bshifter(	// core/src/exu.scala:158:7
-  input  [31:0] io_A,	// core/src/exu.scala:159:16
-  input  [4:0]  io_B,	// core/src/exu.scala:159:16
-  input  [3:0]  io_Op,	// core/src/exu.scala:159:16
-  output [31:0] io_Out	// core/src/exu.scala:159:16
+(*DONT_TOUCH="TRUE"*)module bshifter(	// core/src/exu.scala:156:7
+  input  [31:0] io_A,	// core/src/exu.scala:157:16
+  input  [4:0]  io_B,	// core/src/exu.scala:157:16
+  input  [3:0]  io_Op,	// core/src/exu.scala:157:16
+  output [31:0] io_Out	// core/src/exu.scala:157:16
 );
 
-  wire _GEN = io_Op != 4'h8;	// core/src/exu.scala:172:53
+  wire _GEN = io_Op != 4'h8;	// core/src/exu.scala:170:53
   wire Shifter_1_0 =
-    io_B[0] ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[1] : _GEN & io_A[0]) : io_A[0];	// core/src/exu.scala:167:24, :171:{37,43}, :172:53
+    io_B[0] ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[1] : _GEN & io_A[0]) : io_A[0];	// core/src/exu.scala:165:24, :169:{37,43}, :170:53
   wire Shifter_1_1 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[2] : io_Op == 4'h8 ? io_A[0] : io_A[1])
-      : io_A[1];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[1];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_2 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[3] : io_Op == 4'h8 ? io_A[1] : io_A[2])
-      : io_A[2];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[2];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_3 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[4] : io_Op == 4'h8 ? io_A[2] : io_A[3])
-      : io_A[3];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[3];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_4 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[5] : io_Op == 4'h8 ? io_A[3] : io_A[4])
-      : io_A[4];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[4];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_5 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[6] : io_Op == 4'h8 ? io_A[4] : io_A[5])
-      : io_A[5];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[5];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_6 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[7] : io_Op == 4'h8 ? io_A[5] : io_A[6])
-      : io_A[6];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[6];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_7 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[8] : io_Op == 4'h8 ? io_A[6] : io_A[7])
-      : io_A[7];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[7];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_8 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[9] : io_Op == 4'h8 ? io_A[7] : io_A[8])
-      : io_A[8];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[8];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_9 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[10] : io_Op == 4'h8 ? io_A[8] : io_A[9])
-      : io_A[9];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[9];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_10 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[11] : io_Op == 4'h8 ? io_A[9] : io_A[10])
-      : io_A[10];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[10];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_11 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[12] : io_Op == 4'h8 ? io_A[10] : io_A[11])
-      : io_A[11];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[11];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_12 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[13] : io_Op == 4'h8 ? io_A[11] : io_A[12])
-      : io_A[12];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[12];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_13 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[14] : io_Op == 4'h8 ? io_A[12] : io_A[13])
-      : io_A[13];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[13];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_14 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[15] : io_Op == 4'h8 ? io_A[13] : io_A[14])
-      : io_A[14];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[14];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_15 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[16] : io_Op == 4'h8 ? io_A[14] : io_A[15])
-      : io_A[15];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[15];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_16 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[17] : io_Op == 4'h8 ? io_A[15] : io_A[16])
-      : io_A[16];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[16];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_17 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[18] : io_Op == 4'h8 ? io_A[16] : io_A[17])
-      : io_A[17];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[17];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_18 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[19] : io_Op == 4'h8 ? io_A[17] : io_A[18])
-      : io_A[18];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[18];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_19 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[20] : io_Op == 4'h8 ? io_A[18] : io_A[19])
-      : io_A[19];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[19];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_20 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[21] : io_Op == 4'h8 ? io_A[19] : io_A[20])
-      : io_A[20];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[20];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_21 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[22] : io_Op == 4'h8 ? io_A[20] : io_A[21])
-      : io_A[21];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[21];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_22 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[23] : io_Op == 4'h8 ? io_A[21] : io_A[22])
-      : io_A[22];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[22];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_23 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[24] : io_Op == 4'h8 ? io_A[22] : io_A[23])
-      : io_A[23];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[23];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_24 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[25] : io_Op == 4'h8 ? io_A[23] : io_A[24])
-      : io_A[24];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[24];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_25 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[26] : io_Op == 4'h8 ? io_A[24] : io_A[25])
-      : io_A[25];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[25];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_26 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[27] : io_Op == 4'h8 ? io_A[25] : io_A[26])
-      : io_A[26];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[26];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_27 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[28] : io_Op == 4'h8 ? io_A[26] : io_A[27])
-      : io_A[27];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[27];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_28 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[29] : io_Op == 4'h8 ? io_A[27] : io_A[28])
-      : io_A[28];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[28];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_29 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[30] : io_Op == 4'h8 ? io_A[28] : io_A[29])
-      : io_A[29];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
+      : io_A[29];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
   wire Shifter_1_30 =
     io_B[0]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? io_A[31] : io_Op == 4'h8 ? io_A[29] : io_A[30])
-      : io_A[30];	// core/src/exu.scala:167:24, :171:43, :172:53, :187:37, :188:53
-  wire _GEN_0 = io_Op != 4'h9;	// core/src/exu.scala:172:53, :180:53
+      : io_A[30];	// core/src/exu.scala:165:24, :169:43, :170:53, :185:37, :186:53
+  wire _GEN_0 = io_Op != 4'h9;	// core/src/exu.scala:170:53, :178:53
   wire Shifter_1_31 =
     ~(io_B[0]) | io_Op == 4'hA
       ? io_A[31]
-      : _GEN_0 & (io_Op == 4'h8 ? io_A[30] : io_A[31]);	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53
+      : _GEN_0 & (io_Op == 4'h8 ? io_A[30] : io_A[31]);	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53
   wire Shifter_2_0 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_1_2 : _GEN & Shifter_1_0)
-      : Shifter_1_0;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_1_0;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_2_1 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_1_3 : _GEN & Shifter_1_1)
-      : Shifter_1_1;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_1_1;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_2_2 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_4
            : io_Op == 4'h8 ? Shifter_1_0 : Shifter_1_2)
-      : Shifter_1_2;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37, :188:53
+      : Shifter_1_2;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37, :186:53
   wire Shifter_2_3 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_5
            : io_Op == 4'h8 ? Shifter_1_1 : Shifter_1_3)
-      : Shifter_1_3;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_3;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_4 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_6
            : io_Op == 4'h8 ? Shifter_1_2 : Shifter_1_4)
-      : Shifter_1_4;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_4;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_5 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_7
            : io_Op == 4'h8 ? Shifter_1_3 : Shifter_1_5)
-      : Shifter_1_5;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_5;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_6 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_8
            : io_Op == 4'h8 ? Shifter_1_4 : Shifter_1_6)
-      : Shifter_1_6;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_6;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_7 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_9
            : io_Op == 4'h8 ? Shifter_1_5 : Shifter_1_7)
-      : Shifter_1_7;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_7;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_8 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_10
            : io_Op == 4'h8 ? Shifter_1_6 : Shifter_1_8)
-      : Shifter_1_8;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_8;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_9 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_11
            : io_Op == 4'h8 ? Shifter_1_7 : Shifter_1_9)
-      : Shifter_1_9;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_9;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_10 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_12
            : io_Op == 4'h8 ? Shifter_1_8 : Shifter_1_10)
-      : Shifter_1_10;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_10;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_11 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_13
            : io_Op == 4'h8 ? Shifter_1_9 : Shifter_1_11)
-      : Shifter_1_11;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_11;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_12 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_14
            : io_Op == 4'h8 ? Shifter_1_10 : Shifter_1_12)
-      : Shifter_1_12;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_12;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_13 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_15
            : io_Op == 4'h8 ? Shifter_1_11 : Shifter_1_13)
-      : Shifter_1_13;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_13;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_14 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_16
            : io_Op == 4'h8 ? Shifter_1_12 : Shifter_1_14)
-      : Shifter_1_14;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_14;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_15 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_17
            : io_Op == 4'h8 ? Shifter_1_13 : Shifter_1_15)
-      : Shifter_1_15;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_15;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_16 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_18
            : io_Op == 4'h8 ? Shifter_1_14 : Shifter_1_16)
-      : Shifter_1_16;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_16;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_17 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_19
            : io_Op == 4'h8 ? Shifter_1_15 : Shifter_1_17)
-      : Shifter_1_17;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_17;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_18 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_20
            : io_Op == 4'h8 ? Shifter_1_16 : Shifter_1_18)
-      : Shifter_1_18;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_18;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_19 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_21
            : io_Op == 4'h8 ? Shifter_1_17 : Shifter_1_19)
-      : Shifter_1_19;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_19;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_20 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_22
            : io_Op == 4'h8 ? Shifter_1_18 : Shifter_1_20)
-      : Shifter_1_20;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_20;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_21 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_23
            : io_Op == 4'h8 ? Shifter_1_19 : Shifter_1_21)
-      : Shifter_1_21;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_21;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_22 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_24
            : io_Op == 4'h8 ? Shifter_1_20 : Shifter_1_22)
-      : Shifter_1_22;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_22;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_23 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_25
            : io_Op == 4'h8 ? Shifter_1_21 : Shifter_1_23)
-      : Shifter_1_23;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_23;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_24 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_26
            : io_Op == 4'h8 ? Shifter_1_22 : Shifter_1_24)
-      : Shifter_1_24;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_24;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_25 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_27
            : io_Op == 4'h8 ? Shifter_1_23 : Shifter_1_25)
-      : Shifter_1_25;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_25;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_26 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_28
            : io_Op == 4'h8 ? Shifter_1_24 : Shifter_1_26)
-      : Shifter_1_26;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_26;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_27 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_29
            : io_Op == 4'h8 ? Shifter_1_25 : Shifter_1_27)
-      : Shifter_1_27;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_27;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_28 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_30
            : io_Op == 4'h8 ? Shifter_1_26 : Shifter_1_28)
-      : Shifter_1_28;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_1_28;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_2_29 =
     io_B[1]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_1_31
            : io_Op == 4'h8 ? Shifter_1_27 : Shifter_1_29)
-      : Shifter_1_29;	// core/src/exu.scala:171:43, :172:53, :179:37, :187:37, :188:53
+      : Shifter_1_29;	// core/src/exu.scala:169:43, :170:53, :177:37, :185:37, :186:53
   wire Shifter_2_30 =
     io_B[1]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_1_28 : Shifter_1_30))
-      : Shifter_1_30;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_1_30;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_2_31 =
     io_B[1]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_1_29 : Shifter_1_31))
-      : Shifter_1_31;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_1_31;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_3_0 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_2_4 : _GEN & Shifter_2_0)
-      : Shifter_2_0;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_2_0;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_3_1 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_2_5 : _GEN & Shifter_2_1)
-      : Shifter_2_1;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_2_1;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_3_2 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_2_6 : _GEN & Shifter_2_2)
-      : Shifter_2_2;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_2_2;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_3_3 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_2_7 : _GEN & Shifter_2_3)
-      : Shifter_2_3;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_2_3;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_3_4 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_8
            : io_Op == 4'h8 ? Shifter_2_0 : Shifter_2_4)
-      : Shifter_2_4;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37, :188:53
+      : Shifter_2_4;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37, :186:53
   wire Shifter_3_5 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_9
            : io_Op == 4'h8 ? Shifter_2_1 : Shifter_2_5)
-      : Shifter_2_5;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37, :188:53
+      : Shifter_2_5;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37, :186:53
   wire Shifter_3_6 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_10
            : io_Op == 4'h8 ? Shifter_2_2 : Shifter_2_6)
-      : Shifter_2_6;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_6;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_7 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_11
            : io_Op == 4'h8 ? Shifter_2_3 : Shifter_2_7)
-      : Shifter_2_7;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_7;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_8 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_12
            : io_Op == 4'h8 ? Shifter_2_4 : Shifter_2_8)
-      : Shifter_2_8;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_8;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_9 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_13
            : io_Op == 4'h8 ? Shifter_2_5 : Shifter_2_9)
-      : Shifter_2_9;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_9;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_10 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_14
            : io_Op == 4'h8 ? Shifter_2_6 : Shifter_2_10)
-      : Shifter_2_10;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_10;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_11 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_15
            : io_Op == 4'h8 ? Shifter_2_7 : Shifter_2_11)
-      : Shifter_2_11;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_11;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_12 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_16
            : io_Op == 4'h8 ? Shifter_2_8 : Shifter_2_12)
-      : Shifter_2_12;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_12;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_13 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_17
            : io_Op == 4'h8 ? Shifter_2_9 : Shifter_2_13)
-      : Shifter_2_13;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_13;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_14 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_18
            : io_Op == 4'h8 ? Shifter_2_10 : Shifter_2_14)
-      : Shifter_2_14;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_14;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_15 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_19
            : io_Op == 4'h8 ? Shifter_2_11 : Shifter_2_15)
-      : Shifter_2_15;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_15;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_16 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_20
            : io_Op == 4'h8 ? Shifter_2_12 : Shifter_2_16)
-      : Shifter_2_16;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_16;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_17 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_21
            : io_Op == 4'h8 ? Shifter_2_13 : Shifter_2_17)
-      : Shifter_2_17;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_17;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_18 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_22
            : io_Op == 4'h8 ? Shifter_2_14 : Shifter_2_18)
-      : Shifter_2_18;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_18;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_19 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_23
            : io_Op == 4'h8 ? Shifter_2_15 : Shifter_2_19)
-      : Shifter_2_19;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_19;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_20 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_24
            : io_Op == 4'h8 ? Shifter_2_16 : Shifter_2_20)
-      : Shifter_2_20;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_20;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_21 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_25
            : io_Op == 4'h8 ? Shifter_2_17 : Shifter_2_21)
-      : Shifter_2_21;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_21;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_22 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_26
            : io_Op == 4'h8 ? Shifter_2_18 : Shifter_2_22)
-      : Shifter_2_22;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_22;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_23 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_27
            : io_Op == 4'h8 ? Shifter_2_19 : Shifter_2_23)
-      : Shifter_2_23;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_23;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_24 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_28
            : io_Op == 4'h8 ? Shifter_2_20 : Shifter_2_24)
-      : Shifter_2_24;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_24;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_25 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_29
            : io_Op == 4'h8 ? Shifter_2_21 : Shifter_2_25)
-      : Shifter_2_25;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_2_25;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_3_26 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_30
            : io_Op == 4'h8 ? Shifter_2_22 : Shifter_2_26)
-      : Shifter_2_26;	// core/src/exu.scala:171:43, :172:53, :179:37, :187:37, :188:53
+      : Shifter_2_26;	// core/src/exu.scala:169:43, :170:53, :177:37, :185:37, :186:53
   wire Shifter_3_27 =
     io_B[2]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_2_31
            : io_Op == 4'h8 ? Shifter_2_23 : Shifter_2_27)
-      : Shifter_2_27;	// core/src/exu.scala:171:43, :172:53, :179:37, :187:37, :188:53
+      : Shifter_2_27;	// core/src/exu.scala:169:43, :170:53, :177:37, :185:37, :186:53
   wire Shifter_3_28 =
     io_B[2]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_2_24 : Shifter_2_28))
-      : Shifter_2_28;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_2_28;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_3_29 =
     io_B[2]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_2_25 : Shifter_2_29))
-      : Shifter_2_29;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_2_29;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_3_30 =
     io_B[2]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_2_26 : Shifter_2_30))
-      : Shifter_2_30;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_2_30;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_3_31 =
     io_B[2]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_2_27 : Shifter_2_31))
-      : Shifter_2_31;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_2_31;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_4_0 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_3_8 : _GEN & Shifter_3_0)
-      : Shifter_3_0;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_3_0;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_4_1 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_3_9 : _GEN & Shifter_3_1)
-      : Shifter_3_1;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_3_1;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_4_2 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_3_10 : _GEN & Shifter_3_2)
-      : Shifter_3_2;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_3_2;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_4_3 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_3_11 : _GEN & Shifter_3_3)
-      : Shifter_3_3;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_3_3;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_4_4 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_3_12 : _GEN & Shifter_3_4)
-      : Shifter_3_4;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_3_4;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_4_5 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_3_13 : _GEN & Shifter_3_5)
-      : Shifter_3_5;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_3_5;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_4_6 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_3_14 : _GEN & Shifter_3_6)
-      : Shifter_3_6;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_3_6;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_4_7 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_3_15 : _GEN & Shifter_3_7)
-      : Shifter_3_7;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37
+      : Shifter_3_7;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37
   wire Shifter_4_8 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_16
            : io_Op == 4'h8 ? Shifter_3_0 : Shifter_3_8)
-      : Shifter_3_8;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37, :188:53
+      : Shifter_3_8;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37, :186:53
   wire Shifter_4_9 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_17
            : io_Op == 4'h8 ? Shifter_3_1 : Shifter_3_9)
-      : Shifter_3_9;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37, :188:53
+      : Shifter_3_9;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37, :186:53
   wire Shifter_4_10 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_18
            : io_Op == 4'h8 ? Shifter_3_2 : Shifter_3_10)
-      : Shifter_3_10;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37, :188:53
+      : Shifter_3_10;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37, :186:53
   wire Shifter_4_11 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_19
            : io_Op == 4'h8 ? Shifter_3_3 : Shifter_3_11)
-      : Shifter_3_11;	// core/src/exu.scala:171:{37,43}, :172:53, :187:37, :188:53
+      : Shifter_3_11;	// core/src/exu.scala:169:{37,43}, :170:53, :185:37, :186:53
   wire Shifter_4_12 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_20
            : io_Op == 4'h8 ? Shifter_3_4 : Shifter_3_12)
-      : Shifter_3_12;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_3_12;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_4_13 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_21
            : io_Op == 4'h8 ? Shifter_3_5 : Shifter_3_13)
-      : Shifter_3_13;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_3_13;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_4_14 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_22
            : io_Op == 4'h8 ? Shifter_3_6 : Shifter_3_14)
-      : Shifter_3_14;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_3_14;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_4_15 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_23
            : io_Op == 4'h8 ? Shifter_3_7 : Shifter_3_15)
-      : Shifter_3_15;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_3_15;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_4_16 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_24
            : io_Op == 4'h8 ? Shifter_3_8 : Shifter_3_16)
-      : Shifter_3_16;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_3_16;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_4_17 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_25
            : io_Op == 4'h8 ? Shifter_3_9 : Shifter_3_17)
-      : Shifter_3_17;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_3_17;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_4_18 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_26
            : io_Op == 4'h8 ? Shifter_3_10 : Shifter_3_18)
-      : Shifter_3_18;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_3_18;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_4_19 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_27
            : io_Op == 4'h8 ? Shifter_3_11 : Shifter_3_19)
-      : Shifter_3_19;	// core/src/exu.scala:171:43, :172:53, :187:37, :188:53
+      : Shifter_3_19;	// core/src/exu.scala:169:43, :170:53, :185:37, :186:53
   wire Shifter_4_20 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_28
            : io_Op == 4'h8 ? Shifter_3_12 : Shifter_3_20)
-      : Shifter_3_20;	// core/src/exu.scala:171:43, :172:53, :179:37, :187:37, :188:53
+      : Shifter_3_20;	// core/src/exu.scala:169:43, :170:53, :177:37, :185:37, :186:53
   wire Shifter_4_21 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_29
            : io_Op == 4'h8 ? Shifter_3_13 : Shifter_3_21)
-      : Shifter_3_21;	// core/src/exu.scala:171:43, :172:53, :179:37, :187:37, :188:53
+      : Shifter_3_21;	// core/src/exu.scala:169:43, :170:53, :177:37, :185:37, :186:53
   wire Shifter_4_22 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_30
            : io_Op == 4'h8 ? Shifter_3_14 : Shifter_3_22)
-      : Shifter_3_22;	// core/src/exu.scala:171:43, :172:53, :179:37, :187:37, :188:53
+      : Shifter_3_22;	// core/src/exu.scala:169:43, :170:53, :177:37, :185:37, :186:53
   wire Shifter_4_23 =
     io_B[3]
       ? (io_Op == 4'hA | io_Op == 4'h9
            ? Shifter_3_31
            : io_Op == 4'h8 ? Shifter_3_15 : Shifter_3_23)
-      : Shifter_3_23;	// core/src/exu.scala:171:43, :172:53, :179:37, :187:37, :188:53
+      : Shifter_3_23;	// core/src/exu.scala:169:43, :170:53, :177:37, :185:37, :186:53
   wire Shifter_4_24 =
     io_B[3]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_3_16 : Shifter_3_24))
-      : Shifter_3_24;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_3_24;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_4_25 =
     io_B[3]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_3_17 : Shifter_3_25))
-      : Shifter_3_25;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_3_25;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_4_26 =
     io_B[3]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_3_18 : Shifter_3_26))
-      : Shifter_3_26;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_3_26;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_4_27 =
     io_B[3]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_3_19 : Shifter_3_27))
-      : Shifter_3_27;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_3_27;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_4_28 =
     io_B[3]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_3_20 : Shifter_3_28))
-      : Shifter_3_28;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_3_28;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_4_29 =
     io_B[3]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_3_21 : Shifter_3_29))
-      : Shifter_3_29;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_3_29;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_4_30 =
     io_B[3]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_3_22 : Shifter_3_30))
-      : Shifter_3_30;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_3_30;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   wire Shifter_4_31 =
     io_B[3]
       ? (io_Op == 4'hA
            ? io_A[31]
            : _GEN_0 & (io_Op == 4'h8 ? Shifter_3_23 : Shifter_3_31))
-      : Shifter_3_31;	// core/src/exu.scala:167:24, :171:43, :172:53, :179:37, :180:53, :187:37
+      : Shifter_3_31;	// core/src/exu.scala:165:24, :169:43, :170:53, :177:37, :178:53, :185:37
   assign io_Out =
     {io_B[4]
        ? (io_Op == 4'hA
@@ -1832,26 +1853,26 @@ endmodule
        : Shifter_4_1,
      io_B[4]
        ? (io_Op == 4'hA | io_Op == 4'h9 ? Shifter_4_16 : _GEN & Shifter_4_0)
-       : Shifter_4_0};	// core/src/exu.scala:158:7, :167:24, :171:{37,43}, :172:53, :179:37, :180:53, :187:37, :196:26
+       : Shifter_4_0};	// core/src/exu.scala:156:7, :165:24, :169:{37,43}, :170:53, :177:37, :178:53, :185:37, :194:26
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module alu(	// core/src/exu.scala:109:7
-  input  [31:0] io_A,	// core/src/exu.scala:110:16
-                io_B,	// core/src/exu.scala:110:16
-  input  [3:0]  io_Op,	// core/src/exu.scala:110:16
-  output [31:0] io_Out,	// core/src/exu.scala:110:16
-  output        io_ULess,	// core/src/exu.scala:110:16
-                io_SLess,	// core/src/exu.scala:110:16
-                io_Zero	// core/src/exu.scala:110:16
+(*DONT_TOUCH="TRUE"*)module alu(	// core/src/exu.scala:107:7
+  input  [31:0] io_A,	// core/src/exu.scala:108:16
+                io_B,	// core/src/exu.scala:108:16
+  input  [3:0]  io_Op,	// core/src/exu.scala:108:16
+  output [31:0] io_Out,	// core/src/exu.scala:108:16
+  output        io_ULess,	// core/src/exu.scala:108:16
+                io_SLess,	// core/src/exu.scala:108:16
+                io_Zero	// core/src/exu.scala:108:16
 );
 
-  wire [31:0]       _Shifter_io_Out;	// core/src/exu.scala:135:25
-  wire              Sub = io_Op == 4'h3 | io_Op == 4'h2 | io_Op == 4'h1;	// core/src/exu.scala:120:37
-  wire [31:0]       FixB = io_B ^ {32{Sub}};	// core/src/exu.scala:120:37, :128:{21,27}
-  wire [33:0]       FixSum = {1'h0, {1'h0, io_A} + {1'h0, FixB}} + {33'h0, Sub};	// core/src/exu.scala:120:37, :128:21, :129:{23,31}
-  wire              SLess = FixSum[31] ^ io_A[31] == FixB[31] & FixSum[31] != io_A[31];	// core/src/exu.scala:128:21, :129:31, :130:{19,24,32,38,48,53}, :132:29
-  wire [31:0]       _io_Out_T_5 = io_A | io_B;	// core/src/exu.scala:146:27
-  wire [33:0]       _GEN = {2'h0, _Shifter_io_Out};	// core/src/exu.scala:120:37, :135:25, :140:37
+  wire [31:0]       _Shifter_io_Out;	// core/src/exu.scala:133:25
+  wire              Sub = io_Op == 4'h3 | io_Op == 4'h2 | io_Op == 4'h1;	// core/src/exu.scala:118:37
+  wire [31:0]       FixB = io_B ^ {32{Sub}};	// core/src/exu.scala:118:37, :126:{21,27}
+  wire [33:0]       FixSum = {1'h0, {1'h0, io_A} + {1'h0, FixB}} + {33'h0, Sub};	// core/src/exu.scala:118:37, :126:21, :127:{23,31}
+  wire              SLess = FixSum[31] ^ io_A[31] == FixB[31] & FixSum[31] != io_A[31];	// core/src/exu.scala:126:21, :127:31, :128:{19,24,32,38,48,53}, :130:29
+  wire [31:0]       _io_Out_T_5 = io_A | io_B;	// core/src/exu.scala:144:27
+  wire [33:0]       _GEN = {2'h0, _Shifter_io_Out};	// core/src/exu.scala:118:37, :133:25, :138:37
   wire [15:0][33:0] _GEN_0 =
     {{34'h0},
      {34'h0},
@@ -1868,28 +1889,28 @@ endmodule
      {{33'h0, ~(FixSum[32])}},
      {{33'h0, SLess}},
      {FixSum},
-     {FixSum}};	// core/src/exu.scala:120:37, :129:31, :132:29, :133:{17,24}, :140:37, :145:28, :146:27, :147:28, :148:22
-  bshifter Shifter (	// core/src/exu.scala:135:25
+     {FixSum}};	// core/src/exu.scala:118:37, :127:31, :130:29, :131:{17,24}, :138:37, :143:28, :144:27, :145:28, :146:22
+  bshifter Shifter (	// core/src/exu.scala:133:25
     .io_A   (io_A),
-    .io_B   (io_B[4:0]),	// core/src/exu.scala:137:25
+    .io_B   (io_B[4:0]),	// core/src/exu.scala:135:25
     .io_Op  (io_Op),
     .io_Out (_Shifter_io_Out)
   );
-  assign io_Out = _GEN_0[io_Op][31:0];	// core/src/exu.scala:109:7, :140:{12,37}
-  assign io_ULess = ~(FixSum[32]);	// core/src/exu.scala:109:7, :129:31, :133:{17,24}
-  assign io_SLess = SLess;	// core/src/exu.scala:109:7, :132:29
-  assign io_Zero = FixSum[31:0] == 32'h0;	// core/src/exu.scala:109:7, :128:27, :129:31, :131:{21,29}
+  assign io_Out = _GEN_0[io_Op][31:0];	// core/src/exu.scala:107:7, :138:{12,37}
+  assign io_ULess = ~(FixSum[32]);	// core/src/exu.scala:107:7, :127:31, :131:{17,24}
+  assign io_SLess = SLess;	// core/src/exu.scala:107:7, :130:29
+  assign io_Zero = FixSum[31:0] == 32'h0;	// core/src/exu.scala:107:7, :126:27, :127:31, :129:{21,29}
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module branchContr(	// core/src/exu.scala:78:7
-  input  [31:0] io_pc,	// core/src/exu.scala:79:16
-                io_rj_data,	// core/src/exu.scala:79:16
-                io_offset,	// core/src/exu.scala:79:16
-  input  [3:0]  io_branchOp,	// core/src/exu.scala:79:16
-  input         io_SLess,	// core/src/exu.scala:79:16
-                io_ULess,	// core/src/exu.scala:79:16
-                io_Zero,	// core/src/exu.scala:79:16
-  output [31:0] io_nextPC	// core/src/exu.scala:79:16
+(*DONT_TOUCH="TRUE"*)module branchContr(	// core/src/exu.scala:76:7
+  input  [31:0] io_pc,	// core/src/exu.scala:77:16
+                io_rj_data,	// core/src/exu.scala:77:16
+                io_offset,	// core/src/exu.scala:77:16
+  input  [3:0]  io_branchOp,	// core/src/exu.scala:77:16
+  input         io_SLess,	// core/src/exu.scala:77:16
+                io_ULess,	// core/src/exu.scala:77:16
+                io_Zero,	// core/src/exu.scala:77:16
+  output [31:0] io_nextPC	// core/src/exu.scala:77:16
 );
 
   assign io_nextPC =
@@ -1906,7 +1927,7 @@ endmodule
                          ? (io_SLess ? io_offset : 32'h4)
                          : io_branchOp == 4'h1
                              ? (io_Zero ? 32'h4 : io_offset)
-                             : io_branchOp == 4'h0 & io_Zero ? io_offset : 32'h4);	// core/src/exu.scala:78:7, :90:48, :94:46, :95:26, :96:26, :97:26, :98:26, :99:27, :100:27, :106:25
+                             : io_branchOp == 4'h0 & io_Zero ? io_offset : 32'h4);	// core/src/exu.scala:76:7, :88:48, :92:46, :93:26, :94:26, :95:26, :96:26, :97:27, :98:27, :104:25
 endmodule
 
 (*DONT_TOUCH="TRUE"*)module exu(	// core/src/exu.scala:5:7
@@ -1935,17 +1956,18 @@ endmodule
                 io_next_bits_wbDst,	// core/src/exu.scala:6:16
   output [4:0]  io_next_bits_rd,	// core/src/exu.scala:6:16
   output [31:0] io_next_bits_rd_data,	// core/src/exu.scala:6:16
-                io_P,	// core/src/exu.scala:6:16
+                io_next_bits_nextPC,	// core/src/exu.scala:6:16
+  input         io_flush,	// core/src/exu.scala:6:16
+  output [31:0] io_P,	// core/src/exu.scala:6:16
   input  [31:0] io_ELALU,	// core/src/exu.scala:6:16
                 io_LWALU,	// core/src/exu.scala:6:16
-                io_LWMEM,	// core/src/exu.scala:6:16
-  output [31:0] io_nextPC	// core/src/exu.scala:6:16
+                io_LWMEM	// core/src/exu.scala:6:16
 );
 
-  wire        _ALU_io_ULess;	// core/src/exu.scala:23:21
-  wire        _ALU_io_SLess;	// core/src/exu.scala:23:21
-  wire        _ALU_io_Zero;	// core/src/exu.scala:23:21
-  wire [31:0] _mult_P;	// core/src/exu.scala:22:22
+  wire        _ALU_io_ULess;	// core/src/exu.scala:21:21
+  wire        _ALU_io_SLess;	// core/src/exu.scala:21:21
+  wire        _ALU_io_Zero;	// core/src/exu.scala:21:21
+  wire [31:0] _mult_P;	// core/src/exu.scala:20:22
   wire [31:0] ForwardRD =
     io_prev_bits_FwEX_RD == 3'h3
       ? _mult_P
@@ -1953,7 +1975,7 @@ endmodule
           ? io_LWMEM
           : io_prev_bits_FwEX_RD == 3'h1
               ? io_LWALU
-              : io_prev_bits_FwEX_RD == 3'h0 ? io_ELALU : io_prev_bits_rd_data;	// core/src/exu.scala:22:22, :33:75
+              : io_prev_bits_FwEX_RD == 3'h0 ? io_ELALU : io_prev_bits_rd_data;	// core/src/exu.scala:20:22, :31:75
   wire [31:0] ForwardRJ =
     io_prev_bits_FwEX_RJ == 3'h3
       ? _mult_P
@@ -1961,11 +1983,11 @@ endmodule
           ? io_LWMEM
           : io_prev_bits_FwEX_RJ == 3'h1
               ? io_LWALU
-              : io_prev_bits_FwEX_RJ == 3'h0 ? io_ELALU : io_prev_bits_rj_data;	// core/src/exu.scala:22:22, :33:75, :34:75
+              : io_prev_bits_FwEX_RJ == 3'h0 ? io_ELALU : io_prev_bits_rj_data;	// core/src/exu.scala:20:22, :31:75, :32:75
   wire [31:0] ALUA =
     io_prev_bits_aluAsrc == 2'h1
       ? io_prev_bits_pc
-      : io_prev_bits_aluAsrc == 2'h0 ? ForwardRJ : 32'h0;	// core/src/exu.scala:33:75, :34:75, :37:53
+      : io_prev_bits_aluAsrc == 2'h0 ? ForwardRJ : 32'h0;	// core/src/exu.scala:31:75, :32:75, :35:53
   wire [31:0] ALUB =
     io_prev_bits_aluBsrc == 3'h3
       ? 32'h4
@@ -1983,39 +2005,39 @@ endmodule
                                : io_prev_bits_FwEX_RK == 3'h0
                                    ? io_ELALU
                                    : io_prev_bits_rk_data)
-                  : 32'h0;	// core/src/exu.scala:22:22, :33:75, :35:75, :37:53, :41:53
-  mult_gen_0 mult (	// core/src/exu.scala:22:22
+                  : 32'h0;	// core/src/exu.scala:20:22, :31:75, :33:75, :35:53, :39:53
+  mult_gen_0 mult (	// core/src/exu.scala:20:22
     .CLK (clock),
-    .A   (ALUA),	// core/src/exu.scala:37:53
-    .B   (ALUB),	// core/src/exu.scala:41:53
+    .A   (ALUA),	// core/src/exu.scala:35:53
+    .B   (ALUB),	// core/src/exu.scala:39:53
     .P   (_mult_P)
   );
-  alu ALU (	// core/src/exu.scala:23:21
-    .io_A     (ALUA),	// core/src/exu.scala:37:53
-    .io_B     (ALUB),	// core/src/exu.scala:41:53
+  alu ALU (	// core/src/exu.scala:21:21
+    .io_A     (ALUA),	// core/src/exu.scala:35:53
+    .io_B     (ALUB),	// core/src/exu.scala:39:53
     .io_Op    (io_prev_bits_aluOp),
     .io_Out   (io_next_bits_ALUOut),
     .io_ULess (_ALU_io_ULess),
     .io_SLess (_ALU_io_SLess),
     .io_Zero  (_ALU_io_Zero)
   );
-  branchContr brCtrl (	// core/src/exu.scala:24:24
+  branchContr brCtrl (	// core/src/exu.scala:22:24
     .io_pc       (io_prev_bits_pc),
-    .io_rj_data  (ForwardRJ),	// core/src/exu.scala:34:75
+    .io_rj_data  (ForwardRJ),	// core/src/exu.scala:32:75
     .io_offset   (io_prev_bits_Imm),
     .io_branchOp (io_prev_bits_branchOp),
-    .io_SLess    (_ALU_io_SLess),	// core/src/exu.scala:23:21
-    .io_ULess    (_ALU_io_ULess),	// core/src/exu.scala:23:21
-    .io_Zero     (_ALU_io_Zero),	// core/src/exu.scala:23:21
-    .io_nextPC   (io_nextPC)
+    .io_SLess    (_ALU_io_SLess),	// core/src/exu.scala:21:21
+    .io_ULess    (_ALU_io_ULess),	// core/src/exu.scala:21:21
+    .io_Zero     (_ALU_io_Zero),	// core/src/exu.scala:21:21
+    .io_nextPC   (io_next_bits_nextPC)
   );
-  assign io_next_valid = io_prev_valid;	// core/src/exu.scala:5:7
+  assign io_next_valid = io_prev_valid & ~io_flush;	// core/src/exu.scala:5:7, :72:{56,68}
   assign io_next_bits_memOp = io_prev_bits_memOp;	// core/src/exu.scala:5:7
   assign io_next_bits_wbSel = io_prev_bits_wbSel;	// core/src/exu.scala:5:7
   assign io_next_bits_wbDst = io_prev_bits_wbDst;	// core/src/exu.scala:5:7
   assign io_next_bits_rd = io_prev_bits_rd;	// core/src/exu.scala:5:7
-  assign io_next_bits_rd_data = ForwardRD;	// core/src/exu.scala:5:7, :33:75
-  assign io_P = _mult_P;	// core/src/exu.scala:5:7, :22:22
+  assign io_next_bits_rd_data = ForwardRD;	// core/src/exu.scala:5:7, :31:75
+  assign io_P = _mult_P;	// core/src/exu.scala:5:7, :20:22
 endmodule
 
 (*DONT_TOUCH="TRUE"*)module buffer_2(	// core/src/core.scala:84:7
@@ -2028,13 +2050,15 @@ endmodule
                 io_prev_bits_wbDst,	// core/src/core.scala:85:16
   input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:85:16
   input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:85:16
+                io_prev_bits_nextPC,	// core/src/core.scala:85:16
   output        io_next_valid,	// core/src/core.scala:85:16
   output [31:0] io_next_bits_ALUOut,	// core/src/core.scala:85:16
   output [3:0]  io_next_bits_memOp,	// core/src/core.scala:85:16
   output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:85:16
                 io_next_bits_wbDst,	// core/src/core.scala:85:16
   output [4:0]  io_next_bits_rd,	// core/src/core.scala:85:16
-  output [31:0] io_next_bits_rd_data	// core/src/core.scala:85:16
+  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:85:16
+                io_next_bits_nextPC	// core/src/core.scala:85:16
 );
 
   reg        state;	// core/src/core.scala:91:24
@@ -2044,6 +2068,7 @@ endmodule
   reg [1:0]  regs_wbDst;	// core/src/core.scala:92:19
   reg [4:0]  regs_rd;	// core/src/core.scala:92:19
   reg [31:0] regs_rd_data;	// core/src/core.scala:92:19
+  reg [31:0] regs_nextPC;	// core/src/core.scala:92:19
   always @(posedge clock) begin	// core/src/core.scala:84:7
     if (reset)	// core/src/core.scala:84:7
       state <= 1'h0;	// core/src/core.scala:85:16, :91:24
@@ -2055,19 +2080,20 @@ endmodule
     regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:84:7, :92:19, :103:30, :105:14, :109:14
     regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
     regs_rd_data <= io_prev_valid ? io_prev_bits_rd_data : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
+    regs_nextPC <= io_prev_valid ? io_prev_bits_nextPC : 32'h0;	// core/src/core.scala:92:19, :97:29, :103:30, :105:14, :109:14
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:84:7
     `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:84:7
       `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:84:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// core/src/core.scala:84:7
-      automatic logic [31:0] _RANDOM[0:2];	// core/src/core.scala:84:7
+      automatic logic [31:0] _RANDOM[0:3];	// core/src/core.scala:84:7
       `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:84:7
         `INIT_RANDOM_PROLOG_	// core/src/core.scala:84:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:84:7
-        for (logic [1:0] i = 2'h0; i < 2'h3; i += 2'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:84:7
+        for (logic [2:0] i = 3'h0; i < 3'h4; i += 3'h1) begin
+          _RANDOM[i[1:0]] = `RANDOM;	// core/src/core.scala:84:7
         end	// core/src/core.scala:84:7
         state = _RANDOM[2'h0][0];	// core/src/core.scala:84:7, :91:24
         regs_ALUOut = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// core/src/core.scala:84:7, :91:24, :92:19
@@ -2076,6 +2102,7 @@ endmodule
         regs_wbDst = _RANDOM[2'h1][8:7];	// core/src/core.scala:84:7, :92:19
         regs_rd = _RANDOM[2'h1][13:9];	// core/src/core.scala:84:7, :92:19
         regs_rd_data = {_RANDOM[2'h1][31:14], _RANDOM[2'h2][13:0]};	// core/src/core.scala:84:7, :92:19
+        regs_nextPC = {_RANDOM[2'h2][31:14], _RANDOM[2'h3][13:0]};	// core/src/core.scala:84:7, :92:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:84:7
@@ -2089,6 +2116,7 @@ endmodule
   assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_rd = regs_rd;	// core/src/core.scala:84:7, :92:19
   assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:84:7, :92:19
+  assign io_next_bits_nextPC = regs_nextPC;	// core/src/core.scala:84:7, :92:19
 endmodule
 
 (*DONT_TOUCH="TRUE"*)module lsu(	// core/src/lsu.scala:5:7
@@ -2108,33 +2136,35 @@ endmodule
                 io_prev_bits_wbDst,	// core/src/lsu.scala:6:16
   input  [4:0]  io_prev_bits_rd,	// core/src/lsu.scala:6:16
   input  [31:0] io_prev_bits_rd_data,	// core/src/lsu.scala:6:16
+                io_prev_bits_nextPC,	// core/src/lsu.scala:6:16
   output        io_next_valid,	// core/src/lsu.scala:6:16
   output [31:0] io_next_bits_MemOut,	// core/src/lsu.scala:6:16
                 io_next_bits_ALUOut,	// core/src/lsu.scala:6:16
   output [1:0]  io_next_bits_wbSel,	// core/src/lsu.scala:6:16
                 io_next_bits_wbDst,	// core/src/lsu.scala:6:16
-  output [4:0]  io_next_bits_rd	// core/src/lsu.scala:6:16
+  output [4:0]  io_next_bits_rd,	// core/src/lsu.scala:6:16
+  output [31:0] io_nextPC	// core/src/lsu.scala:6:16
 );
 
-  wire [3:0][3:0]  _GEN = '{4'h7, 4'hB, 4'hD, 4'hE};	// core/src/lsu.scala:41:50
+  wire [3:0][3:0]  _GEN = '{4'h7, 4'hB, 4'hD, 4'hE};	// core/src/lsu.scala:43:50
   wire [3:0][7:0]  _GEN_0 =
     {{io_ext_in_bits_data_out[31:24]},
      {io_ext_in_bits_data_out[23:16]},
      {io_ext_in_bits_data_out[15:8]},
-     {io_ext_in_bits_data_out[7:0]}};	// core/src/lsu.scala:22:51, :23:24, :24:24, :25:24, :26:24
-  wire [7:0]       FetchByte = _GEN_0[io_prev_bits_ALUOut[1:0]];	// core/src/lsu.scala:22:{38,51}
+     {io_ext_in_bits_data_out[7:0]}};	// core/src/lsu.scala:24:51, :25:24, :26:24, :27:24, :28:24
+  wire [7:0]       FetchByte = _GEN_0[io_prev_bits_ALUOut[1:0]];	// core/src/lsu.scala:24:{38,51}
   wire [15:0]      FetchHalf =
     io_prev_bits_ALUOut[1]
       ? io_ext_in_bits_data_out[31:16]
-      : io_ext_in_bits_data_out[15:0];	// core/src/lsu.scala:28:{38,48}, :29:24, :30:24
+      : io_ext_in_bits_data_out[15:0];	// core/src/lsu.scala:30:{38,48}, :31:24, :32:24
   wire [3:0][31:0] _GEN_1 =
     {{{io_prev_bits_rd_data[7:0], 24'h0}},
      {{8'h0, io_prev_bits_rd_data[7:0], 16'h0}},
      {{16'h0, io_prev_bits_rd_data[7:0], 8'h0}},
-     {{24'h0, io_prev_bits_rd_data[7:0]}}};	// core/src/lsu.scala:34:31, :36:31, :58:50, :59:{19,44}, :60:{19,56}, :61:19, :62:19
-  assign io_ext_out_valid = io_prev_bits_memOp != 4'h8 & io_prev_valid;	// core/src/lsu.scala:5:7, :114:{44,60}
+     {{24'h0, io_prev_bits_rd_data[7:0]}}};	// core/src/lsu.scala:36:31, :38:31, :60:50, :61:{19,44}, :62:{19,56}, :63:19, :64:19
+  assign io_ext_out_valid = io_prev_bits_memOp != 4'h8 & io_prev_valid;	// core/src/lsu.scala:5:7, :117:{44,60}
   assign io_ext_out_bits_data_wen =
-    io_prev_bits_memOp == 4'h7 | io_prev_bits_memOp == 4'h6 | io_prev_bits_memOp == 4'h5;	// core/src/lsu.scala:5:7, :41:50, :52:38, :98:52
+    io_prev_bits_memOp == 4'h7 | io_prev_bits_memOp == 4'h6 | io_prev_bits_memOp == 4'h5;	// core/src/lsu.scala:5:7, :43:50, :54:38, :100:52
   assign io_ext_out_bits_data_in =
     io_prev_bits_memOp == 4'h7 | io_prev_bits_memOp == 4'h6 | io_prev_bits_memOp == 4'h5
       ? (io_prev_bits_memOp == 4'h7
@@ -2144,7 +2174,7 @@ endmodule
                     ? {io_prev_bits_rd_data[15:0], 16'h0}
                     : {16'h0, io_prev_bits_rd_data[15:0]})
                : io_prev_bits_memOp == 4'h5 ? _GEN_1[io_prev_bits_ALUOut[1:0]] : 32'h0)
-      : 32'h0;	// core/src/lsu.scala:5:7, :22:38, :28:38, :33:38, :36:31, :41:50, :52:38, :58:50, :64:47, :65:{19,44}, :66:19, :69:38, :103:51
+      : 32'h0;	// core/src/lsu.scala:5:7, :24:38, :30:38, :35:38, :38:31, :43:50, :54:38, :60:50, :66:47, :67:{19,44}, :68:19, :71:38, :105:51
   assign io_ext_out_bits_addr = io_prev_bits_ALUOut;	// core/src/lsu.scala:5:7
   assign io_ext_out_bits_be_n =
     ~(io_prev_bits_memOp == 4'h7 | io_prev_bits_memOp == 4'h6
@@ -2152,17 +2182,17 @@ endmodule
       ? 4'h0
       : io_prev_bits_memOp == 4'h6
           ? (io_prev_bits_ALUOut[1] ? 4'h3 : 4'hC)
-          : io_prev_bits_memOp == 4'h5 ? _GEN[io_prev_bits_ALUOut[1:0]] : 4'h0;	// core/src/lsu.scala:5:7, :22:38, :28:38, :41:50, :47:47, :52:38, :108:48
+          : io_prev_bits_memOp == 4'h5 ? _GEN[io_prev_bits_ALUOut[1:0]] : 4'h0;	// core/src/lsu.scala:5:7, :24:38, :30:38, :43:50, :49:47, :54:38, :110:48
   assign io_ext_out_bits_ce_n =
     ~(io_prev_bits_memOp == 4'h7 | io_prev_bits_memOp == 4'h6 | io_prev_bits_memOp == 4'h5
       | io_prev_bits_memOp == 4'h4 | io_prev_bits_memOp == 4'h3
-      | io_prev_bits_memOp == 4'h2 | io_prev_bits_memOp == 4'h1) & (|io_prev_bits_memOp);	// core/src/lsu.scala:5:7, :33:38, :41:50, :47:47, :52:38, :76:48
+      | io_prev_bits_memOp == 4'h2 | io_prev_bits_memOp == 4'h1) & (|io_prev_bits_memOp);	// core/src/lsu.scala:5:7, :35:38, :43:50, :49:47, :54:38, :78:48
   assign io_ext_out_bits_oe_n =
     ~(io_prev_bits_memOp == 4'h4 | io_prev_bits_memOp == 4'h3 | io_prev_bits_memOp == 4'h2
-      | io_prev_bits_memOp == 4'h1) & (|io_prev_bits_memOp);	// core/src/lsu.scala:5:7, :33:38, :47:47, :86:48
+      | io_prev_bits_memOp == 4'h1) & (|io_prev_bits_memOp);	// core/src/lsu.scala:5:7, :35:38, :49:47, :88:48
   assign io_ext_out_bits_we_n =
     ~(io_prev_bits_memOp == 4'h7 | io_prev_bits_memOp == 4'h6)
-    & io_prev_bits_memOp != 4'h5;	// core/src/lsu.scala:5:7, :41:50, :52:38, :93:48
+    & io_prev_bits_memOp != 4'h5;	// core/src/lsu.scala:5:7, :43:50, :54:38, :95:48
   assign io_next_valid = io_prev_valid;	// core/src/lsu.scala:5:7
   assign io_next_bits_MemOut =
     io_prev_bits_memOp == 4'h4
@@ -2173,11 +2203,12 @@ endmodule
               ? {{16{FetchHalf[15]}}, FetchHalf}
               : io_prev_bits_memOp == 4'h1
                   ? {24'h0, FetchByte}
-                  : io_prev_bits_memOp == 4'h0 ? {{24{FetchByte[7]}}, FetchByte} : 32'h0;	// core/src/lsu.scala:5:7, :22:51, :28:48, :33:38, :34:{26,31,45}, :35:26, :36:{26,31,45}, :37:26, :47:47, :52:38
+                  : io_prev_bits_memOp == 4'h0 ? {{24{FetchByte[7]}}, FetchByte} : 32'h0;	// core/src/lsu.scala:5:7, :24:51, :30:48, :35:38, :36:{26,31,45}, :37:26, :38:{26,31,45}, :39:26, :49:47, :54:38
   assign io_next_bits_ALUOut = io_prev_bits_ALUOut;	// core/src/lsu.scala:5:7
   assign io_next_bits_wbSel = io_prev_bits_wbSel;	// core/src/lsu.scala:5:7
   assign io_next_bits_wbDst = io_prev_bits_wbDst;	// core/src/lsu.scala:5:7
   assign io_next_bits_rd = io_prev_bits_rd;	// core/src/lsu.scala:5:7
+  assign io_nextPC = io_prev_bits_nextPC;	// core/src/lsu.scala:5:7
 endmodule
 
 (*DONT_TOUCH="TRUE"*)module buffer_3(	// core/src/core.scala:84:7
@@ -2440,6 +2471,7 @@ endmodule
   wire [1:0]  _lsu_io_next_bits_wbSel;	// core/src/core.scala:18:21
   wire [1:0]  _lsu_io_next_bits_wbDst;	// core/src/core.scala:18:21
   wire [4:0]  _lsu_io_next_bits_rd;	// core/src/core.scala:18:21
+  wire [31:0] _lsu_io_nextPC;	// core/src/core.scala:18:21
   wire        _exu_lsu_io_next_valid;	// core/src/core.scala:17:25
   wire [31:0] _exu_lsu_io_next_bits_ALUOut;	// core/src/core.scala:17:25
   wire [3:0]  _exu_lsu_io_next_bits_memOp;	// core/src/core.scala:17:25
@@ -2447,6 +2479,7 @@ endmodule
   wire [1:0]  _exu_lsu_io_next_bits_wbDst;	// core/src/core.scala:17:25
   wire [4:0]  _exu_lsu_io_next_bits_rd;	// core/src/core.scala:17:25
   wire [31:0] _exu_lsu_io_next_bits_rd_data;	// core/src/core.scala:17:25
+  wire [31:0] _exu_lsu_io_next_bits_nextPC;	// core/src/core.scala:17:25
   wire        _exu_io_next_valid;	// core/src/core.scala:16:21
   wire [31:0] _exu_io_next_bits_ALUOut;	// core/src/core.scala:16:21
   wire [3:0]  _exu_io_next_bits_memOp;	// core/src/core.scala:16:21
@@ -2454,8 +2487,8 @@ endmodule
   wire [1:0]  _exu_io_next_bits_wbDst;	// core/src/core.scala:16:21
   wire [4:0]  _exu_io_next_bits_rd;	// core/src/core.scala:16:21
   wire [31:0] _exu_io_next_bits_rd_data;	// core/src/core.scala:16:21
+  wire [31:0] _exu_io_next_bits_nextPC;	// core/src/core.scala:16:21
   wire [31:0] _exu_io_P;	// core/src/core.scala:16:21
-  wire [31:0] _exu_io_nextPC;	// core/src/core.scala:16:21
   wire        _idu_exu_io_next_valid;	// core/src/core.scala:15:25
   wire [3:0]  _idu_exu_io_next_bits_aluOp;	// core/src/core.scala:15:25
   wire [1:0]  _idu_exu_io_next_bits_aluAsrc;	// core/src/core.scala:15:25
@@ -2503,7 +2536,7 @@ endmodule
   wire [31:0] _ifu_io_next_bits_pc;	// core/src/core.scala:12:21
   wire [31:0] _ifu_io_next_bits_inst;	// core/src/core.scala:12:21
   wire        _flush_T_1 =
-    _ifu_idu_io_next_bits_pc != _exu_io_nextPC & _idu_exu_io_next_valid;	// core/src/core.scala:13:25, :15:25, :16:21, :27:{37,55}
+    _idu_exu_io_next_bits_pc != _lsu_io_nextPC & _exu_lsu_io_next_valid;	// core/src/core.scala:15:25, :17:25, :18:21, :27:{37,55}
   ifu ifu (	// core/src/core.scala:12:21
     .clock                    (clock),
     .reset                    (reset),
@@ -2516,7 +2549,7 @@ endmodule
     .io_next_bits_pc          (_ifu_io_next_bits_pc),
     .io_next_bits_inst        (_ifu_io_next_bits_inst),
     .io_flush                 (_flush_T_1),	// core/src/core.scala:27:55
-    .io_nextPC                (_exu_io_nextPC)	// core/src/core.scala:16:21
+    .io_nextPC                (_lsu_io_nextPC)	// core/src/core.scala:18:21
   );
   buffer ifu_idu (	// core/src/core.scala:13:25
     .clock             (clock),
@@ -2611,7 +2644,8 @@ endmodule
     .io_next_bits_FwEX_RD  (_idu_exu_io_next_bits_FwEX_RD),
     .io_next_bits_FwEX_RJ  (_idu_exu_io_next_bits_FwEX_RJ),
     .io_next_bits_FwEX_RK  (_idu_exu_io_next_bits_FwEX_RK),
-    .io_next_bits_pc       (_idu_exu_io_next_bits_pc)
+    .io_next_bits_pc       (_idu_exu_io_next_bits_pc),
+    .io_flush              (_flush_T_1)	// core/src/core.scala:27:55
   );
   exu exu (	// core/src/core.scala:16:21
     .clock                 (clock),
@@ -2639,11 +2673,12 @@ endmodule
     .io_next_bits_wbDst    (_exu_io_next_bits_wbDst),
     .io_next_bits_rd       (_exu_io_next_bits_rd),
     .io_next_bits_rd_data  (_exu_io_next_bits_rd_data),
+    .io_next_bits_nextPC   (_exu_io_next_bits_nextPC),
+    .io_flush              (_flush_T_1),	// core/src/core.scala:27:55
     .io_P                  (_exu_io_P),
     .io_ELALU              (_exu_lsu_io_next_bits_ALUOut),	// core/src/core.scala:17:25
     .io_LWALU              (_lsu_wbu_io_next_bits_ALUOut),	// core/src/core.scala:19:25
-    .io_LWMEM              (_lsu_wbu_io_next_bits_MemOut),	// core/src/core.scala:19:25
-    .io_nextPC             (_exu_io_nextPC)
+    .io_LWMEM              (_lsu_wbu_io_next_bits_MemOut)	// core/src/core.scala:19:25
   );
   buffer_2 exu_lsu (	// core/src/core.scala:17:25
     .clock                (clock),
@@ -2655,13 +2690,15 @@ endmodule
     .io_prev_bits_wbDst   (_exu_io_next_bits_wbDst),	// core/src/core.scala:16:21
     .io_prev_bits_rd      (_exu_io_next_bits_rd),	// core/src/core.scala:16:21
     .io_prev_bits_rd_data (_exu_io_next_bits_rd_data),	// core/src/core.scala:16:21
+    .io_prev_bits_nextPC  (_exu_io_next_bits_nextPC),	// core/src/core.scala:16:21
     .io_next_valid        (_exu_lsu_io_next_valid),
     .io_next_bits_ALUOut  (_exu_lsu_io_next_bits_ALUOut),
     .io_next_bits_memOp   (_exu_lsu_io_next_bits_memOp),
     .io_next_bits_wbSel   (_exu_lsu_io_next_bits_wbSel),
     .io_next_bits_wbDst   (_exu_lsu_io_next_bits_wbDst),
     .io_next_bits_rd      (_exu_lsu_io_next_bits_rd),
-    .io_next_bits_rd_data (_exu_lsu_io_next_bits_rd_data)
+    .io_next_bits_rd_data (_exu_lsu_io_next_bits_rd_data),
+    .io_next_bits_nextPC  (_exu_lsu_io_next_bits_nextPC)
   );
   lsu lsu (	// core/src/core.scala:18:21
     .io_ext_in_bits_data_out  (io_ext_in_bits_data_out),
@@ -2680,12 +2717,14 @@ endmodule
     .io_prev_bits_wbDst       (_exu_lsu_io_next_bits_wbDst),	// core/src/core.scala:17:25
     .io_prev_bits_rd          (_exu_lsu_io_next_bits_rd),	// core/src/core.scala:17:25
     .io_prev_bits_rd_data     (_exu_lsu_io_next_bits_rd_data),	// core/src/core.scala:17:25
+    .io_prev_bits_nextPC      (_exu_lsu_io_next_bits_nextPC),	// core/src/core.scala:17:25
     .io_next_valid            (_lsu_io_next_valid),
     .io_next_bits_MemOut      (_lsu_io_next_bits_MemOut),
     .io_next_bits_ALUOut      (_lsu_io_next_bits_ALUOut),
     .io_next_bits_wbSel       (_lsu_io_next_bits_wbSel),
     .io_next_bits_wbDst       (_lsu_io_next_bits_wbDst),
-    .io_next_bits_rd          (_lsu_io_next_bits_rd)
+    .io_next_bits_rd          (_lsu_io_next_bits_rd),
+    .io_nextPC                (_lsu_io_nextPC)
   );
   buffer_3 lsu_wbu (	// core/src/core.scala:19:25
     .clock               (clock),

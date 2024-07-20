@@ -16,8 +16,6 @@ class exu extends Module {
         val ELALU = Input(UInt(32.W)) // EXU/LSU ALUOut
         val LWALU = Input(UInt(32.W)) // LSU/WBU ALUOut
         val LWMEM = Input(UInt(32.W)) // LSU/WBU MemOut
-        // branch control
-        val nextPC = Output(UInt(32.W))
     })
     val mult = Module(new mult_gen_0())
     val ALU = Module(new alu())
@@ -61,7 +59,6 @@ class exu extends Module {
     brCtrl.io.SLess := ALU.io.SLess
     brCtrl.io.ULess := ALU.io.ULess
     brCtrl.io.Zero := ALU.io.Zero
-    io.nextPC := brCtrl.io.nextPC
 
     io.next.bits.ALUOut := ALU.io.Out
     io.next.bits.memOp := io.prev.bits.memOp
@@ -70,6 +67,7 @@ class exu extends Module {
     io.next.bits.Imm := io.prev.bits.Imm
     io.next.bits.rd := io.prev.bits.rd
     io.next.bits.rd_data := ForwardRD
+    io.next.bits.nextPC := brCtrl.io.nextPC
 
     io.next.valid := io.prev.valid && io.stall === 0.U && io.flush === 0.U
     io.prev.ready := io.next.ready
