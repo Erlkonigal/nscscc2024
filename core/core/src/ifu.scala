@@ -9,25 +9,28 @@ class ifu extends Module {
         val base_out = Decoupled(new bus_out())
         // pipe
         val next = Decoupled(new ifu_idu())
-        // branch flush
+        // pipe signal
+        val stall = Input(UInt(1.W))
         val flush = Input(UInt(1.W))
+        // nextpc
         val nextPC = Input(UInt(32.W))
     })
 
     val pc = RegInit("h80000000".U(32.W))
-    val ready = io.base_out.ready && io.next.ready
 
-    when(ready) {
-        pc := pc + 4.U
-        io.base_out.valid := 1.B
-    }
-    .elsewhen(io.flush === 1.U) {
+    io.base_out.valid := io.base_out.ready
+    
+    when(io.flush === 1.U) {
         pc := io.nextPC
-        io.base_out.valid := 0.B
+    }
+    .elsewhen(io.stall === 1.U) {
+        pc := pc
+    }
+    .elsewhen(io.base_out.ready) {
+        pc := pc + 4.U
     }
     .otherwise {
         pc := pc
-        io.base_out.valid := 0.B
     }
 
     io.base_out.bits.addr := pc
@@ -42,6 +45,6 @@ class ifu extends Module {
 
     io.next.bits.pc := pc
     io.next.bits.inst := io.base_in.bits.data_out
-    io.next.valid := io.base_out.ready
+    io.next.valid := io.base_out.ready && io.stall === 0.U && io.flush === 0.U
 }
 

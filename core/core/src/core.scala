@@ -26,17 +26,30 @@ class core extends Module {
     ifu.io.base_in <> abt.io.out.BusOut(1)
     lsu.io.ext_in <> abt.io.out.BusOut(0)
 
-    val lastpc = Wire(UInt(32.W))
+    // val lastpc = Wire(UInt(32.W))
+    // when(exu.io.prev.valid) {
+    //     lastpc := exu.io.prev.bits.pc
+    // }
+    // .elsewhen(idu.io.prev.valid) {
+    //     lastpc := idu.io.prev.bits.pc
+    // }
+    // .otherwise {
+    //     lastpc := ifu.io.next.bits.pc
+    // }
+    val cmp_exu = exu.io.prev.bits.pc =/= lsu.io.nextPC
+    val cmp_idu = idu.io.prev.bits.pc =/= lsu.io.nextPC
+    val cmp_ifu = ifu.io.next.bits.pc =/= lsu.io.nextPC
+    val cmp_sum = Wire(Bool())
     when(exu.io.prev.valid) {
-        lastpc := exu.io.prev.bits.pc
+        cmp_sum := cmp_exu
     }
     .elsewhen(idu.io.prev.valid) {
-        lastpc := idu.io.prev.bits.pc
+        cmp_sum := cmp_idu
     }
     .otherwise {
-        lastpc := ifu.io.next.bits.pc
+        cmp_sum := cmp_ifu
     }
-    val flush = lastpc =/= lsu.io.nextPC && lsu.io.prev.valid
+    val flush = cmp_sum && lsu.io.prev.valid
 
     val fwctrl = Module(new forwarding())
     fwctrl.io.RD := idu.io.RD
@@ -46,6 +59,7 @@ class core extends Module {
     fwctrl.io.RSel := idu.io.RSel
     fwctrl.io.flush := flush
 
+    ifu.io.stall := fwctrl.io.stall
     ifu.io.flush := flush
     ifu_idu.io.stall := fwctrl.io.stall
     ifu_idu.io.flush := flush

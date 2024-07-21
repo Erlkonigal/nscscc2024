@@ -62,23 +62,24 @@
   input         io_base_out_ready,	// core/src/ifu.scala:6:16
   output        io_base_out_valid,	// core/src/ifu.scala:6:16
   output [31:0] io_base_out_bits_addr,	// core/src/ifu.scala:6:16
-  input         io_next_ready,	// core/src/ifu.scala:6:16
   output        io_next_valid,	// core/src/ifu.scala:6:16
   output [31:0] io_next_bits_pc,	// core/src/ifu.scala:6:16
                 io_next_bits_inst,	// core/src/ifu.scala:6:16
-  input         io_flush,	// core/src/ifu.scala:6:16
+  input         io_stall,	// core/src/ifu.scala:6:16
+                io_flush,	// core/src/ifu.scala:6:16
   input  [31:0] io_nextPC	// core/src/ifu.scala:6:16
 );
 
-  reg  [31:0] pc;	// core/src/ifu.scala:17:21
-  wire        ready = io_base_out_ready & io_next_ready;	// core/src/ifu.scala:18:35
+  reg [31:0] pc;	// core/src/ifu.scala:19:21
   always @(posedge clock) begin	// core/src/ifu.scala:5:7
     if (reset)	// core/src/ifu.scala:5:7
-      pc <= 32'h80000000;	// core/src/ifu.scala:17:21
-    else if (ready)	// core/src/ifu.scala:18:35
-      pc <= pc + 32'h4;	// core/src/ifu.scala:17:21, :21:18
+      pc <= 32'h80000000;	// core/src/ifu.scala:19:21
     else if (io_flush)	// core/src/ifu.scala:6:16
-      pc <= io_nextPC;	// core/src/ifu.scala:17:21
+      pc <= io_nextPC;	// core/src/ifu.scala:19:21
+    else if (io_stall | ~io_base_out_ready) begin	// core/src/ifu.scala:26:33, :27:12, :29:34
+    end
+    else	// core/src/ifu.scala:26:33, :27:12, :29:34
+      pc <= pc + 32'h4;	// core/src/ifu.scala:19:21, :30:18
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// core/src/ifu.scala:5:7
     `ifdef FIRRTL_BEFORE_INITIAL	// core/src/ifu.scala:5:7
@@ -91,79 +92,77 @@
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// core/src/ifu.scala:5:7
         _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// core/src/ifu.scala:5:7
-        pc = _RANDOM[/*Zero width*/ 1'b0];	// core/src/ifu.scala:5:7, :17:21
+        pc = _RANDOM[/*Zero width*/ 1'b0];	// core/src/ifu.scala:5:7, :19:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// core/src/ifu.scala:5:7
       `FIRRTL_AFTER_INITIAL	// core/src/ifu.scala:5:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_base_out_valid = ready;	// core/src/ifu.scala:5:7, :18:35
-  assign io_base_out_bits_addr = pc;	// core/src/ifu.scala:5:7, :17:21
-  assign io_next_valid = io_base_out_ready;	// core/src/ifu.scala:5:7
-  assign io_next_bits_pc = pc;	// core/src/ifu.scala:5:7, :17:21
+  assign io_base_out_valid = io_base_out_ready;	// core/src/ifu.scala:5:7
+  assign io_base_out_bits_addr = pc;	// core/src/ifu.scala:5:7, :19:21
+  assign io_next_valid = io_base_out_ready & ~io_stall & ~io_flush;	// core/src/ifu.scala:5:7, :48:{52,60,72}
+  assign io_next_bits_pc = pc;	// core/src/ifu.scala:5:7, :19:21
   assign io_next_bits_inst = io_base_in_bits_data_out;	// core/src/ifu.scala:5:7
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module buffer(	// core/src/core.scala:94:7
-  input         clock,	// core/src/core.scala:94:7
-                reset,	// core/src/core.scala:94:7
-  output        io_prev_ready,	// core/src/core.scala:95:16
-  input         io_prev_valid,	// core/src/core.scala:95:16
-  input  [31:0] io_prev_bits_pc,	// core/src/core.scala:95:16
-                io_prev_bits_inst,	// core/src/core.scala:95:16
-  output        io_next_valid,	// core/src/core.scala:95:16
-  output [31:0] io_next_bits_pc,	// core/src/core.scala:95:16
-                io_next_bits_inst,	// core/src/core.scala:95:16
-  input         io_stall,	// core/src/core.scala:95:16
-                io_flush	// core/src/core.scala:95:16
+(*DONT_TOUCH="TRUE"*)module buffer(	// core/src/core.scala:108:7
+  input         clock,	// core/src/core.scala:108:7
+                reset,	// core/src/core.scala:108:7
+                io_prev_valid,	// core/src/core.scala:109:16
+  input  [31:0] io_prev_bits_pc,	// core/src/core.scala:109:16
+                io_prev_bits_inst,	// core/src/core.scala:109:16
+  output        io_next_valid,	// core/src/core.scala:109:16
+  output [31:0] io_next_bits_pc,	// core/src/core.scala:109:16
+                io_next_bits_inst,	// core/src/core.scala:109:16
+  input         io_stall,	// core/src/core.scala:109:16
+                io_flush	// core/src/core.scala:109:16
 );
 
-  reg        state;	// core/src/core.scala:101:24
-  reg [31:0] regs_pc;	// core/src/core.scala:102:19
-  reg [31:0] regs_inst;	// core/src/core.scala:102:19
-  always @(posedge clock) begin	// core/src/core.scala:94:7
-    if (reset)	// core/src/core.scala:94:7
-      state <= 1'h0;	// core/src/core.scala:101:24
-    else	// core/src/core.scala:94:7
-      state <= ~io_flush & (io_stall ? state : io_prev_valid);	// core/src/core.scala:101:24, :105:28, :106:15, :109:33, :110:15, :113:30
-    if (io_flush) begin	// core/src/core.scala:94:7
-      regs_pc <= 32'h0;	// core/src/core.scala:102:19, :107:29
-      regs_inst <= 32'h0;	// core/src/core.scala:102:19, :107:29
+  reg        state;	// core/src/core.scala:115:24
+  reg [31:0] regs_pc;	// core/src/core.scala:116:19
+  reg [31:0] regs_inst;	// core/src/core.scala:116:19
+  always @(posedge clock) begin	// core/src/core.scala:108:7
+    if (reset)	// core/src/core.scala:108:7
+      state <= 1'h0;	// core/src/core.scala:115:24
+    else	// core/src/core.scala:108:7
+      state <= ~io_flush & (io_stall ? state : io_prev_valid);	// core/src/core.scala:115:24, :119:28, :120:15, :123:33, :124:15, :127:30
+    if (io_flush) begin	// core/src/core.scala:108:7
+      regs_pc <= 32'h0;	// core/src/core.scala:116:19, :121:29
+      regs_inst <= 32'h0;	// core/src/core.scala:116:19, :121:29
     end
-    else if (io_stall) begin	// core/src/core.scala:95:16
+    else if (io_stall) begin	// core/src/core.scala:109:16
     end
-    else begin	// core/src/core.scala:95:16
-      regs_pc <= io_prev_valid ? io_prev_bits_pc : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_inst <= io_prev_valid ? io_prev_bits_inst : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
+    else begin	// core/src/core.scala:109:16
+      regs_pc <= io_prev_valid ? io_prev_bits_pc : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_inst <= io_prev_valid ? io_prev_bits_inst : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:94:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:94:7
-      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:94:7
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:108:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:108:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:108:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// core/src/core.scala:94:7
-      automatic logic [31:0] _RANDOM[0:2];	// core/src/core.scala:94:7
-      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:94:7
-        `INIT_RANDOM_PROLOG_	// core/src/core.scala:94:7
+    initial begin	// core/src/core.scala:108:7
+      automatic logic [31:0] _RANDOM[0:2];	// core/src/core.scala:108:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:108:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:108:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:94:7
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:108:7
         for (logic [1:0] i = 2'h0; i < 2'h3; i += 2'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:94:7
-        end	// core/src/core.scala:94:7
-        state = _RANDOM[2'h0][0];	// core/src/core.scala:94:7, :101:24
-        regs_pc = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_inst = {_RANDOM[2'h1][31:1], _RANDOM[2'h2][0]};	// core/src/core.scala:94:7, :102:19
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:108:7
+        end	// core/src/core.scala:108:7
+        state = _RANDOM[2'h0][0];	// core/src/core.scala:108:7, :115:24
+        regs_pc = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_inst = {_RANDOM[2'h1][31:1], _RANDOM[2'h2][0]};	// core/src/core.scala:108:7, :116:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:94:7
-      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:94:7
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:108:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:108:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_prev_ready = ~io_stall & ~io_flush;	// core/src/core.scala:94:7, :103:{26,34,46}
-  assign io_next_valid = state;	// core/src/core.scala:94:7, :101:24
-  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_inst = regs_inst;	// core/src/core.scala:94:7, :102:19
+  assign io_next_valid = state;	// core/src/core.scala:108:7, :115:24
+  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_inst = regs_inst;	// core/src/core.scala:108:7, :116:19
 endmodule
 
 (*DONT_TOUCH="TRUE"*)module ImmGen(	// core/src/idu.scala:341:7
@@ -886,158 +885,158 @@ endmodule
   assign io_RSel = io_RSel_0;	// core/src/idu.scala:135:7, src/main/scala/chisel3/util/Lookup.scala:34:39
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module buffer_1(	// core/src/core.scala:94:7
-  input         clock,	// core/src/core.scala:94:7
-                reset,	// core/src/core.scala:94:7
-                io_prev_valid,	// core/src/core.scala:95:16
-  input  [3:0]  io_prev_bits_aluOp,	// core/src/core.scala:95:16
-  input  [1:0]  io_prev_bits_aluAsrc,	// core/src/core.scala:95:16
-  input  [2:0]  io_prev_bits_aluBsrc,	// core/src/core.scala:95:16
-  input  [3:0]  io_prev_bits_branchOp,	// core/src/core.scala:95:16
-                io_prev_bits_memOp,	// core/src/core.scala:95:16
-  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:95:16
-                io_prev_bits_wbDst,	// core/src/core.scala:95:16
-  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:95:16
-  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:95:16
-  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:95:16
-                io_prev_bits_rj_data,	// core/src/core.scala:95:16
-                io_prev_bits_rk_data,	// core/src/core.scala:95:16
-  input  [2:0]  io_prev_bits_FwEX_RD,	// core/src/core.scala:95:16
-                io_prev_bits_FwEX_RJ,	// core/src/core.scala:95:16
-                io_prev_bits_FwEX_RK,	// core/src/core.scala:95:16
-  input  [31:0] io_prev_bits_pc,	// core/src/core.scala:95:16
-  output        io_next_valid,	// core/src/core.scala:95:16
-  output [3:0]  io_next_bits_aluOp,	// core/src/core.scala:95:16
-  output [1:0]  io_next_bits_aluAsrc,	// core/src/core.scala:95:16
-  output [2:0]  io_next_bits_aluBsrc,	// core/src/core.scala:95:16
-  output [3:0]  io_next_bits_branchOp,	// core/src/core.scala:95:16
-                io_next_bits_memOp,	// core/src/core.scala:95:16
-  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:95:16
-                io_next_bits_wbDst,	// core/src/core.scala:95:16
-  output [31:0] io_next_bits_Imm,	// core/src/core.scala:95:16
-  output [4:0]  io_next_bits_rd,	// core/src/core.scala:95:16
-  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:95:16
-                io_next_bits_rj_data,	// core/src/core.scala:95:16
-                io_next_bits_rk_data,	// core/src/core.scala:95:16
-  output [2:0]  io_next_bits_FwEX_RD,	// core/src/core.scala:95:16
-                io_next_bits_FwEX_RJ,	// core/src/core.scala:95:16
-                io_next_bits_FwEX_RK,	// core/src/core.scala:95:16
-  output [31:0] io_next_bits_pc,	// core/src/core.scala:95:16
-  input         io_flush	// core/src/core.scala:95:16
+(*DONT_TOUCH="TRUE"*)module buffer_1(	// core/src/core.scala:108:7
+  input         clock,	// core/src/core.scala:108:7
+                reset,	// core/src/core.scala:108:7
+                io_prev_valid,	// core/src/core.scala:109:16
+  input  [3:0]  io_prev_bits_aluOp,	// core/src/core.scala:109:16
+  input  [1:0]  io_prev_bits_aluAsrc,	// core/src/core.scala:109:16
+  input  [2:0]  io_prev_bits_aluBsrc,	// core/src/core.scala:109:16
+  input  [3:0]  io_prev_bits_branchOp,	// core/src/core.scala:109:16
+                io_prev_bits_memOp,	// core/src/core.scala:109:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:109:16
+                io_prev_bits_wbDst,	// core/src/core.scala:109:16
+  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:109:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:109:16
+  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:109:16
+                io_prev_bits_rj_data,	// core/src/core.scala:109:16
+                io_prev_bits_rk_data,	// core/src/core.scala:109:16
+  input  [2:0]  io_prev_bits_FwEX_RD,	// core/src/core.scala:109:16
+                io_prev_bits_FwEX_RJ,	// core/src/core.scala:109:16
+                io_prev_bits_FwEX_RK,	// core/src/core.scala:109:16
+  input  [31:0] io_prev_bits_pc,	// core/src/core.scala:109:16
+  output        io_next_valid,	// core/src/core.scala:109:16
+  output [3:0]  io_next_bits_aluOp,	// core/src/core.scala:109:16
+  output [1:0]  io_next_bits_aluAsrc,	// core/src/core.scala:109:16
+  output [2:0]  io_next_bits_aluBsrc,	// core/src/core.scala:109:16
+  output [3:0]  io_next_bits_branchOp,	// core/src/core.scala:109:16
+                io_next_bits_memOp,	// core/src/core.scala:109:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:109:16
+                io_next_bits_wbDst,	// core/src/core.scala:109:16
+  output [31:0] io_next_bits_Imm,	// core/src/core.scala:109:16
+  output [4:0]  io_next_bits_rd,	// core/src/core.scala:109:16
+  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:109:16
+                io_next_bits_rj_data,	// core/src/core.scala:109:16
+                io_next_bits_rk_data,	// core/src/core.scala:109:16
+  output [2:0]  io_next_bits_FwEX_RD,	// core/src/core.scala:109:16
+                io_next_bits_FwEX_RJ,	// core/src/core.scala:109:16
+                io_next_bits_FwEX_RK,	// core/src/core.scala:109:16
+  output [31:0] io_next_bits_pc,	// core/src/core.scala:109:16
+  input         io_flush	// core/src/core.scala:109:16
 );
 
-  reg        state;	// core/src/core.scala:101:24
-  reg [3:0]  regs_aluOp;	// core/src/core.scala:102:19
-  reg [1:0]  regs_aluAsrc;	// core/src/core.scala:102:19
-  reg [2:0]  regs_aluBsrc;	// core/src/core.scala:102:19
-  reg [3:0]  regs_branchOp;	// core/src/core.scala:102:19
-  reg [3:0]  regs_memOp;	// core/src/core.scala:102:19
-  reg [1:0]  regs_wbSel;	// core/src/core.scala:102:19
-  reg [1:0]  regs_wbDst;	// core/src/core.scala:102:19
-  reg [31:0] regs_Imm;	// core/src/core.scala:102:19
-  reg [4:0]  regs_rd;	// core/src/core.scala:102:19
-  reg [31:0] regs_rd_data;	// core/src/core.scala:102:19
-  reg [31:0] regs_rj_data;	// core/src/core.scala:102:19
-  reg [31:0] regs_rk_data;	// core/src/core.scala:102:19
-  reg [2:0]  regs_FwEX_RD;	// core/src/core.scala:102:19
-  reg [2:0]  regs_FwEX_RJ;	// core/src/core.scala:102:19
-  reg [2:0]  regs_FwEX_RK;	// core/src/core.scala:102:19
-  reg [31:0] regs_pc;	// core/src/core.scala:102:19
-  always @(posedge clock) begin	// core/src/core.scala:94:7
-    if (reset)	// core/src/core.scala:94:7
-      state <= 1'h0;	// core/src/core.scala:95:16, :101:24
-    else	// core/src/core.scala:94:7
-      state <= ~io_flush & io_prev_valid;	// core/src/core.scala:101:24, :105:28, :106:15, :109:33
-    if (io_flush) begin	// core/src/core.scala:94:7
-      regs_aluOp <= 4'h0;	// core/src/core.scala:102:19, :107:29
-      regs_aluAsrc <= 2'h0;	// core/src/core.scala:102:19, :107:29
-      regs_aluBsrc <= 3'h0;	// core/src/core.scala:94:7, :102:19
-      regs_branchOp <= 4'h0;	// core/src/core.scala:102:19, :107:29
-      regs_memOp <= 4'h0;	// core/src/core.scala:102:19, :107:29
-      regs_wbSel <= 2'h0;	// core/src/core.scala:102:19, :107:29
-      regs_wbDst <= 2'h0;	// core/src/core.scala:102:19, :107:29
-      regs_Imm <= 32'h0;	// core/src/core.scala:102:19, :107:29
-      regs_rd <= 5'h0;	// core/src/core.scala:102:19, :107:29
-      regs_rd_data <= 32'h0;	// core/src/core.scala:102:19, :107:29
-      regs_rj_data <= 32'h0;	// core/src/core.scala:102:19, :107:29
-      regs_rk_data <= 32'h0;	// core/src/core.scala:102:19, :107:29
-      regs_FwEX_RD <= 3'h0;	// core/src/core.scala:94:7, :102:19
-      regs_FwEX_RJ <= 3'h0;	// core/src/core.scala:94:7, :102:19
-      regs_FwEX_RK <= 3'h0;	// core/src/core.scala:94:7, :102:19
-      regs_pc <= 32'h0;	// core/src/core.scala:102:19, :107:29
+  reg        state;	// core/src/core.scala:115:24
+  reg [3:0]  regs_aluOp;	// core/src/core.scala:116:19
+  reg [1:0]  regs_aluAsrc;	// core/src/core.scala:116:19
+  reg [2:0]  regs_aluBsrc;	// core/src/core.scala:116:19
+  reg [3:0]  regs_branchOp;	// core/src/core.scala:116:19
+  reg [3:0]  regs_memOp;	// core/src/core.scala:116:19
+  reg [1:0]  regs_wbSel;	// core/src/core.scala:116:19
+  reg [1:0]  regs_wbDst;	// core/src/core.scala:116:19
+  reg [31:0] regs_Imm;	// core/src/core.scala:116:19
+  reg [4:0]  regs_rd;	// core/src/core.scala:116:19
+  reg [31:0] regs_rd_data;	// core/src/core.scala:116:19
+  reg [31:0] regs_rj_data;	// core/src/core.scala:116:19
+  reg [31:0] regs_rk_data;	// core/src/core.scala:116:19
+  reg [2:0]  regs_FwEX_RD;	// core/src/core.scala:116:19
+  reg [2:0]  regs_FwEX_RJ;	// core/src/core.scala:116:19
+  reg [2:0]  regs_FwEX_RK;	// core/src/core.scala:116:19
+  reg [31:0] regs_pc;	// core/src/core.scala:116:19
+  always @(posedge clock) begin	// core/src/core.scala:108:7
+    if (reset)	// core/src/core.scala:108:7
+      state <= 1'h0;	// core/src/core.scala:109:16, :115:24
+    else	// core/src/core.scala:108:7
+      state <= ~io_flush & io_prev_valid;	// core/src/core.scala:115:24, :119:28, :120:15, :123:33
+    if (io_flush) begin	// core/src/core.scala:108:7
+      regs_aluOp <= 4'h0;	// core/src/core.scala:116:19, :121:29
+      regs_aluAsrc <= 2'h0;	// core/src/core.scala:116:19, :121:29
+      regs_aluBsrc <= 3'h0;	// core/src/core.scala:108:7, :116:19
+      regs_branchOp <= 4'h0;	// core/src/core.scala:116:19, :121:29
+      regs_memOp <= 4'h0;	// core/src/core.scala:116:19, :121:29
+      regs_wbSel <= 2'h0;	// core/src/core.scala:116:19, :121:29
+      regs_wbDst <= 2'h0;	// core/src/core.scala:116:19, :121:29
+      regs_Imm <= 32'h0;	// core/src/core.scala:116:19, :121:29
+      regs_rd <= 5'h0;	// core/src/core.scala:116:19, :121:29
+      regs_rd_data <= 32'h0;	// core/src/core.scala:116:19, :121:29
+      regs_rj_data <= 32'h0;	// core/src/core.scala:116:19, :121:29
+      regs_rk_data <= 32'h0;	// core/src/core.scala:116:19, :121:29
+      regs_FwEX_RD <= 3'h0;	// core/src/core.scala:108:7, :116:19
+      regs_FwEX_RJ <= 3'h0;	// core/src/core.scala:108:7, :116:19
+      regs_FwEX_RK <= 3'h0;	// core/src/core.scala:108:7, :116:19
+      regs_pc <= 32'h0;	// core/src/core.scala:116:19, :121:29
     end
-    else begin	// core/src/core.scala:94:7
-      regs_aluOp <= io_prev_valid ? io_prev_bits_aluOp : 4'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_aluAsrc <= io_prev_valid ? io_prev_bits_aluAsrc : 2'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_aluBsrc <= io_prev_valid ? io_prev_bits_aluBsrc : 3'h0;	// core/src/core.scala:94:7, :102:19, :113:30, :115:14, :119:14
-      regs_branchOp <= io_prev_valid ? io_prev_bits_branchOp : 4'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_memOp <= io_prev_valid ? io_prev_bits_memOp : 4'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_wbSel <= io_prev_valid ? io_prev_bits_wbSel : 2'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_Imm <= io_prev_valid ? io_prev_bits_Imm : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_rd_data <= io_prev_valid ? io_prev_bits_rd_data : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_rj_data <= io_prev_valid ? io_prev_bits_rj_data : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_rk_data <= io_prev_valid ? io_prev_bits_rk_data : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-      regs_FwEX_RD <= io_prev_valid ? io_prev_bits_FwEX_RD : 3'h0;	// core/src/core.scala:94:7, :102:19, :113:30, :115:14, :119:14
-      regs_FwEX_RJ <= io_prev_valid ? io_prev_bits_FwEX_RJ : 3'h0;	// core/src/core.scala:94:7, :102:19, :113:30, :115:14, :119:14
-      regs_FwEX_RK <= io_prev_valid ? io_prev_bits_FwEX_RK : 3'h0;	// core/src/core.scala:94:7, :102:19, :113:30, :115:14, :119:14
-      regs_pc <= io_prev_valid ? io_prev_bits_pc : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
+    else begin	// core/src/core.scala:108:7
+      regs_aluOp <= io_prev_valid ? io_prev_bits_aluOp : 4'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_aluAsrc <= io_prev_valid ? io_prev_bits_aluAsrc : 2'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_aluBsrc <= io_prev_valid ? io_prev_bits_aluBsrc : 3'h0;	// core/src/core.scala:108:7, :116:19, :127:30, :129:14, :133:14
+      regs_branchOp <= io_prev_valid ? io_prev_bits_branchOp : 4'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_memOp <= io_prev_valid ? io_prev_bits_memOp : 4'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_wbSel <= io_prev_valid ? io_prev_bits_wbSel : 2'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_Imm <= io_prev_valid ? io_prev_bits_Imm : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_rd_data <= io_prev_valid ? io_prev_bits_rd_data : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_rj_data <= io_prev_valid ? io_prev_bits_rj_data : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_rk_data <= io_prev_valid ? io_prev_bits_rk_data : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+      regs_FwEX_RD <= io_prev_valid ? io_prev_bits_FwEX_RD : 3'h0;	// core/src/core.scala:108:7, :116:19, :127:30, :129:14, :133:14
+      regs_FwEX_RJ <= io_prev_valid ? io_prev_bits_FwEX_RJ : 3'h0;	// core/src/core.scala:108:7, :116:19, :127:30, :129:14, :133:14
+      regs_FwEX_RK <= io_prev_valid ? io_prev_bits_FwEX_RK : 3'h0;	// core/src/core.scala:108:7, :116:19, :127:30, :129:14, :133:14
+      regs_pc <= io_prev_valid ? io_prev_bits_pc : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:94:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:94:7
-      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:94:7
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:108:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:108:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:108:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// core/src/core.scala:94:7
-      automatic logic [31:0] _RANDOM[0:6];	// core/src/core.scala:94:7
-      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:94:7
-        `INIT_RANDOM_PROLOG_	// core/src/core.scala:94:7
+    initial begin	// core/src/core.scala:108:7
+      automatic logic [31:0] _RANDOM[0:6];	// core/src/core.scala:108:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:108:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:108:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:94:7
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:108:7
         for (logic [2:0] i = 3'h0; i < 3'h7; i += 3'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:94:7
-        end	// core/src/core.scala:94:7
-        state = _RANDOM[3'h0][0];	// core/src/core.scala:94:7, :101:24
-        regs_aluOp = _RANDOM[3'h0][4:1];	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_aluAsrc = _RANDOM[3'h0][6:5];	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_aluBsrc = _RANDOM[3'h0][9:7];	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_branchOp = _RANDOM[3'h0][13:10];	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_memOp = _RANDOM[3'h0][17:14];	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_wbSel = _RANDOM[3'h0][19:18];	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_wbDst = _RANDOM[3'h0][21:20];	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_Imm = {_RANDOM[3'h0][31:22], _RANDOM[3'h1][21:0]};	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_rd = _RANDOM[3'h1][26:22];	// core/src/core.scala:94:7, :102:19
-        regs_rd_data = {_RANDOM[3'h2][31:5], _RANDOM[3'h3][4:0]};	// core/src/core.scala:94:7, :102:19
-        regs_rj_data = {_RANDOM[3'h3][31:5], _RANDOM[3'h4][4:0]};	// core/src/core.scala:94:7, :102:19
-        regs_rk_data = {_RANDOM[3'h4][31:5], _RANDOM[3'h5][4:0]};	// core/src/core.scala:94:7, :102:19
-        regs_FwEX_RD = _RANDOM[3'h5][7:5];	// core/src/core.scala:94:7, :102:19
-        regs_FwEX_RJ = _RANDOM[3'h5][10:8];	// core/src/core.scala:94:7, :102:19
-        regs_FwEX_RK = _RANDOM[3'h5][13:11];	// core/src/core.scala:94:7, :102:19
-        regs_pc = {_RANDOM[3'h5][31:14], _RANDOM[3'h6][13:0]};	// core/src/core.scala:94:7, :102:19
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:108:7
+        end	// core/src/core.scala:108:7
+        state = _RANDOM[3'h0][0];	// core/src/core.scala:108:7, :115:24
+        regs_aluOp = _RANDOM[3'h0][4:1];	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_aluAsrc = _RANDOM[3'h0][6:5];	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_aluBsrc = _RANDOM[3'h0][9:7];	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_branchOp = _RANDOM[3'h0][13:10];	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_memOp = _RANDOM[3'h0][17:14];	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_wbSel = _RANDOM[3'h0][19:18];	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_wbDst = _RANDOM[3'h0][21:20];	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_Imm = {_RANDOM[3'h0][31:22], _RANDOM[3'h1][21:0]};	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_rd = _RANDOM[3'h1][26:22];	// core/src/core.scala:108:7, :116:19
+        regs_rd_data = {_RANDOM[3'h2][31:5], _RANDOM[3'h3][4:0]};	// core/src/core.scala:108:7, :116:19
+        regs_rj_data = {_RANDOM[3'h3][31:5], _RANDOM[3'h4][4:0]};	// core/src/core.scala:108:7, :116:19
+        regs_rk_data = {_RANDOM[3'h4][31:5], _RANDOM[3'h5][4:0]};	// core/src/core.scala:108:7, :116:19
+        regs_FwEX_RD = _RANDOM[3'h5][7:5];	// core/src/core.scala:108:7, :116:19
+        regs_FwEX_RJ = _RANDOM[3'h5][10:8];	// core/src/core.scala:108:7, :116:19
+        regs_FwEX_RK = _RANDOM[3'h5][13:11];	// core/src/core.scala:108:7, :116:19
+        regs_pc = {_RANDOM[3'h5][31:14], _RANDOM[3'h6][13:0]};	// core/src/core.scala:108:7, :116:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:94:7
-      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:94:7
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:108:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:108:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_next_valid = state;	// core/src/core.scala:94:7, :101:24
-  assign io_next_bits_aluOp = regs_aluOp;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_aluAsrc = regs_aluAsrc;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_aluBsrc = regs_aluBsrc;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_branchOp = regs_branchOp;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_rk_data = regs_rk_data;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_FwEX_RD = regs_FwEX_RD;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_FwEX_RJ = regs_FwEX_RJ;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_FwEX_RK = regs_FwEX_RK;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:94:7, :102:19
+  assign io_next_valid = state;	// core/src/core.scala:108:7, :115:24
+  assign io_next_bits_aluOp = regs_aluOp;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_aluAsrc = regs_aluAsrc;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_aluBsrc = regs_aluBsrc;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_branchOp = regs_branchOp;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_rk_data = regs_rk_data;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_FwEX_RD = regs_FwEX_RD;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_FwEX_RJ = regs_FwEX_RJ;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_FwEX_RK = regs_FwEX_RK;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:108:7, :116:19
 endmodule
 
 // external module mult_gen_0
@@ -2009,119 +2008,119 @@ endmodule
   assign io_P = _mult_P;	// core/src/exu.scala:5:7, :20:22
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module buffer_2(	// core/src/core.scala:94:7
-  input         clock,	// core/src/core.scala:94:7
-                reset,	// core/src/core.scala:94:7
-                io_prev_valid,	// core/src/core.scala:95:16
-  input  [31:0] io_prev_bits_ALUOut,	// core/src/core.scala:95:16
-  input         io_prev_bits_SLess,	// core/src/core.scala:95:16
-                io_prev_bits_ULess,	// core/src/core.scala:95:16
-                io_prev_bits_Zero,	// core/src/core.scala:95:16
-  input  [3:0]  io_prev_bits_branchOp,	// core/src/core.scala:95:16
-                io_prev_bits_memOp,	// core/src/core.scala:95:16
-  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:95:16
-                io_prev_bits_wbDst,	// core/src/core.scala:95:16
-  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:95:16
-  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:95:16
-  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:95:16
-                io_prev_bits_rj_data,	// core/src/core.scala:95:16
-                io_prev_bits_pc,	// core/src/core.scala:95:16
-  output        io_next_valid,	// core/src/core.scala:95:16
-  output [31:0] io_next_bits_ALUOut,	// core/src/core.scala:95:16
-  output        io_next_bits_SLess,	// core/src/core.scala:95:16
-                io_next_bits_ULess,	// core/src/core.scala:95:16
-                io_next_bits_Zero,	// core/src/core.scala:95:16
-  output [3:0]  io_next_bits_branchOp,	// core/src/core.scala:95:16
-                io_next_bits_memOp,	// core/src/core.scala:95:16
-  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:95:16
-                io_next_bits_wbDst,	// core/src/core.scala:95:16
-  output [31:0] io_next_bits_Imm,	// core/src/core.scala:95:16
-  output [4:0]  io_next_bits_rd,	// core/src/core.scala:95:16
-  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:95:16
-                io_next_bits_rj_data,	// core/src/core.scala:95:16
-                io_next_bits_pc	// core/src/core.scala:95:16
+(*DONT_TOUCH="TRUE"*)module buffer_2(	// core/src/core.scala:108:7
+  input         clock,	// core/src/core.scala:108:7
+                reset,	// core/src/core.scala:108:7
+                io_prev_valid,	// core/src/core.scala:109:16
+  input  [31:0] io_prev_bits_ALUOut,	// core/src/core.scala:109:16
+  input         io_prev_bits_SLess,	// core/src/core.scala:109:16
+                io_prev_bits_ULess,	// core/src/core.scala:109:16
+                io_prev_bits_Zero,	// core/src/core.scala:109:16
+  input  [3:0]  io_prev_bits_branchOp,	// core/src/core.scala:109:16
+                io_prev_bits_memOp,	// core/src/core.scala:109:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:109:16
+                io_prev_bits_wbDst,	// core/src/core.scala:109:16
+  input  [31:0] io_prev_bits_Imm,	// core/src/core.scala:109:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:109:16
+  input  [31:0] io_prev_bits_rd_data,	// core/src/core.scala:109:16
+                io_prev_bits_rj_data,	// core/src/core.scala:109:16
+                io_prev_bits_pc,	// core/src/core.scala:109:16
+  output        io_next_valid,	// core/src/core.scala:109:16
+  output [31:0] io_next_bits_ALUOut,	// core/src/core.scala:109:16
+  output        io_next_bits_SLess,	// core/src/core.scala:109:16
+                io_next_bits_ULess,	// core/src/core.scala:109:16
+                io_next_bits_Zero,	// core/src/core.scala:109:16
+  output [3:0]  io_next_bits_branchOp,	// core/src/core.scala:109:16
+                io_next_bits_memOp,	// core/src/core.scala:109:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:109:16
+                io_next_bits_wbDst,	// core/src/core.scala:109:16
+  output [31:0] io_next_bits_Imm,	// core/src/core.scala:109:16
+  output [4:0]  io_next_bits_rd,	// core/src/core.scala:109:16
+  output [31:0] io_next_bits_rd_data,	// core/src/core.scala:109:16
+                io_next_bits_rj_data,	// core/src/core.scala:109:16
+                io_next_bits_pc	// core/src/core.scala:109:16
 );
 
-  reg        state;	// core/src/core.scala:101:24
-  reg [31:0] regs_ALUOut;	// core/src/core.scala:102:19
-  reg        regs_SLess;	// core/src/core.scala:102:19
-  reg        regs_ULess;	// core/src/core.scala:102:19
-  reg        regs_Zero;	// core/src/core.scala:102:19
-  reg [3:0]  regs_branchOp;	// core/src/core.scala:102:19
-  reg [3:0]  regs_memOp;	// core/src/core.scala:102:19
-  reg [1:0]  regs_wbSel;	// core/src/core.scala:102:19
-  reg [1:0]  regs_wbDst;	// core/src/core.scala:102:19
-  reg [31:0] regs_Imm;	// core/src/core.scala:102:19
-  reg [4:0]  regs_rd;	// core/src/core.scala:102:19
-  reg [31:0] regs_rd_data;	// core/src/core.scala:102:19
-  reg [31:0] regs_rj_data;	// core/src/core.scala:102:19
-  reg [31:0] regs_pc;	// core/src/core.scala:102:19
-  always @(posedge clock) begin	// core/src/core.scala:94:7
-    if (reset)	// core/src/core.scala:94:7
-      state <= 1'h0;	// core/src/core.scala:95:16, :101:24
-    else	// core/src/core.scala:94:7
-      state <= io_prev_valid;	// core/src/core.scala:101:24
-    regs_ALUOut <= io_prev_valid ? io_prev_bits_ALUOut : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_SLess <= io_prev_valid & io_prev_bits_SLess;	// core/src/core.scala:102:19, :113:30, :115:14, :119:14
-    regs_ULess <= io_prev_valid & io_prev_bits_ULess;	// core/src/core.scala:102:19, :113:30, :115:14, :119:14
-    regs_Zero <= io_prev_valid & io_prev_bits_Zero;	// core/src/core.scala:102:19, :113:30, :115:14, :119:14
-    regs_branchOp <= io_prev_valid ? io_prev_bits_branchOp : 4'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_memOp <= io_prev_valid ? io_prev_bits_memOp : 4'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_wbSel <= io_prev_valid ? io_prev_bits_wbSel : 2'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_Imm <= io_prev_valid ? io_prev_bits_Imm : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_rd_data <= io_prev_valid ? io_prev_bits_rd_data : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_rj_data <= io_prev_valid ? io_prev_bits_rj_data : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_pc <= io_prev_valid ? io_prev_bits_pc : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
+  reg        state;	// core/src/core.scala:115:24
+  reg [31:0] regs_ALUOut;	// core/src/core.scala:116:19
+  reg        regs_SLess;	// core/src/core.scala:116:19
+  reg        regs_ULess;	// core/src/core.scala:116:19
+  reg        regs_Zero;	// core/src/core.scala:116:19
+  reg [3:0]  regs_branchOp;	// core/src/core.scala:116:19
+  reg [3:0]  regs_memOp;	// core/src/core.scala:116:19
+  reg [1:0]  regs_wbSel;	// core/src/core.scala:116:19
+  reg [1:0]  regs_wbDst;	// core/src/core.scala:116:19
+  reg [31:0] regs_Imm;	// core/src/core.scala:116:19
+  reg [4:0]  regs_rd;	// core/src/core.scala:116:19
+  reg [31:0] regs_rd_data;	// core/src/core.scala:116:19
+  reg [31:0] regs_rj_data;	// core/src/core.scala:116:19
+  reg [31:0] regs_pc;	// core/src/core.scala:116:19
+  always @(posedge clock) begin	// core/src/core.scala:108:7
+    if (reset)	// core/src/core.scala:108:7
+      state <= 1'h0;	// core/src/core.scala:109:16, :115:24
+    else	// core/src/core.scala:108:7
+      state <= io_prev_valid;	// core/src/core.scala:115:24
+    regs_ALUOut <= io_prev_valid ? io_prev_bits_ALUOut : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_SLess <= io_prev_valid & io_prev_bits_SLess;	// core/src/core.scala:116:19, :127:30, :129:14, :133:14
+    regs_ULess <= io_prev_valid & io_prev_bits_ULess;	// core/src/core.scala:116:19, :127:30, :129:14, :133:14
+    regs_Zero <= io_prev_valid & io_prev_bits_Zero;	// core/src/core.scala:116:19, :127:30, :129:14, :133:14
+    regs_branchOp <= io_prev_valid ? io_prev_bits_branchOp : 4'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_memOp <= io_prev_valid ? io_prev_bits_memOp : 4'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_wbSel <= io_prev_valid ? io_prev_bits_wbSel : 2'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_Imm <= io_prev_valid ? io_prev_bits_Imm : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_rd_data <= io_prev_valid ? io_prev_bits_rd_data : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_rj_data <= io_prev_valid ? io_prev_bits_rj_data : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_pc <= io_prev_valid ? io_prev_bits_pc : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:94:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:94:7
-      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:94:7
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:108:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:108:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:108:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// core/src/core.scala:94:7
-      automatic logic [31:0] _RANDOM[0:5];	// core/src/core.scala:94:7
-      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:94:7
-        `INIT_RANDOM_PROLOG_	// core/src/core.scala:94:7
+    initial begin	// core/src/core.scala:108:7
+      automatic logic [31:0] _RANDOM[0:5];	// core/src/core.scala:108:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:108:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:108:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:94:7
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:108:7
         for (logic [2:0] i = 3'h0; i < 3'h6; i += 3'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:94:7
-        end	// core/src/core.scala:94:7
-        state = _RANDOM[3'h0][0];	// core/src/core.scala:94:7, :101:24
-        regs_ALUOut = {_RANDOM[3'h0][31:1], _RANDOM[3'h1][0]};	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_SLess = _RANDOM[3'h1][1];	// core/src/core.scala:94:7, :102:19
-        regs_ULess = _RANDOM[3'h1][2];	// core/src/core.scala:94:7, :102:19
-        regs_Zero = _RANDOM[3'h1][3];	// core/src/core.scala:94:7, :102:19
-        regs_branchOp = _RANDOM[3'h1][7:4];	// core/src/core.scala:94:7, :102:19
-        regs_memOp = _RANDOM[3'h1][11:8];	// core/src/core.scala:94:7, :102:19
-        regs_wbSel = _RANDOM[3'h1][13:12];	// core/src/core.scala:94:7, :102:19
-        regs_wbDst = _RANDOM[3'h1][15:14];	// core/src/core.scala:94:7, :102:19
-        regs_Imm = {_RANDOM[3'h1][31:16], _RANDOM[3'h2][15:0]};	// core/src/core.scala:94:7, :102:19
-        regs_rd = _RANDOM[3'h2][20:16];	// core/src/core.scala:94:7, :102:19
-        regs_rd_data = {_RANDOM[3'h2][31:21], _RANDOM[3'h3][20:0]};	// core/src/core.scala:94:7, :102:19
-        regs_rj_data = {_RANDOM[3'h3][31:21], _RANDOM[3'h4][20:0]};	// core/src/core.scala:94:7, :102:19
-        regs_pc = {_RANDOM[3'h4][31:21], _RANDOM[3'h5][20:0]};	// core/src/core.scala:94:7, :102:19
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:108:7
+        end	// core/src/core.scala:108:7
+        state = _RANDOM[3'h0][0];	// core/src/core.scala:108:7, :115:24
+        regs_ALUOut = {_RANDOM[3'h0][31:1], _RANDOM[3'h1][0]};	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_SLess = _RANDOM[3'h1][1];	// core/src/core.scala:108:7, :116:19
+        regs_ULess = _RANDOM[3'h1][2];	// core/src/core.scala:108:7, :116:19
+        regs_Zero = _RANDOM[3'h1][3];	// core/src/core.scala:108:7, :116:19
+        regs_branchOp = _RANDOM[3'h1][7:4];	// core/src/core.scala:108:7, :116:19
+        regs_memOp = _RANDOM[3'h1][11:8];	// core/src/core.scala:108:7, :116:19
+        regs_wbSel = _RANDOM[3'h1][13:12];	// core/src/core.scala:108:7, :116:19
+        regs_wbDst = _RANDOM[3'h1][15:14];	// core/src/core.scala:108:7, :116:19
+        regs_Imm = {_RANDOM[3'h1][31:16], _RANDOM[3'h2][15:0]};	// core/src/core.scala:108:7, :116:19
+        regs_rd = _RANDOM[3'h2][20:16];	// core/src/core.scala:108:7, :116:19
+        regs_rd_data = {_RANDOM[3'h2][31:21], _RANDOM[3'h3][20:0]};	// core/src/core.scala:108:7, :116:19
+        regs_rj_data = {_RANDOM[3'h3][31:21], _RANDOM[3'h4][20:0]};	// core/src/core.scala:108:7, :116:19
+        regs_pc = {_RANDOM[3'h4][31:21], _RANDOM[3'h5][20:0]};	// core/src/core.scala:108:7, :116:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:94:7
-      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:94:7
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:108:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:108:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_next_valid = state;	// core/src/core.scala:94:7, :101:24
-  assign io_next_bits_ALUOut = regs_ALUOut;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_SLess = regs_SLess;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_ULess = regs_ULess;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_Zero = regs_Zero;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_branchOp = regs_branchOp;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:94:7, :102:19
+  assign io_next_valid = state;	// core/src/core.scala:108:7, :115:24
+  assign io_next_bits_ALUOut = regs_ALUOut;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_SLess = regs_SLess;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_ULess = regs_ULess;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_Zero = regs_Zero;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_branchOp = regs_branchOp;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_memOp = regs_memOp;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_Imm = regs_Imm;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_rd_data = regs_rd_data;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_rj_data = regs_rj_data;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_pc = regs_pc;	// core/src/core.scala:108:7, :116:19
 endmodule
 
 (*DONT_TOUCH="TRUE"*)module branchContr(	// core/src/lsu.scala:140:7
@@ -2259,71 +2258,71 @@ endmodule
   assign io_next_bits_rd = io_prev_bits_rd;	// core/src/lsu.scala:5:7
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module buffer_3(	// core/src/core.scala:94:7
-  input         clock,	// core/src/core.scala:94:7
-                reset,	// core/src/core.scala:94:7
-                io_prev_valid,	// core/src/core.scala:95:16
-  input  [31:0] io_prev_bits_MemOut,	// core/src/core.scala:95:16
-                io_prev_bits_ALUOut,	// core/src/core.scala:95:16
-  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:95:16
-                io_prev_bits_wbDst,	// core/src/core.scala:95:16
-  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:95:16
-  output        io_next_valid,	// core/src/core.scala:95:16
-  output [31:0] io_next_bits_MemOut,	// core/src/core.scala:95:16
-                io_next_bits_ALUOut,	// core/src/core.scala:95:16
-  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:95:16
-                io_next_bits_wbDst,	// core/src/core.scala:95:16
-  output [4:0]  io_next_bits_rd	// core/src/core.scala:95:16
+(*DONT_TOUCH="TRUE"*)module buffer_3(	// core/src/core.scala:108:7
+  input         clock,	// core/src/core.scala:108:7
+                reset,	// core/src/core.scala:108:7
+                io_prev_valid,	// core/src/core.scala:109:16
+  input  [31:0] io_prev_bits_MemOut,	// core/src/core.scala:109:16
+                io_prev_bits_ALUOut,	// core/src/core.scala:109:16
+  input  [1:0]  io_prev_bits_wbSel,	// core/src/core.scala:109:16
+                io_prev_bits_wbDst,	// core/src/core.scala:109:16
+  input  [4:0]  io_prev_bits_rd,	// core/src/core.scala:109:16
+  output        io_next_valid,	// core/src/core.scala:109:16
+  output [31:0] io_next_bits_MemOut,	// core/src/core.scala:109:16
+                io_next_bits_ALUOut,	// core/src/core.scala:109:16
+  output [1:0]  io_next_bits_wbSel,	// core/src/core.scala:109:16
+                io_next_bits_wbDst,	// core/src/core.scala:109:16
+  output [4:0]  io_next_bits_rd	// core/src/core.scala:109:16
 );
 
-  reg        state;	// core/src/core.scala:101:24
-  reg [31:0] regs_MemOut;	// core/src/core.scala:102:19
-  reg [31:0] regs_ALUOut;	// core/src/core.scala:102:19
-  reg [1:0]  regs_wbSel;	// core/src/core.scala:102:19
-  reg [1:0]  regs_wbDst;	// core/src/core.scala:102:19
-  reg [4:0]  regs_rd;	// core/src/core.scala:102:19
-  always @(posedge clock) begin	// core/src/core.scala:94:7
-    if (reset)	// core/src/core.scala:94:7
-      state <= 1'h0;	// core/src/core.scala:95:16, :101:24
-    else	// core/src/core.scala:94:7
-      state <= io_prev_valid;	// core/src/core.scala:101:24
-    regs_MemOut <= io_prev_valid ? io_prev_bits_MemOut : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_ALUOut <= io_prev_valid ? io_prev_bits_ALUOut : 32'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
-    regs_wbSel <= io_prev_valid ? io_prev_bits_wbSel : 2'h0;	// core/src/core.scala:94:7, :102:19, :113:30, :115:14, :119:14
-    regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:94:7, :102:19, :113:30, :115:14, :119:14
-    regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:102:19, :107:29, :113:30, :115:14, :119:14
+  reg        state;	// core/src/core.scala:115:24
+  reg [31:0] regs_MemOut;	// core/src/core.scala:116:19
+  reg [31:0] regs_ALUOut;	// core/src/core.scala:116:19
+  reg [1:0]  regs_wbSel;	// core/src/core.scala:116:19
+  reg [1:0]  regs_wbDst;	// core/src/core.scala:116:19
+  reg [4:0]  regs_rd;	// core/src/core.scala:116:19
+  always @(posedge clock) begin	// core/src/core.scala:108:7
+    if (reset)	// core/src/core.scala:108:7
+      state <= 1'h0;	// core/src/core.scala:109:16, :115:24
+    else	// core/src/core.scala:108:7
+      state <= io_prev_valid;	// core/src/core.scala:115:24
+    regs_MemOut <= io_prev_valid ? io_prev_bits_MemOut : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_ALUOut <= io_prev_valid ? io_prev_bits_ALUOut : 32'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
+    regs_wbSel <= io_prev_valid ? io_prev_bits_wbSel : 2'h0;	// core/src/core.scala:108:7, :116:19, :127:30, :129:14, :133:14
+    regs_wbDst <= io_prev_valid ? io_prev_bits_wbDst : 2'h0;	// core/src/core.scala:108:7, :116:19, :127:30, :129:14, :133:14
+    regs_rd <= io_prev_valid ? io_prev_bits_rd : 5'h0;	// core/src/core.scala:116:19, :121:29, :127:30, :129:14, :133:14
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:94:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:94:7
-      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:94:7
+  `ifdef ENABLE_INITIAL_REG_	// core/src/core.scala:108:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// core/src/core.scala:108:7
+      `FIRRTL_BEFORE_INITIAL	// core/src/core.scala:108:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// core/src/core.scala:94:7
-      automatic logic [31:0] _RANDOM[0:2];	// core/src/core.scala:94:7
-      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:94:7
-        `INIT_RANDOM_PROLOG_	// core/src/core.scala:94:7
+    initial begin	// core/src/core.scala:108:7
+      automatic logic [31:0] _RANDOM[0:2];	// core/src/core.scala:108:7
+      `ifdef INIT_RANDOM_PROLOG_	// core/src/core.scala:108:7
+        `INIT_RANDOM_PROLOG_	// core/src/core.scala:108:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:94:7
+      `ifdef RANDOMIZE_REG_INIT	// core/src/core.scala:108:7
         for (logic [1:0] i = 2'h0; i < 2'h3; i += 2'h1) begin
-          _RANDOM[i] = `RANDOM;	// core/src/core.scala:94:7
-        end	// core/src/core.scala:94:7
-        state = _RANDOM[2'h0][0];	// core/src/core.scala:94:7, :101:24
-        regs_MemOut = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// core/src/core.scala:94:7, :101:24, :102:19
-        regs_ALUOut = {_RANDOM[2'h1][31:1], _RANDOM[2'h2][0]};	// core/src/core.scala:94:7, :102:19
-        regs_wbSel = _RANDOM[2'h2][2:1];	// core/src/core.scala:94:7, :102:19
-        regs_wbDst = _RANDOM[2'h2][4:3];	// core/src/core.scala:94:7, :102:19
-        regs_rd = _RANDOM[2'h2][9:5];	// core/src/core.scala:94:7, :102:19
+          _RANDOM[i] = `RANDOM;	// core/src/core.scala:108:7
+        end	// core/src/core.scala:108:7
+        state = _RANDOM[2'h0][0];	// core/src/core.scala:108:7, :115:24
+        regs_MemOut = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// core/src/core.scala:108:7, :115:24, :116:19
+        regs_ALUOut = {_RANDOM[2'h1][31:1], _RANDOM[2'h2][0]};	// core/src/core.scala:108:7, :116:19
+        regs_wbSel = _RANDOM[2'h2][2:1];	// core/src/core.scala:108:7, :116:19
+        regs_wbDst = _RANDOM[2'h2][4:3];	// core/src/core.scala:108:7, :116:19
+        regs_rd = _RANDOM[2'h2][9:5];	// core/src/core.scala:108:7, :116:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:94:7
-      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:94:7
+    `ifdef FIRRTL_AFTER_INITIAL	// core/src/core.scala:108:7
+      `FIRRTL_AFTER_INITIAL	// core/src/core.scala:108:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_next_valid = state;	// core/src/core.scala:94:7, :101:24
-  assign io_next_bits_MemOut = regs_MemOut;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_ALUOut = regs_ALUOut;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:94:7, :102:19
-  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:94:7, :102:19
+  assign io_next_valid = state;	// core/src/core.scala:108:7, :115:24
+  assign io_next_bits_MemOut = regs_MemOut;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_ALUOut = regs_ALUOut;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_wbSel = regs_wbSel;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_wbDst = regs_wbDst;	// core/src/core.scala:108:7, :116:19
+  assign io_next_bits_rd = regs_rd;	// core/src/core.scala:108:7, :116:19
 endmodule
 
 (*DONT_TOUCH="TRUE"*)module wbu(	// core/src/wbu.scala:5:7
@@ -2580,13 +2579,13 @@ endmodule
                 io_bus_out_bits_we_n	// core/src/core.scala:6:16
 );
 
-  wire        _fwctrl_io_stall;	// core/src/core.scala:41:24
-  wire [2:0]  _fwctrl_io_FwID_RJ;	// core/src/core.scala:41:24
-  wire [2:0]  _fwctrl_io_FwID_RK;	// core/src/core.scala:41:24
-  wire [2:0]  _fwctrl_io_FwID_RD;	// core/src/core.scala:41:24
-  wire [2:0]  _fwctrl_io_FwEX_RJ;	// core/src/core.scala:41:24
-  wire [2:0]  _fwctrl_io_FwEX_RK;	// core/src/core.scala:41:24
-  wire [2:0]  _fwctrl_io_FwEX_RD;	// core/src/core.scala:41:24
+  wire        _fwctrl_io_stall;	// core/src/core.scala:54:24
+  wire [2:0]  _fwctrl_io_FwID_RJ;	// core/src/core.scala:54:24
+  wire [2:0]  _fwctrl_io_FwID_RK;	// core/src/core.scala:54:24
+  wire [2:0]  _fwctrl_io_FwID_RD;	// core/src/core.scala:54:24
+  wire [2:0]  _fwctrl_io_FwEX_RJ;	// core/src/core.scala:54:24
+  wire [2:0]  _fwctrl_io_FwEX_RK;	// core/src/core.scala:54:24
+  wire [2:0]  _fwctrl_io_FwEX_RD;	// core/src/core.scala:54:24
   wire        _abt_io_in_DataIn_1_ready;	// core/src/core.scala:20:21
   wire [31:0] _abt_io_out_BusOut_0_bits_data_out;	// core/src/core.scala:20:21
   wire [31:0] _abt_io_out_BusOut_1_bits_data_out;	// core/src/core.scala:20:21
@@ -2682,7 +2681,6 @@ endmodule
   wire [4:0]  _idu_io_RD;	// core/src/core.scala:12:21
   wire [4:0]  _idu_io_RDst;	// core/src/core.scala:12:21
   wire [1:0]  _idu_io_RSel;	// core/src/core.scala:12:21
-  wire        _ifu_idu_io_prev_ready;	// core/src/core.scala:11:25
   wire        _ifu_idu_io_next_valid;	// core/src/core.scala:11:25
   wire [31:0] _ifu_idu_io_next_bits_pc;	// core/src/core.scala:11:25
   wire [31:0] _ifu_idu_io_next_bits_inst;	// core/src/core.scala:11:25
@@ -2693,10 +2691,10 @@ endmodule
   wire [31:0] _ifu_io_next_bits_inst;	// core/src/core.scala:10:21
   wire        flush =
     (_idu_exu_io_next_valid
-       ? _idu_exu_io_next_bits_pc
+       ? _idu_exu_io_next_bits_pc != _lsu_io_nextPC
        : _ifu_idu_io_next_valid
-           ? _ifu_idu_io_next_bits_pc
-           : _ifu_io_next_bits_pc) != _lsu_io_nextPC & _exu_lsu_io_next_valid;	// core/src/core.scala:10:21, :11:25, :13:25, :15:25, :16:21, :30:29, :31:16, :33:34, :34:16, :37:16, :39:{24,42}
+           ? _ifu_idu_io_next_bits_pc != _lsu_io_nextPC
+           : _ifu_io_next_bits_pc != _lsu_io_nextPC) & _exu_lsu_io_next_valid;	// core/src/core.scala:10:21, :11:25, :13:25, :15:25, :16:21, :39:39, :40:39, :41:39, :43:29, :44:17, :46:34, :47:17, :50:17, :52:25
   ifu ifu (	// core/src/core.scala:10:21
     .clock                    (clock),
     .reset                    (reset),
@@ -2704,25 +2702,24 @@ endmodule
     .io_base_out_ready        (_abt_io_in_DataIn_1_ready),	// core/src/core.scala:20:21
     .io_base_out_valid        (_ifu_io_base_out_valid),
     .io_base_out_bits_addr    (_ifu_io_base_out_bits_addr),
-    .io_next_ready            (_ifu_idu_io_prev_ready),	// core/src/core.scala:11:25
     .io_next_valid            (_ifu_io_next_valid),
     .io_next_bits_pc          (_ifu_io_next_bits_pc),
     .io_next_bits_inst        (_ifu_io_next_bits_inst),
-    .io_flush                 (flush),	// core/src/core.scala:39:42
+    .io_stall                 (_fwctrl_io_stall),	// core/src/core.scala:54:24
+    .io_flush                 (flush),	// core/src/core.scala:52:25
     .io_nextPC                (_lsu_io_nextPC)	// core/src/core.scala:16:21
   );
   buffer ifu_idu (	// core/src/core.scala:11:25
     .clock             (clock),
     .reset             (reset),
-    .io_prev_ready     (_ifu_idu_io_prev_ready),
     .io_prev_valid     (_ifu_io_next_valid),	// core/src/core.scala:10:21
     .io_prev_bits_pc   (_ifu_io_next_bits_pc),	// core/src/core.scala:10:21
     .io_prev_bits_inst (_ifu_io_next_bits_inst),	// core/src/core.scala:10:21
     .io_next_valid     (_ifu_idu_io_next_valid),
     .io_next_bits_pc   (_ifu_idu_io_next_bits_pc),
     .io_next_bits_inst (_ifu_idu_io_next_bits_inst),
-    .io_stall          (_fwctrl_io_stall),	// core/src/core.scala:41:24
-    .io_flush          (flush)	// core/src/core.scala:39:42
+    .io_stall          (_fwctrl_io_stall),	// core/src/core.scala:54:24
+    .io_flush          (flush)	// core/src/core.scala:52:25
   );
   idu idu (	// core/src/core.scala:12:21
     .clock                 (clock),
@@ -2747,8 +2744,8 @@ endmodule
     .io_next_bits_FwEX_RJ  (_idu_io_next_bits_FwEX_RJ),
     .io_next_bits_FwEX_RK  (_idu_io_next_bits_FwEX_RK),
     .io_next_bits_pc       (_idu_io_next_bits_pc),
-    .io_stall              (_fwctrl_io_stall),	// core/src/core.scala:41:24
-    .io_flush              (flush),	// core/src/core.scala:39:42
+    .io_stall              (_fwctrl_io_stall),	// core/src/core.scala:54:24
+    .io_flush              (flush),	// core/src/core.scala:52:25
     .io_wen                (_wbu_io_wen),	// core/src/core.scala:18:21
     .io_waddr              (_wbu_io_waddr),	// core/src/core.scala:18:21
     .io_wdata              (_wbu_io_wdata),	// core/src/core.scala:18:21
@@ -2757,12 +2754,12 @@ endmodule
     .io_RD                 (_idu_io_RD),
     .io_RDst               (_idu_io_RDst),
     .io_RSel               (_idu_io_RSel),
-    .io_FwID_RJ            (_fwctrl_io_FwID_RJ),	// core/src/core.scala:41:24
-    .io_FwID_RK            (_fwctrl_io_FwID_RK),	// core/src/core.scala:41:24
-    .io_FwID_RD            (_fwctrl_io_FwID_RD),	// core/src/core.scala:41:24
-    .io_FwEX_RJ            (_fwctrl_io_FwEX_RJ),	// core/src/core.scala:41:24
-    .io_FwEX_RK            (_fwctrl_io_FwEX_RK),	// core/src/core.scala:41:24
-    .io_FwEX_RD            (_fwctrl_io_FwEX_RD),	// core/src/core.scala:41:24
+    .io_FwID_RJ            (_fwctrl_io_FwID_RJ),	// core/src/core.scala:54:24
+    .io_FwID_RK            (_fwctrl_io_FwID_RK),	// core/src/core.scala:54:24
+    .io_FwID_RD            (_fwctrl_io_FwID_RD),	// core/src/core.scala:54:24
+    .io_FwEX_RJ            (_fwctrl_io_FwEX_RJ),	// core/src/core.scala:54:24
+    .io_FwEX_RK            (_fwctrl_io_FwEX_RK),	// core/src/core.scala:54:24
+    .io_FwEX_RD            (_fwctrl_io_FwEX_RD),	// core/src/core.scala:54:24
     .io_ELALU              (_exu_lsu_io_next_bits_ALUOut),	// core/src/core.scala:15:25
     .io_LWALU              (_lsu_wbu_io_next_bits_ALUOut),	// core/src/core.scala:17:25
     .io_LWMEM              (_lsu_wbu_io_next_bits_MemOut),	// core/src/core.scala:17:25
@@ -2805,7 +2802,7 @@ endmodule
     .io_next_bits_FwEX_RJ  (_idu_exu_io_next_bits_FwEX_RJ),
     .io_next_bits_FwEX_RK  (_idu_exu_io_next_bits_FwEX_RK),
     .io_next_bits_pc       (_idu_exu_io_next_bits_pc),
-    .io_flush              (flush)	// core/src/core.scala:39:42
+    .io_flush              (flush)	// core/src/core.scala:52:25
   );
   exu exu (	// core/src/core.scala:14:21
     .clock                 (clock),
@@ -2840,7 +2837,7 @@ endmodule
     .io_next_bits_rd_data  (_exu_io_next_bits_rd_data),
     .io_next_bits_rj_data  (_exu_io_next_bits_rj_data),
     .io_next_bits_pc       (_exu_io_next_bits_pc),
-    .io_flush              (flush),	// core/src/core.scala:39:42
+    .io_flush              (flush),	// core/src/core.scala:52:25
     .io_P                  (_exu_io_P),
     .io_ELALU              (_exu_lsu_io_next_bits_ALUOut),	// core/src/core.scala:15:25
     .io_LWALU              (_lsu_wbu_io_next_bits_ALUOut),	// core/src/core.scala:17:25
@@ -2963,14 +2960,14 @@ endmodule
     .io_out_BusOut_0_bits_data_out (_abt_io_out_BusOut_0_bits_data_out),
     .io_out_BusOut_1_bits_data_out (_abt_io_out_BusOut_1_bits_data_out)
   );
-  forwarding fwctrl (	// core/src/core.scala:41:24
+  forwarding fwctrl (	// core/src/core.scala:54:24
     .clock      (clock),
     .io_RJ      (_idu_io_RJ),	// core/src/core.scala:12:21
     .io_RK      (_idu_io_RK),	// core/src/core.scala:12:21
     .io_RD      (_idu_io_RD),	// core/src/core.scala:12:21
     .io_RDst    (_idu_io_RDst),	// core/src/core.scala:12:21
     .io_RSel    (_idu_io_RSel),	// core/src/core.scala:12:21
-    .io_flush   (flush),	// core/src/core.scala:39:42
+    .io_flush   (flush),	// core/src/core.scala:52:25
     .io_stall   (_fwctrl_io_stall),
     .io_FwID_RJ (_fwctrl_io_FwID_RJ),
     .io_FwID_RK (_fwctrl_io_FwID_RK),
