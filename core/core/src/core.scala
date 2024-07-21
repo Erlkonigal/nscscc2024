@@ -36,7 +36,7 @@ class core extends Module {
     .otherwise {
         lastpc := ifu.io.next.bits.pc
     }
-    val flush = lastpc =/= lsu.io.prev.bits.nextPC && lsu.io.prev.valid
+    val flush = lastpc =/= lsu.io.nextPC && lsu.io.prev.valid
 
     val fwctrl = Module(new forwarding())
     fwctrl.io.RD := idu.io.RD

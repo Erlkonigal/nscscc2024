@@ -19,7 +19,6 @@ class exu extends Module {
     })
     val mult = Module(new mult_gen_0())
     val ALU = Module(new alu())
-    val brCtrl = Module(new branchContr())
 
     val FwSrcSeq = Seq(
         ForwardSrc.elALU -> io.ELALU,
@@ -52,56 +51,22 @@ class exu extends Module {
     mult.io.B := ALUB
     io.P := mult.io.P
 
-    brCtrl.io.pc := io.prev.bits.pc
-    brCtrl.io.rj_data := ForwardRJ
-    brCtrl.io.offset := io.prev.bits.Imm
-    brCtrl.io.branchOp := io.prev.bits.branchOp
-    brCtrl.io.SLess := ALU.io.SLess
-    brCtrl.io.ULess := ALU.io.ULess
-    brCtrl.io.Zero := ALU.io.Zero
-
     io.next.bits.ALUOut := ALU.io.Out
+    io.next.bits.SLess := ALU.io.SLess
+    io.next.bits.ULess := ALU.io.ULess
+    io.next.bits.Zero := ALU.io.Zero
+    io.next.bits.branchOp := io.prev.bits.branchOp
     io.next.bits.memOp := io.prev.bits.memOp
     io.next.bits.wbSel := io.prev.bits.wbSel
     io.next.bits.wbDst := io.prev.bits.wbDst
     io.next.bits.Imm := io.prev.bits.Imm
     io.next.bits.rd := io.prev.bits.rd
     io.next.bits.rd_data := ForwardRD
-    io.next.bits.nextPC := brCtrl.io.nextPC
+    io.next.bits.rj_data := ForwardRJ
+    io.next.bits.pc := io.prev.bits.pc
 
     io.next.valid := io.prev.valid && io.stall === 0.U && io.flush === 0.U
     io.prev.ready := io.next.ready
-}
-
-class branchContr extends Module {
-    val io = IO(new Bundle {
-        val pc = Input(UInt(32.W))
-        val rj_data = Input(UInt(32.W))
-        val offset = Input(UInt(32.W))
-        val branchOp = Input(Branch())
-        val SLess = Input(UInt(1.W))
-        val ULess = Input(UInt(1.W))
-        val Zero = Input(UInt(1.W))
-        val nextPC = Output(UInt(32.W))
-    })
-
-    val PCAsrc = MuxLookup(io.branchOp, io.pc) (Seq(
-        Branch.jirl -> io.rj_data,
-    ))
-
-    val PCBsrc = MuxLookup(io.branchOp, 4.U) (Seq(
-        Branch.beq -> Mux(io.Zero === 1.U, io.offset, 4.U),
-        Branch.bne -> Mux(io.Zero === 0.U, io.offset, 4.U),
-        Branch.blt -> Mux(io.SLess === 1.U, io.offset, 4.U),
-        Branch.bge -> Mux(io.SLess === 0.U, io.offset, 4.U),
-        Branch.bltu -> Mux(io.ULess === 1.U, io.offset, 4.U),
-        Branch.bgeu -> Mux(io.ULess === 0.U, io.offset, 4.U),
-        Branch.b -> io.offset,
-        Branch.bl -> io.offset,
-        Branch.jirl -> io.offset,
-    ))
-
-    io.nextPC := PCAsrc + PCBsrc
 }
 
 class alu extends Module {

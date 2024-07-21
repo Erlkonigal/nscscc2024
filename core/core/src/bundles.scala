@@ -153,7 +153,11 @@ object PCBsrc extends ChiselEnum {
 class exu_lsu extends Bundle {
 // ALU
     val ALUOut = Output(UInt(32.W))
+    val SLess = Output(UInt(1.W))
+    val ULess = Output(UInt(1.W))
+    val Zero = Output(UInt(1.W))
 // Controller
+    val branchOp = Output(Branch())
     val memOp = Output(MemOp())
     val wbSel = Output(WBSel())
     val wbDst = Output(WBDst())
@@ -162,8 +166,9 @@ class exu_lsu extends Bundle {
 // RegFile
     val rd = Output(UInt(5.W))
     val rd_data = Output(UInt(32.W))
+    val rj_data = Output(UInt(32.W))
 // branch
-    val nextPC = Output(UInt(32.W))
+    val pc = Output(UInt(32.W))
 }
 
 class lsu_wbu extends Bundle {
