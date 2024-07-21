@@ -55,7 +55,7 @@
   `endif // not def ENABLE_INITIAL_MEM_
 `endif // not def SYNTHESIS
 
-(*DONT_TOUCH="TRUE"*)module ifu(	// core/src/ifu.scala:5:7
+module ifu(	// core/src/ifu.scala:5:7
   input         clock,	// core/src/ifu.scala:5:7
                 reset,	// core/src/ifu.scala:5:7
   input  [31:0] io_base_in_bits_data_out,	// core/src/ifu.scala:6:16
@@ -106,7 +106,7 @@
   assign io_next_bits_inst = io_base_in_bits_data_out;	// core/src/ifu.scala:5:7
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module buffer(	// core/src/core.scala:108:7
+module buffer(	// core/src/core.scala:108:7
   input         clock,	// core/src/core.scala:108:7
                 reset,	// core/src/core.scala:108:7
                 io_prev_valid,	// core/src/core.scala:109:16
@@ -165,7 +165,7 @@ endmodule
   assign io_next_bits_inst = regs_inst;	// core/src/core.scala:108:7, :116:19
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module ImmGen(	// core/src/idu.scala:341:7
+module ImmGen(	// core/src/idu.scala:341:7
   input  [25:0] io_inst26,	// core/src/idu.scala:342:16
   input  [3:0]  io_immType,	// core/src/idu.scala:342:16
   output [31:0] io_Imm	// core/src/idu.scala:342:16
@@ -193,7 +193,7 @@ endmodule
                                       : 32'h0;	// core/src/idu.scala:341:7, :348:42, :350:{37,42,62}, :351:{36,41,55,71}, :352:{37,42,56,72}, :353:38, :354:{37,42,56,72,86}, :355:{37,42,56,72}, :356:{37,47,60}, :357:{37,42,55,70}, :358:{35,40,53,68}
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module RegFile(	// core/src/idu.scala:319:7
+module RegFile(	// core/src/idu.scala:319:7
   input         clock,	// core/src/idu.scala:319:7
                 reset,	// core/src/idu.scala:319:7
   input  [4:0]  io_rd,	// core/src/idu.scala:320:16
@@ -558,7 +558,7 @@ endmodule
   assign io_rk_data = io_rk == 5'h0 ? 32'h0 : _GEN[io_rk];	// core/src/idu.scala:319:7, :332:30, :334:22, :336:{22,29}
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module idu(	// core/src/idu.scala:135:7
+module idu(	// core/src/idu.scala:135:7
   input         clock,	// core/src/idu.scala:135:7
                 reset,	// core/src/idu.scala:135:7
                 io_prev_valid,	// core/src/idu.scala:136:16
@@ -885,7 +885,7 @@ endmodule
   assign io_RSel = io_RSel_0;	// core/src/idu.scala:135:7, src/main/scala/chisel3/util/Lookup.scala:34:39
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module buffer_1(	// core/src/core.scala:108:7
+module buffer_1(	// core/src/core.scala:108:7
   input         clock,	// core/src/core.scala:108:7
                 reset,	// core/src/core.scala:108:7
                 io_prev_valid,	// core/src/core.scala:109:16
@@ -1041,7 +1041,7 @@ endmodule
 
 // external module mult_gen_0
 
-(*DONT_TOUCH="TRUE"*)module bshifter(	// core/src/exu.scala:121:7
+module bshifter(	// core/src/exu.scala:121:7
   input  [31:0] io_A,	// core/src/exu.scala:122:16
   input  [4:0]  io_B,	// core/src/exu.scala:122:16
   input  [3:0]  io_Op,	// core/src/exu.scala:122:16
@@ -1855,7 +1855,7 @@ endmodule
        : Shifter_4_0};	// core/src/exu.scala:121:7, :130:24, :134:{37,43}, :135:53, :142:37, :143:53, :150:37, :159:26
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module alu(	// core/src/exu.scala:72:7
+module alu(	// core/src/exu.scala:72:7
   input  [31:0] io_A,	// core/src/exu.scala:73:16
                 io_B,	// core/src/exu.scala:73:16
   input  [3:0]  io_Op,	// core/src/exu.scala:73:16
@@ -1901,7 +1901,7 @@ endmodule
   assign io_Zero = FixSum[31:0] == 32'h0;	// core/src/exu.scala:72:7, :91:27, :92:31, :94:{21,29}
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module exu(	// core/src/exu.scala:5:7
+module exu(	// core/src/exu.scala:5:7
   input         clock,	// core/src/exu.scala:5:7
                 io_prev_valid,	// core/src/exu.scala:6:16
   input  [3:0]  io_prev_bits_aluOp,	// core/src/exu.scala:6:16
@@ -2008,7 +2008,7 @@ endmodule
   assign io_P = _mult_P;	// core/src/exu.scala:5:7, :20:22
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module buffer_2(	// core/src/core.scala:108:7
+module buffer_2(	// core/src/core.scala:108:7
   input         clock,	// core/src/core.scala:108:7
                 reset,	// core/src/core.scala:108:7
                 io_prev_valid,	// core/src/core.scala:109:16
@@ -2123,7 +2123,7 @@ endmodule
   assign io_next_bits_pc = regs_pc;	// core/src/core.scala:108:7, :116:19
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module branchContr(	// core/src/lsu.scala:140:7
+module branchContr(	// core/src/lsu.scala:140:7
   input  [31:0] io_pc,	// core/src/lsu.scala:141:16
                 io_rj_data,	// core/src/lsu.scala:141:16
                 io_offset,	// core/src/lsu.scala:141:16
@@ -2151,7 +2151,7 @@ endmodule
                              : io_branchOp == 4'h0 & io_Zero ? io_offset : 32'h4);	// core/src/lsu.scala:140:7, :152:48, :156:46, :157:26, :158:26, :159:26, :160:26, :161:27, :162:27, :168:25
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module lsu(	// core/src/lsu.scala:5:7
+module lsu(	// core/src/lsu.scala:5:7
   input  [31:0] io_ext_in_bits_data_out,	// core/src/lsu.scala:6:16
   output        io_ext_out_valid,	// core/src/lsu.scala:6:16
                 io_ext_out_bits_data_wen,	// core/src/lsu.scala:6:16
@@ -2258,7 +2258,7 @@ endmodule
   assign io_next_bits_rd = io_prev_bits_rd;	// core/src/lsu.scala:5:7
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module buffer_3(	// core/src/core.scala:108:7
+module buffer_3(	// core/src/core.scala:108:7
   input         clock,	// core/src/core.scala:108:7
                 reset,	// core/src/core.scala:108:7
                 io_prev_valid,	// core/src/core.scala:109:16
@@ -2325,7 +2325,7 @@ endmodule
   assign io_next_bits_rd = regs_rd;	// core/src/core.scala:108:7, :116:19
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module wbu(	// core/src/wbu.scala:5:7
+module wbu(	// core/src/wbu.scala:5:7
   input         io_prev_valid,	// core/src/wbu.scala:6:16
   input  [31:0] io_prev_bits_MemOut,	// core/src/wbu.scala:6:16
                 io_prev_bits_ALUOut,	// core/src/wbu.scala:6:16
@@ -2347,7 +2347,7 @@ endmodule
   assign io_wdata = _GEN[io_prev_bits_wbSel];	// core/src/wbu.scala:5:7, :21:52
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module Arbiter2_bus_out(	// src/main/scala/chisel3/util/Arbiter.scala:133:7
+module Arbiter2_bus_out(	// src/main/scala/chisel3/util/Arbiter.scala:133:7
   input         io_in_0_valid,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
                 io_in_0_bits_data_wen,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
   input  [31:0] io_in_0_bits_data_in,	// src/main/scala/chisel3/util/Arbiter.scala:140:14
@@ -2381,7 +2381,7 @@ endmodule
   assign io_out_bits_we_n = ~io_in_0_valid | io_in_0_bits_we_n;	// src/main/scala/chisel3/util/Arbiter.scala:133:7, :143:15, :145:26, :147:19
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module abt(	// core/src/abt.scala:5:7
+module abt(	// core/src/abt.scala:5:7
   input         io_in_DataIn_0_valid,	// core/src/abt.scala:6:16
                 io_in_DataIn_0_bits_data_wen,	// core/src/abt.scala:6:16
   input  [31:0] io_in_DataIn_0_bits_data_in,	// core/src/abt.scala:6:16
@@ -2433,7 +2433,7 @@ endmodule
   assign io_out_BusOut_1_bits_data_out = io_in_BusIn_bits_data_out;	// core/src/abt.scala:5:7
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module forwarding(	// core/src/idu.scala:5:7
+module forwarding(	// core/src/idu.scala:5:7
   input        clock,	// core/src/idu.scala:5:7
   input  [4:0] io_RJ,	// core/src/idu.scala:6:16
                io_RK,	// core/src/idu.scala:6:16
@@ -2564,7 +2564,7 @@ endmodule
   assign io_FwEX_RD = RetEX_RD;	// core/src/idu.scala:5:7, :84:72, :85:17, :87:47
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module core(	// core/src/core.scala:5:7
+module core(	// core/src/core.scala:5:7
   input         clock,	// core/src/core.scala:5:7
                 reset,	// core/src/core.scala:5:7
   input  [31:0] io_bus_in_bits_data_out,	// core/src/core.scala:6:16
@@ -2978,7 +2978,7 @@ endmodule
   );
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module xbar(	// core/src/xbar.scala:5:7
+module xbar(	// core/src/xbar.scala:5:7
   output        io_in_DataIn_ready,	// core/src/xbar.scala:6:16
   input         io_in_DataIn_valid,	// core/src/xbar.scala:6:16
                 io_in_DataIn_bits_data_wen,	// core/src/xbar.scala:6:16
@@ -3050,7 +3050,7 @@ endmodule
       : _GEN_0 ? io_in_BusIn_1_bits_data_out : io_in_BusIn_0_bits_data_out;	// core/src/bundles.scala:8:23, core/src/xbar.scala:5:7, :26:56, :29:27
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module sram_ctrl(	// core/src/sram_ctrl.scala:5:7
+module sram_ctrl(	// core/src/sram_ctrl.scala:5:7
   input         io_in_valid,	// core/src/sram_ctrl.scala:6:16
                 io_in_bits_data_wen,	// core/src/sram_ctrl.scala:6:16
   input  [31:0] io_in_bits_data_in,	// core/src/sram_ctrl.scala:6:16
@@ -3085,7 +3085,7 @@ endmodule
 // external module async_receiver
 
 // VCS coverage exclude_file
-(*DONT_TOUCH="TRUE"*)module ram_16x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+module ram_16x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   input  [3:0] R0_addr,
   input        R0_en,
                R0_clk,
@@ -3116,7 +3116,7 @@ endmodule
   assign R0_data = R0_en ? Memory[R0_addr] : 8'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module Queue16_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+module Queue16_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   input        clock,	// src/main/scala/chisel3/util/Decoupled.scala:243:7
                reset,	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -3184,7 +3184,7 @@ endmodule
   assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module uart_ctrl(	// core/src/uart_ctrl.scala:31:7
+module uart_ctrl(	// core/src/uart_ctrl.scala:31:7
   input         clock,	// core/src/uart_ctrl.scala:31:7
                 reset,	// core/src/uart_ctrl.scala:31:7
                 io_in_valid,	// core/src/uart_ctrl.scala:32:16
@@ -3259,7 +3259,7 @@ endmodule
       : {30'h0, _recv_fifo_io_deq_valid, _tran_fifo_io_enq_ready};	// core/src/uart_ctrl.scala:31:7, :40:27, :41:27, :62:{22,49}, :65:{30,36,41}, :67:54, :70:{36,41}
 endmodule
 
-(*DONT_TOUCH="TRUE"*)module subtop(	// core/src/subtop.scala:5:7
+module subtop(	// core/src/subtop.scala:5:7
   input         clock,	// core/src/subtop.scala:5:7
                 reset,	// core/src/subtop.scala:5:7
   output        io_base_data_wen,	// core/src/subtop.scala:6:16

@@ -56,16 +56,13 @@ module thinpad_top(
 /* =========== Demo code begin =========== */
 
 // PLL分频示例
-wire locked, clk_10M, clk_20M;
+wire locked;
 wire clk;
 pll_example clock_gen 
  (
   // Clock in ports
   .clk_in1(clk_50M),  // 外部时钟输入
-  // Clock out ports
-  .clk_out1(clk_10M), // 时钟输出1，频率在IP配置界面中设�?
-  .clk_out2(clk_20M), // 时钟输出2，频率在IP配置界面中设�?
-  .clk_out3(clk),
+  .clk_out1(clk),
   // Status and control signals
   .reset(reset_btn), // PLL复位输入
   .locked(locked)    // PLL锁定指示输出�?"1"表示时钟稳定�?
