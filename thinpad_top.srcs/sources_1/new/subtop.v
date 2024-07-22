@@ -3211,7 +3211,7 @@ module uart_ctrl(	// core/src/uart_ctrl.scala:31:7
   wire       _GEN = io_in_valid & io_in_bits_addr == 32'h0;	// core/src/uart_ctrl.scala:62:{22,40}
   async_transmitter #(
     .Baud(9600),
-    .ClkFrequency(50000000)
+    .ClkFrequency(60000000)
   ) tran_0 (	// core/src/uart_ctrl.scala:37:22
     .clk       (clock),
     .TxD_start (_tran_io_TxD_start_T_1),	// core/src/uart_ctrl.scala:44:44
@@ -3221,7 +3221,7 @@ module uart_ctrl(	// core/src/uart_ctrl.scala:31:7
   );
   async_receiver #(
     .Baud(9600),
-    .ClkFrequency(50000000)
+    .ClkFrequency(60000000)
   ) recv (	// core/src/uart_ctrl.scala:38:22
     .clk            (clock),
     .RxD            (io_uart_rx),

@@ -289,8 +289,8 @@ set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 
 set gclk [get_clocks -of_objects [get_pins clock_gen/clk_out1]]
 
-set_input_delay -clock $gclk 15 [get_ports base_ram_data[*]] 
-set_input_delay -clock $gclk 15 [get_ports ext_ram_data[*]] 
+set_input_delay -clock $gclk 16 [get_ports base_ram_data[*]] 
+set_input_delay -clock $gclk 16 [get_ports ext_ram_data[*]] 
 set_input_delay -clock $gclk 10 [get_ports reset_btn] 
 set_input_delay  -clock $gclk 10 [get_ports rxd] 
 
