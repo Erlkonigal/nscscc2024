@@ -10,16 +10,13 @@ class ifu extends Module {
         // pipe
         val next = Decoupled(new ifu_idu())
         // pipe signal
-        val stall = Input(UInt(1.W))
         val flush = Input(UInt(1.W))
+        val stall = Input(UInt(1.W))
         // nextpc
         val nextPC = Input(UInt(32.W))
     })
 
     val pc = RegInit("h80000000".U(32.W))
-
-    io.base_out.valid := io.base_out.ready
-    
     when(io.flush === 1.U) {
         pc := io.nextPC
     }
@@ -33,6 +30,7 @@ class ifu extends Module {
         pc := pc
     }
 
+    io.base_out.valid := io.base_out.ready
     io.base_out.bits.addr := pc
     io.base_out.bits.oe_n := 0.U
     io.base_out.bits.ce_n := 0.U
@@ -45,6 +43,27 @@ class ifu extends Module {
 
     io.next.bits.pc := pc
     io.next.bits.inst := io.base_in.bits.data_out
-    io.next.valid := io.base_out.ready && io.stall === 0.U && io.flush === 0.U
+    io.next.valid := io.base_out.ready
+}
+
+// static predict: back taken forward not taken
+class spred extends Module {
+    val io = IO(new Bundle {
+        // input signals
+        val pc = Input(UInt(32.W))
+        val nextPC = Input(UInt(32.W))
+        val memready = Input(UInt(1.W))
+        // pipe signals
+        val stall = Input(UInt(1.W))
+        val flush = Input(UInt(1.W))
+        // ram data(instruction)
+        val inst = Input(UInt(32.W))
+        // output next pc
+        val npc = Output(UInt(32.W))
+    })
+}
+
+class btb extends Module {
+
 }
 

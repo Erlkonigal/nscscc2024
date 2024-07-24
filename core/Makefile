@@ -40,6 +40,9 @@ run: verilator
 clean:
 	rm -rf $(BUILD_DIR)
 
+remote: 
+#	sed -i 's/^module/(*DONT_TOUCH="TRUE"*)module/' $(MODULES_DIR)/subtop.v
+	cp -f $(MODULES_DIR)/subtop.v ~/Documents/remote/
 copy:
-	sed -i 's/^module/(*DONT_TOUCH="TRUE"*)module/' $(MODULES_DIR)/subtop.v
+#	sed -i 's/^module/(*DONT_TOUCH="TRUE"*)module/' $(MODULES_DIR)/subtop.v
 	cp -f $(MODULES_DIR)/subtop.v ../thinpad_top.srcs/sources_1/new/

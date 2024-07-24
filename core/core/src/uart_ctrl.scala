@@ -3,7 +3,7 @@ import chisel3.util._
 import bundles._
 
 class async_transmitter extends BlackBox(Map(
-    "ClkFrequency" -> 50000000,
+    "ClkFrequency" -> 60000000,
     "Baud" -> 9600
 )) {
     val io = IO(new Bundle {
@@ -16,7 +16,7 @@ class async_transmitter extends BlackBox(Map(
 }
 
 class async_receiver extends BlackBox(Map(
-    "ClkFrequency" -> 50000000,
+    "ClkFrequency" -> 60000000,
     "Baud" -> 9600
 )) {
     val io = IO(new Bundle {
@@ -59,12 +59,12 @@ class uart_ctrl extends Module {
 
     tran_fifo.io.enq.bits := io.in.bits.data_in(7, 0)
 
-    when(io.in.valid & io.in.bits.addr === 0.U) {
+    when(io.in.valid & io.in.bits.addr(2) === 0.B) {
         tran_fifo.io.enq.valid := master_write & tran_fifo.io.enq.ready
         recv_fifo.io.deq.ready := master_read & recv_fifo.io.deq.valid
         io.out.bits.data_out := Cat(Fill(24, 0.B), recv_fifo.io.deq.bits)
     }
-    .elsewhen(io.in.valid & io.in.bits.addr === 4.U) {
+    .elsewhen(io.in.valid & io.in.bits.addr(2) === 1.B) {
         tran_fifo.io.enq.valid := 0.B
         recv_fifo.io.deq.ready := 0.B
         io.out.bits.data_out := Cat(Fill(30, 0.B), recv_fifo.io.deq.valid, tran_fifo.io.enq.ready)

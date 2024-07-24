@@ -4,8 +4,10 @@ import bundles._
 
 class core extends Module {
     val io = IO(new Bundle {
-        val bus_in = Flipped(Decoupled(new bus_in()))
-        val bus_out = Decoupled(new bus_out())
+        val ifu_in = Flipped(Decoupled(new bus_in()))
+        val ifu_out = Decoupled(new bus_out())
+        val lsu_in = Flipped(Decoupled(new bus_in()))
+        val lsu_out = Decoupled(new bus_out())
     })
     val ifu = Module(new ifu())
     val ifu_idu = Module(new buffer(new ifu_idu()))
@@ -17,25 +19,11 @@ class core extends Module {
     val lsu_wbu = Module(new buffer(new lsu_wbu()))
     val wbu = Module(new wbu())
 
-    val abt = Module(new abt(2))
+    ifu.io.base_in <> io.ifu_in
+    ifu.io.base_out <> io.ifu_out
+    lsu.io.ext_in <> io.lsu_in
+    lsu.io.ext_out <> io.lsu_out
 
-    abt.io.in.DataIn(1) <> ifu.io.base_out
-    abt.io.in.DataIn(0) <> lsu.io.ext_out // lsu first
-    abt.io.out.DataOut <> io.bus_out
-    abt.io.in.BusIn <> io.bus_in
-    ifu.io.base_in <> abt.io.out.BusOut(1)
-    lsu.io.ext_in <> abt.io.out.BusOut(0)
-
-    // val lastpc = Wire(UInt(32.W))
-    // when(exu.io.prev.valid) {
-    //     lastpc := exu.io.prev.bits.pc
-    // }
-    // .elsewhen(idu.io.prev.valid) {
-    //     lastpc := idu.io.prev.bits.pc
-    // }
-    // .otherwise {
-    //     lastpc := ifu.io.next.bits.pc
-    // }
     val cmp_exu = exu.io.prev.bits.pc =/= lsu.io.nextPC
     val cmp_idu = idu.io.prev.bits.pc =/= lsu.io.nextPC
     val cmp_ifu = ifu.io.next.bits.pc =/= lsu.io.nextPC
@@ -46,9 +34,13 @@ class core extends Module {
     .elsewhen(idu.io.prev.valid) {
         cmp_sum := cmp_idu
     }
-    .otherwise {
+    .elsewhen(ifu.io.base_out.ready) {
         cmp_sum := cmp_ifu
     }
+    .otherwise {
+        cmp_sum := 0.B
+    }
+
     val flush = cmp_sum && lsu.io.prev.valid
 
     val fwctrl = Module(new forwarding())
