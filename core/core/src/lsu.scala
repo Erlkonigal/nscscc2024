@@ -11,9 +11,13 @@ class lsu extends Module {
         val prev = Flipped(Decoupled(new exu_lsu()))
         val next = Decoupled(new lsu_wbu())
         // pipe signal
-        val stall = Input(UInt(1.W))
-        val flush = Input(UInt(1.W))
+        val flush = Output(Bool())
         // branch
+        val update = Output(Bool())
+        val u_branch = Output(Bool())
+        val u_type = Output(Bool())
+        val u_pc = Output(UInt(32.W))
+        val u_target = Output(UInt(32.W))
         val nextPC = Output(UInt(32.W))
     })
     val Address = io.prev.bits.ALUOut
@@ -75,32 +79,23 @@ class lsu extends Module {
     ))
 
     io.ext_out.bits.addr := Address
-    io.ext_out.bits.ce_n := MuxLookup(Op, 1.U) (Seq(
-        MemOp.ldb -> 0.U,
-        MemOp.ldbu -> 0.U,
-        MemOp.ldh -> 0.U,
-        MemOp.ldhu -> 0.U,
-        MemOp.ldw -> 0.U,
-        MemOp.stb -> 0.U,
-        MemOp.sth -> 0.U,
-        MemOp.stw -> 0.U,
+    io.ext_out.bits.ce_n := Op === MemOp.other
+    io.ext_out.bits.oe_n := MuxLookup(Op, 1.B) (Seq(
+        MemOp.ldb -> 0.B,
+        MemOp.ldbu -> 0.B,
+        MemOp.ldh -> 0.B,
+        MemOp.ldhu -> 0.B,
+        MemOp.ldw -> 0.B,
     ))
-    io.ext_out.bits.oe_n := MuxLookup(Op, 1.U) (Seq(
-        MemOp.ldb -> 0.U,
-        MemOp.ldbu -> 0.U,
-        MemOp.ldh -> 0.U,
-        MemOp.ldhu -> 0.U,
-        MemOp.ldw -> 0.U,
+    io.ext_out.bits.we_n := MuxLookup(Op, 1.B) (Seq(
+        MemOp.stb -> 0.B,
+        MemOp.sth -> 0.B,
+        MemOp.stw -> 0.B,
     ))
-    io.ext_out.bits.we_n := MuxLookup(Op, 1.U) (Seq(
-        MemOp.stb -> 0.U,
-        MemOp.sth -> 0.U,
-        MemOp.stw -> 0.U,
-    ))
-    io.ext_out.bits.data_wen := MuxLookup(Op, 0.U) (Seq(
-        MemOp.stb -> 1.U,
-        MemOp.sth -> 1.U,
-        MemOp.stw -> 1.U,
+    io.ext_out.bits.data_wen := MuxLookup(Op, 0.B) (Seq(
+        MemOp.stb -> 1.B,
+        MemOp.sth -> 1.B,
+        MemOp.stw -> 1.B,
     ))
     io.ext_out.bits.data_in := MuxLookup(Op, 0.U) (Seq(
         MemOp.stb -> GenData,
@@ -121,8 +116,25 @@ class lsu extends Module {
     branch.io.SLess := io.prev.bits.SLess
     branch.io.ULess := io.prev.bits.ULess
     branch.io.Zero := io.prev.bits.Zero
-
-    io.nextPC := branch.io.nextPC
+    
+    val nextPC = Mux(branch.io.branch, branch.io.btarget, io.prev.bits.pc + 4.U)
+    io.nextPC := nextPC
+    io.flush := nextPC =/= io.prev.bits.npc && io.prev.valid
+    io.update := io.prev.bits.branchOp =/= Branch.other && io.prev.valid
+    io.u_branch := branch.io.branch
+    io.u_type := MuxLookup(io.prev.bits.branchOp, 0.B) (Seq(
+        Branch.jirl -> 0.B,
+        Branch.b -> 0.B,
+        Branch.bl -> 0.B,
+        Branch.beq -> 1.B,
+        Branch.bne -> 1.B,
+        Branch.blt -> 1.B,
+        Branch.bge -> 1.B,
+        Branch.bltu -> 1.B,
+        Branch.bgeu -> 1.B,
+    ))
+    io.u_pc := io.prev.bits.pc
+    io.u_target := branch.io.btarget
 
     io.ext_out.valid := io.prev.bits.memOp =/= MemOp.other && io.prev.valid
     io.ext_in.ready := 1.B
@@ -133,8 +145,15 @@ class lsu extends Module {
     io.next.bits.wbDst := io.prev.bits.wbDst
     io.next.bits.rd := io.prev.bits.rd
 
-    io.next.valid := io.prev.valid && io.stall === 0.U && io.flush === 0.U
+    io.next.valid := io.prev.valid
     io.prev.ready := io.next.ready
+
+    if(Elaborate.mode == "DEBUG") {
+        val total_branch = dontTouch(RegInit(0.U(32.W)))
+        val total_flush = dontTouch(RegInit(0.U(32.W)))
+        total_branch := total_branch + (io.prev.bits.branchOp =/= Branch.other && io.prev.valid)
+        total_flush := total_flush + (nextPC =/= io.prev.bits.npc && io.prev.valid)
+    }
 }
 
 class branchContr extends Module {
@@ -143,27 +162,28 @@ class branchContr extends Module {
         val rj_data = Input(UInt(32.W))
         val offset = Input(UInt(32.W))
         val branchOp = Input(Branch())
-        val SLess = Input(UInt(1.W))
-        val ULess = Input(UInt(1.W))
-        val Zero = Input(UInt(1.W))
-        val nextPC = Output(UInt(32.W))
+        val SLess = Input(Bool())
+        val ULess = Input(Bool())
+        val Zero = Input(Bool())
+        val branch = Output(Bool())
+        val btarget = Output(UInt(32.W))
     })
 
-    val PCAsrc = MuxLookup(io.branchOp, io.pc) (Seq(
-        Branch.jirl -> io.rj_data,
-    ))
+    val jirlPC = io.rj_data + io.offset
+    val pcoff = io.pc + io.offset
 
-    val PCBsrc = MuxLookup(io.branchOp, 4.U) (Seq(
-        Branch.beq -> Mux(io.Zero === 1.U, io.offset, 4.U),
-        Branch.bne -> Mux(io.Zero === 0.U, io.offset, 4.U),
-        Branch.blt -> Mux(io.SLess === 1.U, io.offset, 4.U),
-        Branch.bge -> Mux(io.SLess === 0.U, io.offset, 4.U),
-        Branch.bltu -> Mux(io.ULess === 1.U, io.offset, 4.U),
-        Branch.bgeu -> Mux(io.ULess === 0.U, io.offset, 4.U),
-        Branch.b -> io.offset,
-        Branch.bl -> io.offset,
-        Branch.jirl -> io.offset,
+    io.branch := MuxLookup(io.branchOp, 0.B) (Seq(
+        Branch.jirl -> 1.B,
+        Branch.b -> 1.B,
+        Branch.bl -> 1.B,
+        Branch.beq -> Mux(io.Zero, 1.B, 0.B),
+        Branch.bne -> Mux(~io.Zero, 1.B, 0.B),
+        Branch.blt -> Mux(io.SLess, 1.B, 0.B),
+        Branch.bge -> Mux(~io.SLess, 1.B, 0.B),
+        Branch.bltu -> Mux(io.ULess, 1.B, 0.B),
+        Branch.bgeu -> Mux(~io.ULess, 1.B, 0.B),
     ))
-
-    io.nextPC := PCAsrc + PCBsrc
+    io.btarget := MuxLookup(io.branchOp, pcoff) (Seq(
+        Branch.jirl -> jirlPC,
+    ))
 }

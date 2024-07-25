@@ -24,51 +24,35 @@ class core extends Module {
     lsu.io.ext_in <> io.lsu_in
     lsu.io.ext_out <> io.lsu_out
 
-    val cmp_exu = exu.io.prev.bits.pc =/= lsu.io.nextPC
-    val cmp_idu = idu.io.prev.bits.pc =/= lsu.io.nextPC
-    val cmp_ifu = ifu.io.next.bits.pc =/= lsu.io.nextPC
-    val cmp_sum = Wire(Bool())
-    when(exu.io.prev.valid) {
-        cmp_sum := cmp_exu
-    }
-    .elsewhen(idu.io.prev.valid) {
-        cmp_sum := cmp_idu
-    }
-    .elsewhen(ifu.io.base_out.ready) {
-        cmp_sum := cmp_ifu
-    }
-    .otherwise {
-        cmp_sum := 0.B
-    }
-
-    val flush = cmp_sum && lsu.io.prev.valid
-
     val fwctrl = Module(new forwarding())
     fwctrl.io.RD := idu.io.RD
     fwctrl.io.RJ := idu.io.RJ
     fwctrl.io.RK := idu.io.RK
     fwctrl.io.RDst := idu.io.RDst
     fwctrl.io.RSel := idu.io.RSel
-    fwctrl.io.flush := flush
+    fwctrl.io.flush := lsu.io.flush
 
     ifu.io.stall := fwctrl.io.stall
-    ifu.io.flush := flush
+    ifu.io.flush := lsu.io.flush
     ifu_idu.io.stall := fwctrl.io.stall
-    ifu_idu.io.flush := flush
+    ifu_idu.io.flush := lsu.io.flush
     idu.io.stall := fwctrl.io.stall
-    idu.io.flush := flush
+    idu.io.flush := lsu.io.flush
     idu_exu.io.stall := 0.U
-    idu_exu.io.flush := flush
+    idu_exu.io.flush := lsu.io.flush
     exu.io.stall := 0.U
-    exu.io.flush := flush
+    exu.io.flush := lsu.io.flush
     exu_lsu.io.stall := 0.U
     exu_lsu.io.flush := 0.U
-    lsu.io.stall := 0.U
-    lsu.io.flush := 0.U
     lsu_wbu.io.stall := 0.U
     lsu_wbu.io.flush := 0.U
 
     ifu.io.nextPC := lsu.io.nextPC
+    ifu.io.update := lsu.io.update
+    ifu.io.u_branch := lsu.io.u_branch
+    ifu.io.u_type := lsu.io.u_type
+    ifu.io.u_pc := lsu.io.u_pc
+    ifu.io.u_target := lsu.io.u_target
     idu.io.wen := wbu.io.wen
     idu.io.waddr := wbu.io.waddr
     idu.io.wdata := wbu.io.wdata // write back

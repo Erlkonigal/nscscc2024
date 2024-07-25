@@ -311,6 +311,7 @@ class idu extends Module {
     io.next.bits.FwEX_RK := io.FwEX_RK
 
     io.next.bits.pc := io.prev.bits.pc
+    io.next.bits.npc := io.prev.bits.npc
 
     io.next.valid := io.prev.valid && io.stall === 0.U && io.flush === 0.U
     io.prev.ready := io.next.ready

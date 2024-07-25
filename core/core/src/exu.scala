@@ -64,6 +64,7 @@ class exu extends Module {
     io.next.bits.rd_data := ForwardRD
     io.next.bits.rj_data := ForwardRJ
     io.next.bits.pc := io.prev.bits.pc
+    io.next.bits.npc := io.prev.bits.npc
 
     io.next.valid := io.prev.valid && io.stall === 0.U && io.flush === 0.U
     io.prev.ready := io.next.ready

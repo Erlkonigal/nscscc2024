@@ -14,13 +14,13 @@ class bus_in extends Bundle {
 }
 
 class bus_out extends Bundle {
-    val data_wen = Output(UInt(1.W))
+    val data_wen = Output(Bool())
     val data_in = Output(UInt(32.W))
     val addr = Output(UInt(32.W))
     val be_n = Output(UInt(4.W))
-    val ce_n = Output(UInt(1.W))
-    val oe_n = Output(UInt(1.W))
-    val we_n = Output(UInt(1.W))
+    val ce_n = Output(Bool())
+    val oe_n = Output(Bool())
+    val we_n = Output(Bool())
 }
 
 class gpio extends Bundle {
@@ -32,49 +32,50 @@ class gpio extends Bundle {
 }
 
 class sram extends Bundle {
-    val data_wen = Output(UInt(1.W))
+    val data_wen = Output(Bool())
     val data_in = Output(UInt(32.W))
     val data_out = Input(UInt(32.W)) // inout
 
     val addr = Output(UInt(20.W))
     val be_n = Output(UInt(4.W))
-    val ce_n = Output(UInt(1.W))
-    val oe_n = Output(UInt(1.W))
-    val we_n = Output(UInt(1.W))
+    val ce_n = Output(Bool())
+    val oe_n = Output(Bool())
+    val we_n = Output(Bool())
 }
 
 class uart extends Bundle {
-    val rx = Input(UInt(1.W))
-    val tx = Output(UInt(1.W))
+    val rx = Input(Bool())
+    val tx = Output(Bool())
 }
 
 class flash extends Bundle {
     val a = Output(UInt(23.W))
 
-    val d_wen = Output(UInt(1.W))
+    val d_wen = Output(Bool())
     val d_in = Output(UInt(16.W))
     val d_out = Input(UInt(16.W)) // inout
 
-    val rp_n = Output(UInt(1.W))
-    val vpen = Output(UInt(1.W))
-    val ce_n = Output(UInt(1.W))
-    val oe_n = Output(UInt(1.W))
-    val we_n = Output(UInt(1.W))
-    val byte_n = Output(UInt(1.W))
+    val rp_n = Output(Bool())
+    val vpen = Output(Bool())
+    val ce_n = Output(Bool())
+    val oe_n = Output(Bool())
+    val we_n = Output(Bool())
+    val byte_n = Output(Bool())
 }
 
 class vga extends Bundle {
     val red = Output(UInt(3.W))
     val green = Output(UInt(3.W))
     val blue = Output(UInt(2.W))
-    val hsync = Output(UInt(1.W))
-    val vsync = Output(UInt(1.W))
-    val clk = Output(UInt(1.W))
-    val de = Output(UInt(1.W))
+    val hsync = Output(Bool())
+    val vsync = Output(Bool())
+    val clk = Output(Bool())
+    val de = Output(Bool())
 }
 
 class ifu_idu extends Bundle {
     val pc = Output(UInt(32.W))
+    val npc = Output(UInt(32.W))
     val inst = Output(UInt(32.W))
 }
 
@@ -102,6 +103,7 @@ class idu_exu extends Bundle {
     val FwEX_RK = Output(ForwardSrc())
 // PC
     val pc = Output(UInt(32.W))
+    val npc = Output(UInt(32.W))
 }
 
 object ALUOp extends ChiselEnum {
@@ -153,9 +155,9 @@ object PCBsrc extends ChiselEnum {
 class exu_lsu extends Bundle {
 // ALU
     val ALUOut = Output(UInt(32.W))
-    val SLess = Output(UInt(1.W))
-    val ULess = Output(UInt(1.W))
-    val Zero = Output(UInt(1.W))
+    val SLess = Output(Bool())
+    val ULess = Output(Bool())
+    val Zero = Output(Bool())
 // Controller
     val branchOp = Output(Branch())
     val memOp = Output(MemOp())
@@ -169,6 +171,7 @@ class exu_lsu extends Bundle {
     val rj_data = Output(UInt(32.W))
 // branch
     val pc = Output(UInt(32.W))
+    val npc = Output(UInt(32.W))
 }
 
 class lsu_wbu extends Bundle {

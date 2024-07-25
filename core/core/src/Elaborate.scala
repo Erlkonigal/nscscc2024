@@ -3,6 +3,7 @@ import chisel3._
 import bundles.AddrRange
 
 object Elaborate extends App {
+    def mode = "DEBUG"
     def top = new subtop()
     //def top = new abt(2)
     // def top = new xbar(3, Vector(
