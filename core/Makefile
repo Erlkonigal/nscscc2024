@@ -41,8 +41,8 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 remote: 
-#	sed -i 's/^module/(*DONT_TOUCH="TRUE"*)module/' $(MODULES_DIR)/subtop.v
 	cp -f $(MODULES_DIR)/subtop.v ~/Documents/remote/
+#	sed -i 's/ClkFrequency(9600)/ClkFrequency(100000000)/' ~/Documents/remote/subtop.v
 copy:
-#	sed -i 's/^module/(*DONT_TOUCH="TRUE"*)module/' $(MODULES_DIR)/subtop.v
 	cp -f $(MODULES_DIR)/subtop.v ../thinpad_top.srcs/sources_1/new/
+#	sed -i 's/ClkFrequency(9600)/ClkFrequency(100000000)/' ../thinpad_top.srcs/sources_1/new/subtop.v

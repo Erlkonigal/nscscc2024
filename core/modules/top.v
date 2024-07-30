@@ -62,6 +62,8 @@ subtop subtop(
 );
 
 sram base(
+    .clk(clk),
+    .rst(rst),
     .sel(0),
     .data(base_ram_data),
     .addr(base_ram_addr),
@@ -72,6 +74,8 @@ sram base(
 );
 
 sram ext(
+    .clk(clk),
+    .rst(rst),
     .sel(1),
     .data(ext_ram_data),
     .addr(ext_ram_addr),

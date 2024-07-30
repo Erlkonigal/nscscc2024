@@ -3,6 +3,12 @@ import chisel3.util._
 
 package bundles{
     
+object Compare {
+    def equals(a: UInt, b: UInt): Bool = {
+        ~((a ^ b).orR)
+    }
+}
+
 class AddrRange(val start: UInt, val end: UInt) {
     def contains(addr: UInt): Bool = {
         addr >= start && addr < end
@@ -84,7 +90,6 @@ class idu_exu extends Bundle {
     val aluOp = Output(ALUOp())
     val aluAsrc = Output(ALUAsrc())
     val aluBsrc = Output(ALUBsrc())
-    val branchOp = Output(Branch())
     val memOp = Output(MemOp())
     val wbSel = Output(WBSel())
     val wbDst = Output(WBDst())
@@ -97,13 +102,8 @@ class idu_exu extends Bundle {
     val rd_data = Output(UInt(32.W))
     val rj_data = Output(UInt(32.W))
     val rk_data = Output(UInt(32.W))
-// Forwarding Control
-    val FwEX_RD = Output(ForwardSrc())
-    val FwEX_RJ = Output(ForwardSrc())
-    val FwEX_RK = Output(ForwardSrc())
 // PC
     val pc = Output(UInt(32.W))
-    val npc = Output(UInt(32.W))
 }
 
 object ALUOp extends ChiselEnum {
@@ -155,11 +155,7 @@ object PCBsrc extends ChiselEnum {
 class exu_lsu extends Bundle {
 // ALU
     val ALUOut = Output(UInt(32.W))
-    val SLess = Output(Bool())
-    val ULess = Output(Bool())
-    val Zero = Output(Bool())
 // Controller
-    val branchOp = Output(Branch())
     val memOp = Output(MemOp())
     val wbSel = Output(WBSel())
     val wbDst = Output(WBDst())
@@ -168,10 +164,19 @@ class exu_lsu extends Bundle {
 // RegFile
     val rd = Output(UInt(5.W))
     val rd_data = Output(UInt(32.W))
-    val rj_data = Output(UInt(32.W))
-// branch
+}
+
+class idu_bru extends Bundle {
+// Controller
+    val branchOp = Output(Branch())
+// ImmGen
+    val Imm = Output(UInt(32.W))
+// PC
     val pc = Output(UInt(32.W))
     val npc = Output(UInt(32.W))
+// RegFile
+    val rd_data = Output(UInt(32.W))
+    val rj_data = Output(UInt(32.W))
 }
 
 class lsu_wbu extends Bundle {
@@ -187,7 +192,11 @@ class lsu_wbu extends Bundle {
 }
 
 object ForwardSrc extends ChiselEnum {
-    val elALU, lwALU, lwMem, mulP, lastWB, stall, other = Value
+    val exALU, 
+        l1ALU, l1Mem,
+        l2ALU, l2Mem, 
+        wbALU, wbMem, wbMul, 
+        stall, other = Value
 }
 
 }

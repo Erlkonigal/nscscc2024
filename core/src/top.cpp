@@ -96,12 +96,66 @@ void reset() {
     top->rst = 0;
 }
 
+void put_char(char c) {
+    top->rx = 0;
+    singled_cycle();
+    for(int i = 0; i < 8; i++) {
+        top->rx = (c >> i) & 1;
+        singled_cycle();
+    }
+    top->rx = 1;
+    singled_cycle();
+}
+
+void put_word(int w) {
+    put_char(w & 0xff);
+    put_char((w >> 8) & 0xff);
+    put_char((w >> 16) & 0xff);
+    put_char((w >> 24) & 0xff);
+    for(int i = 0; i < 20; i++) {
+        singled_cycle();
+    }
+}
+
+void Op_D(int addr, int num) {
+    put_char('D');
+    put_word(addr);
+    put_word(num);
+}
+
+void Op_A(int addr, const int *data, int num) {
+    put_char('A');
+    put_word(addr);
+    put_word(num);
+    for(int i = 0; i < num; i++) {
+        put_word(data[i]);
+    }
+}
+
+void Op_G(int addr) {
+    put_char('G');
+    put_word(addr);
+}
+
+void kernel_test() {
+    for(int i = 0; i < 2000; i++) {
+        singled_cycle();
+    }
+    
+    Op_G(0x80003000);
+
+    for(int i = 0; i < 10000; i++) {
+        singled_cycle();
+    }
+}
+
 int main(int argc, char *argv[]) {
     init(argc, argv);
     reset();
-    for(int i = 0; i < 100000; i++) {
-        singled_cycle();
-    }
+    // for(int i = 0; i < 400000; i++) {
+    //     singled_cycle();
+    // }
+    kernel_test();
     clean();
     return 0;
 }

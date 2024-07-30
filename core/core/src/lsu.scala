@@ -11,38 +11,37 @@ class lsu extends Module {
         val prev = Flipped(Decoupled(new exu_lsu()))
         val next = Decoupled(new lsu_wbu())
         // pipe signal
-        val flush = Output(Bool())
-        // branch
-        val update = Output(Bool())
-        val u_branch = Output(Bool())
-        val u_type = Output(Bool())
-        val u_pc = Output(UInt(32.W))
-        val u_target = Output(UInt(32.W))
-        val nextPC = Output(UInt(32.W))
+        val stall = Output(Bool())
+        val flush = Input(Bool())
+        // forwarding
+        val l1_Dst = Output(UInt(5.W))
+        val l1_Sel = Output(WBSel())
+        val l1_ALU = Output(UInt(32.W))
+        val l1_Mem = Output(UInt(32.W))
+
+        val l2_Dst = Output(UInt(5.W))
+        val l2_Sel = Output(WBSel())
+        val l2_ALU = Output(UInt(32.W))
+        val l2_Mem = Output(UInt(32.W))
     })
+// mem signals
     val Address = io.prev.bits.ALUOut
     val Op = io.prev.bits.memOp
-    val ReadData = io.ext_in.bits.data_out
     val WriteData = io.prev.bits.rd_data
-// read
-    val FetchByte = MuxLookup(Address(1, 0), 0.U) (Seq(
-        0.U -> ReadData(7, 0),
-        1.U -> ReadData(15, 8),
-        2.U -> ReadData(23, 16),
-        3.U -> ReadData(31, 24)
+    val Writevalid = io.prev.valid && ~io.flush && MuxLookup(Op, 0.B) (Seq(
+        MemOp.stb -> 1.B,
+        MemOp.sth -> 1.B,
+        MemOp.stw -> 1.B,
     ))
-    val FetchHalf = MuxLookup(Address(1), 0.U) (Seq(
-        0.B -> ReadData(15, 0),
-        1.B -> ReadData(31, 16)
+    val Readvalid = io.prev.valid && ~io.flush && MuxLookup(Op, 0.B) (Seq(
+        MemOp.ldb -> 1.B,
+        MemOp.ldbu -> 1.B,
+        MemOp.ldh -> 1.B,
+        MemOp.ldhu -> 1.B,
+        MemOp.ldw -> 1.B,
     ))
-    val FetchWord = ReadData
-    val FixLoad = MuxLookup(Op, 0.U) (Seq(
-        MemOp.ldb  -> Cat(Fill(24, FetchByte(7)), FetchByte(7, 0)),
-        MemOp.ldbu -> Cat(Fill(24, 0.B), FetchByte(7, 0)),
-        MemOp.ldh  -> Cat(Fill(16, FetchHalf(15)), FetchHalf(15, 0)),
-        MemOp.ldhu -> Cat(Fill(16, 0.B), FetchHalf(15, 0)),
-        MemOp.ldw  -> FetchWord,
-    ))
+    val Memvalid = (Writevalid || Readvalid)
+    val uMemvalid = Op === MemOp.other && io.prev.valid
 // mask
     val ByteMask = MuxLookup(Address(1, 0), 0.U) (Seq(
         0.U -> "b1110".U,
@@ -77,113 +76,239 @@ class lsu extends Module {
         MemOp.sth -> HalfData,
         MemOp.stw -> WordData,
     ))
+// write queue
+    def qsize = 4 // queue size >= 2
+    val wqbundle = new Bundle {
+        val valid = Bool()
+        val addr = UInt(32.W)
+        val data = UInt(32.W)
+        val be_n = UInt(4.W)
+        val op = UInt(2.W) // 0.stb, 1.sth, 2.stw
+    }
+    val wq = RegInit(0.U.asTypeOf(Vec(qsize, wqbundle)))
+    val wq_state = RegInit(1.U(2.W))
+    val wq_ptr = RegInit(0.U(log2Ceil(qsize).W))
+    val wq_empty = ~wq_ptr.orR && ~wq(0).valid
+    val wq_full = ~(wq_ptr ^ (qsize - 1).U).orR && wq(wq_ptr).valid
 
-    io.ext_out.bits.addr := Address
-    io.ext_out.bits.ce_n := Op === MemOp.other
-    io.ext_out.bits.oe_n := MuxLookup(Op, 1.B) (Seq(
-        MemOp.ldb -> 0.B,
-        MemOp.ldbu -> 0.B,
-        MemOp.ldh -> 0.B,
-        MemOp.ldhu -> 0.B,
-        MemOp.ldw -> 0.B,
-    ))
-    io.ext_out.bits.we_n := MuxLookup(Op, 1.B) (Seq(
-        MemOp.stb -> 0.B,
-        MemOp.sth -> 0.B,
-        MemOp.stw -> 0.B,
-    ))
-    io.ext_out.bits.data_wen := MuxLookup(Op, 0.B) (Seq(
-        MemOp.stb -> 1.B,
-        MemOp.sth -> 1.B,
-        MemOp.stw -> 1.B,
-    ))
-    io.ext_out.bits.data_in := MuxLookup(Op, 0.U) (Seq(
-        MemOp.stb -> GenData,
-        MemOp.sth -> GenData,
-        MemOp.stw -> GenData,
-    ))
-    io.ext_out.bits.be_n := MuxLookup(Op, 0.U) (Seq(
-        MemOp.stb -> GenMask,
-        MemOp.sth -> GenMask,
-        MemOp.stw -> GenMask,
+    val wq_stall = Wire(Bool())
+    wq_stall := 0.B
+
+    val newdata = Wire(wqbundle)
+    newdata.valid := 1.B
+    newdata.addr := Address
+    newdata.data := GenData
+    newdata.be_n := GenMask
+    newdata.op := MuxLookup(Op, 0.U) (Seq(
+        MemOp.stb -> 0.U,
+        MemOp.sth -> 1.U,
+        MemOp.stw -> 2.U
     ))
 
-    val branch = Module(new branchContr())
-    branch.io.pc := io.prev.bits.pc
-    branch.io.rj_data := io.prev.bits.rj_data
-    branch.io.offset := io.prev.bits.Imm
-    branch.io.branchOp := io.prev.bits.branchOp
-    branch.io.SLess := io.prev.bits.SLess
-    branch.io.ULess := io.prev.bits.ULess
-    branch.io.Zero := io.prev.bits.Zero
-    
-    val nextPC = Mux(branch.io.branch, branch.io.btarget, io.prev.bits.pc + 4.U)
-    io.nextPC := nextPC
-    io.flush := nextPC =/= io.prev.bits.npc && io.prev.valid
-    io.update := io.prev.bits.branchOp =/= Branch.other && io.prev.valid
-    io.u_branch := branch.io.branch
-    io.u_type := MuxLookup(io.prev.bits.branchOp, 0.B) (Seq(
-        Branch.jirl -> 0.B,
-        Branch.b -> 0.B,
-        Branch.bl -> 0.B,
-        Branch.beq -> 1.B,
-        Branch.bne -> 1.B,
-        Branch.blt -> 1.B,
-        Branch.bge -> 1.B,
-        Branch.bltu -> 1.B,
-        Branch.bgeu -> 1.B,
-    ))
-    io.u_pc := io.prev.bits.pc
-    io.u_target := branch.io.btarget
+    val hit = Wire(Vec(qsize, Bool()))
+    val hit_index = Wire(UInt(log2Ceil(qsize).W))
+    for(i <- 0 until qsize) {
+        hit(i) := wq(i).valid && ~(wq(i).addr ^ Address).orR && MuxLookup(Op, 0.B) (Seq(
+            MemOp.ldb -> ~(wq(i).op ^ 0.U).orR,
+            MemOp.ldbu -> ~(wq(i).op ^ 0.U).orR,
+            MemOp.ldh -> ~(wq(i).op ^ 1.U).orR,
+            MemOp.ldhu -> ~(wq(i).op ^ 1.U).orR,
+            MemOp.ldw -> ~(wq(i).op ^ 2.U).orR,
+        ))
+    }
+    hit_index := ~PriorityEncoder(hit.reverse) // leftmost(newer) has higher priority
 
-    io.ext_out.valid := io.prev.bits.memOp =/= MemOp.other && io.prev.valid
+    switch(wq_state) {
+        is(1.U) {
+            when(Writevalid) {
+                wq_state := 2.U
+                when(~wq_full) {
+                    wq(wq_ptr) := newdata
+                    wq_ptr := Mux(~(wq_ptr ^ (qsize - 1).U).orR, wq_ptr, wq_ptr + 1.U)
+                }
+                .otherwise {
+                    wq_stall := 1.B
+                }
+            }
+            .elsewhen(Readvalid) {
+                wq_state := 1.U
+                wq_stall := Mux(hit(hit_index), 0.B, 1.B)
+            }
+            .otherwise {
+                when(~wq_empty) {
+                    wq_state := 2.U
+                }
+                .otherwise {
+                    wq_state := 1.U
+                }
+            }
+        }
+        is(2.U) {
+            when(Writevalid) {
+                wq_state := 3.U
+                when(~wq_full) {
+                    wq(wq_ptr) := newdata
+                    wq_ptr := Mux(~(wq_ptr ^ (qsize - 1).U).orR, wq_ptr, wq_ptr + 1.U)
+                }
+                .otherwise {
+                    wq_stall := 1.B
+                }
+            }
+            .elsewhen(Readvalid) {
+                wq_state := 1.U
+                wq_stall := Mux(hit(hit_index), 0.B, 1.B)
+            }
+            .otherwise {
+                wq_state := 3.U
+            }
+        }
+        is(3.U) {
+            when(Writevalid) {
+                wq_state := 2.U
+                when(~wq_full) {
+                    for(i <- 0 until qsize - 1) {
+                        wq(i) := Mux(~(wq_ptr ^ (i + 1).U).orR, newdata, wq(i + 1))
+                    }
+                    wq((qsize - 1).U) := 0.U.asTypeOf(wqbundle)
+                }
+                .otherwise {
+                    for(i <- 0 until qsize - 1) {
+                        wq(i) := wq(i + 1)
+                    }
+                    wq((qsize - 1).U) := newdata
+                }
+            }
+            .elsewhen(Readvalid) {
+                wq_state := 1.U
+                wq_stall := Mux(hit(hit_index), 0.B, 1.B)
+            }
+            .otherwise {
+                when((wq_ptr ^ 1.U).orR) {
+                    wq_state := 2.U
+                }
+                .otherwise {
+                    wq_state := 1.U
+                }
+                for(i <- 0 until qsize - 1) {
+                    wq(i) := wq(i + 1)
+                }
+                wq((qsize - 1).U) := 0.U.asTypeOf(wqbundle)
+                wq_ptr := wq_ptr - 1.U
+            }
+        }
+    }
+// state
+    val state = RegInit(0.B)
+    state := Mux(io.flush, 0.B ,MuxLookup(state, 0.B) (Seq(
+        0.B -> Mux(wq_stall, 1.B, state),
+        1.B -> 0.B
+    )))
+// read
+    val ReadData = Mux(state, io.ext_in.bits.data_out, wq(hit_index).data)
+    val FetchByte = MuxLookup(Address(1, 0), 0.U) (Seq(
+        0.U -> ReadData(7, 0),
+        1.U -> ReadData(15, 8),
+        2.U -> ReadData(23, 16),
+        3.U -> ReadData(31, 24)
+    ))
+    val FetchHalf = MuxLookup(Address(1), 0.U) (Seq(
+        0.B -> ReadData(15, 0),
+        1.B -> ReadData(31, 16)
+    ))
+    val FetchWord = ReadData
+    val FixLoad = MuxLookup(Op, 0.U) (Seq(
+        MemOp.ldb  -> Cat(Fill(24, FetchByte(7)), FetchByte(7, 0)),
+        MemOp.ldbu -> Cat(Fill(24, 0.B), FetchByte(7, 0)),
+        MemOp.ldh  -> Cat(Fill(16, FetchHalf(15)), FetchHalf(15, 0)),
+        MemOp.ldhu -> Cat(Fill(16, 0.B), FetchHalf(15, 0)),
+        MemOp.ldw  -> FetchWord,
+    ))
+
+// mem pipline
+    val regs = Reg(new Bundle {
+        val bits = new lsu_wbu()
+        val valid = Bool()
+    })
+    when(io.flush) {
+        regs.valid := 0.B
+    }
+    .elsewhen(io.prev.valid && ~wq_stall && ~state) {
+        regs.bits.MemOut := FixLoad
+        regs.bits.ALUOut := io.prev.bits.ALUOut
+        regs.bits.rd := io.prev.bits.rd
+        regs.bits.wbSel := io.prev.bits.wbSel
+        regs.bits.wbDst := io.prev.bits.wbDst
+        regs.bits.rd := io.prev.bits.rd
+        regs.valid := 1.B
+    }
+    .otherwise {
+        regs.valid := 0.B
+    }
+// io
+    when(Readvalid) {
+        io.ext_out.bits.addr := Address
+        io.ext_out.bits.ce_n := 0.B
+        io.ext_out.bits.oe_n := 0.B
+        io.ext_out.bits.we_n := 1.B
+        io.ext_out.bits.data_wen := 0.B
+        io.ext_out.bits.data_in := 0.U
+        io.ext_out.bits.be_n := 0.U
+    }
+    .otherwise {
+        io.ext_out.bits.addr := wq(0).addr
+        io.ext_out.bits.ce_n := 0.B
+        io.ext_out.bits.oe_n := 1.B
+        io.ext_out.bits.we_n := 0.B
+        io.ext_out.bits.data_wen := 1.B
+        io.ext_out.bits.data_in := wq(0).data
+        io.ext_out.bits.be_n := wq(0).be_n
+    }
+
+    io.stall := wq_stall && ~state
+
+    io.ext_out.valid := wq_state(1) || Readvalid
     io.ext_in.ready := 1.B
 
-    io.next.bits.MemOut := FixLoad
-    io.next.bits.ALUOut := io.prev.bits.ALUOut
-    io.next.bits.wbSel := io.prev.bits.wbSel
-    io.next.bits.wbDst := io.prev.bits.wbDst
-    io.next.bits.rd := io.prev.bits.rd
-
-    io.next.valid := io.prev.valid
-    io.prev.ready := io.next.ready
-
-    if(Elaborate.mode == "DEBUG") {
-        val total_branch = dontTouch(RegInit(0.U(32.W)))
-        val total_flush = dontTouch(RegInit(0.U(32.W)))
-        total_branch := total_branch + (io.prev.bits.branchOp =/= Branch.other && io.prev.valid)
-        total_flush := total_flush + (nextPC =/= io.prev.bits.npc && io.prev.valid)
+    val next = Wire(new lsu_wbu())  
+    when(state) {
+        next.MemOut := FixLoad
+        next.ALUOut := io.prev.bits.ALUOut
+        next.wbSel := io.prev.bits.wbSel
+        next.wbDst := io.prev.bits.wbDst
+        next.rd := io.prev.bits.rd
     }
-}
+    .otherwise {
+        next := regs.bits
+    }
+    io.next.bits := next
 
-class branchContr extends Module {
-    val io = IO(new Bundle {
-        val pc = Input(UInt(32.W))
-        val rj_data = Input(UInt(32.W))
-        val offset = Input(UInt(32.W))
-        val branchOp = Input(Branch())
-        val SLess = Input(Bool())
-        val ULess = Input(Bool())
-        val Zero = Input(Bool())
-        val branch = Output(Bool())
-        val btarget = Output(UInt(32.W))
-    })
+    when(io.prev.valid && ~state && ~io.flush) {
+        io.l1_Dst := MuxLookup(io.prev.bits.wbDst, 0.U) (Seq(
+            WBDst.rd -> io.prev.bits.rd,
+            WBDst.one -> 1.U,
+        ))
+        io.l1_Sel := io.prev.bits.wbSel
+    }
+    .otherwise {
+        io.l1_Dst := 0.U
+        io.l1_Sel := WBSel.other
+    }
+    when(state || regs.valid) {
+        io.l2_Dst := MuxLookup(next.wbDst, 0.U) (Seq(
+            WBDst.rd -> next.rd,
+            WBDst.one -> 1.U,
+        ))
+        io.l2_Sel := next.wbSel
+    }
+    .otherwise {
+        io.l2_Dst := 0.U
+        io.l2_Sel := WBSel.other
+    }
+    io.l1_ALU := io.prev.bits.ALUOut
+    io.l1_Mem := FixLoad
+    io.l2_ALU := next.ALUOut
+    io.l2_Mem := next.MemOut
 
-    val jirlPC = io.rj_data + io.offset
-    val pcoff = io.pc + io.offset
-
-    io.branch := MuxLookup(io.branchOp, 0.B) (Seq(
-        Branch.jirl -> 1.B,
-        Branch.b -> 1.B,
-        Branch.bl -> 1.B,
-        Branch.beq -> Mux(io.Zero, 1.B, 0.B),
-        Branch.bne -> Mux(~io.Zero, 1.B, 0.B),
-        Branch.blt -> Mux(io.SLess, 1.B, 0.B),
-        Branch.bge -> Mux(~io.SLess, 1.B, 0.B),
-        Branch.bltu -> Mux(io.ULess, 1.B, 0.B),
-        Branch.bgeu -> Mux(~io.ULess, 1.B, 0.B),
-    ))
-    io.btarget := MuxLookup(io.branchOp, pcoff) (Seq(
-        Branch.jirl -> jirlPC,
-    ))
+    io.next.valid := state || regs.valid
+    io.prev.ready := io.next.ready
 }
