@@ -7,6 +7,7 @@ class exu extends Module {
         // pipe
         val prev = Flipped(Decoupled(new idu_exu()))
         val next = Decoupled(new exu_lsu())
+        val bru = Decoupled(new exu_bru())
         // pipe signal
         // val stall = Input(Bool())
         // val flush = Input(Bool())
@@ -17,7 +18,7 @@ class exu extends Module {
         val ex_Sel = Output(WBSel())
         val ex_ALU = Output(UInt(32.W))
     })
-    val mult = Module(new mult_gen_0())
+    val mult = Module(new wallace(32))
     val ALU = Module(new alu())
 
     val ALUA = MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
@@ -35,10 +36,9 @@ class exu extends Module {
     ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
-    mult.io.CLK := clock
     mult.io.A := ALUA
     mult.io.B := ALUB
-    io.P := mult.io.P
+    io.P := mult.io.S(31, 0)
 
     io.next.bits.ALUOut := ALU.io.Out
     io.next.bits.memOp := io.prev.bits.memOp
@@ -47,6 +47,16 @@ class exu extends Module {
     io.next.bits.Imm := io.prev.bits.Imm
     io.next.bits.rd := io.prev.bits.rd
     io.next.bits.rd_data := io.prev.bits.rd_data
+
+    io.bru.bits.Zero := Compare.equals(io.prev.bits.rj_data, io.prev.bits.rd_data)
+    io.bru.bits.SLess := io.prev.bits.rj_data.asSInt < io.prev.bits.rd_data.asSInt
+    io.bru.bits.ULess := io.prev.bits.rj_data < io.prev.bits.rd_data
+    io.bru.bits.branchOp := io.prev.bits.branchOp
+    io.bru.bits.pcadd4 := io.prev.bits.pc + 4.U
+    io.bru.bits.pcoff := io.prev.bits.pc + io.prev.bits.Imm
+    io.bru.bits.jirlpc := io.prev.bits.rj_data + io.prev.bits.Imm
+    io.bru.bits.pc := io.prev.bits.pc
+    io.bru.bits.npc := io.prev.bits.npc
 
     when(io.prev.valid) {
         io.ex_Dst := MuxLookup(io.prev.bits.wbDst, 0.U) (Seq(
@@ -61,6 +71,7 @@ class exu extends Module {
     }
     io.ex_ALU := ALU.io.Out
 
+    io.bru.valid := io.prev.valid && io.next.ready // branch after handshake
     io.next.valid := io.prev.valid
     io.prev.ready := io.next.ready
 }
@@ -71,9 +82,6 @@ class alu extends Module {
         val B = Input(UInt(32.W))
         val Op = Input(ALUOp())
         val Out = Output(UInt(32.W))
-        val ULess = Output(Bool())
-        val SLess = Output(Bool())
-        val Zero = Output(Bool())
     })
 
     val Sub = MuxLookup(io.Op, 0.B) (
@@ -109,9 +117,6 @@ class alu extends Module {
         ALUOp.srl -> Shifter.io.Out,
         ALUOp.sra -> Shifter.io.Out,
     ))
-    io.ULess := ULess
-    io.SLess := SLess
-    io.Zero := ZF
 }
 
 class bshifter extends Module {

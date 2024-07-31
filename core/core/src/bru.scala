@@ -5,7 +5,7 @@ import bundles._
 class bru extends Module {
     val io = IO(new Bundle {
         // pipe
-        val prev = Flipped(Decoupled(new idu_bru))
+        val prev = Flipped(Decoupled(new exu_bru))
         // pipe signal
         val stall = Input(Bool())
         val flush = Output(Bool())
@@ -18,13 +18,12 @@ class bru extends Module {
         val nextPC = Output(UInt(32.W))
     })
 
-    val Zero = ~(io.prev.bits.rj_data ^ io.prev.bits.rd_data).orR
-    val SLess = io.prev.bits.rj_data.asSInt < io.prev.bits.rd_data.asSInt
-    val ULess = io.prev.bits.rj_data < io.prev.bits.rd_data
-
-    val pcadd4 = io.prev.bits.pc + 4.U
-    val pcoff = io.prev.bits.pc + io.prev.bits.Imm
-    val jirlPC = io.prev.bits.rj_data + io.prev.bits.Imm
+    val Zero = io.prev.bits.Zero
+    val SLess = io.prev.bits.SLess
+    val ULess = io.prev.bits.ULess
+    val pcadd4 = io.prev.bits.pcadd4
+    val pcoff = io.prev.bits.pcoff
+    val jirlPC = io.prev.bits.jirlpc
 
     val branch = MuxLookup(io.prev.bits.branchOp, 0.B) (Seq(
         Branch.jirl -> 1.B,

@@ -87,6 +87,7 @@ class ifu_idu extends Bundle {
 
 class idu_exu extends Bundle {
 // Controller
+    val branchOp = Output(Branch())
     val aluOp = Output(ALUOp())
     val aluAsrc = Output(ALUAsrc())
     val aluBsrc = Output(ALUBsrc())
@@ -104,6 +105,7 @@ class idu_exu extends Bundle {
     val rk_data = Output(UInt(32.W))
 // PC
     val pc = Output(UInt(32.W))
+    val npc = Output(UInt(32.W))
 }
 
 object ALUOp extends ChiselEnum {
@@ -166,17 +168,19 @@ class exu_lsu extends Bundle {
     val rd_data = Output(UInt(32.W))
 }
 
-class idu_bru extends Bundle {
+class exu_bru extends Bundle {
+// ALU
+    val Zero = Output(Bool())
+    val SLess = Output(Bool())
+    val ULess = Output(Bool())
 // Controller
     val branchOp = Output(Branch())
-// ImmGen
-    val Imm = Output(UInt(32.W))
 // PC
+    val pcadd4 = Output(UInt(32.W))
+    val pcoff = Output(UInt(32.W))
+    val jirlpc = Output(UInt(32.W))
     val pc = Output(UInt(32.W))
     val npc = Output(UInt(32.W))
-// RegFile
-    val rd_data = Output(UInt(32.W))
-    val rj_data = Output(UInt(32.W))
 }
 
 class lsu_wbu extends Bundle {

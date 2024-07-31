@@ -13,11 +13,11 @@ class core extends Module {
     val ifu_idu = Module(new buffer(new ifu_idu()))
     val idu = Module(new idu())
     val idu_exu = Module(new buffer(new idu_exu()))
-    val idu_bru = Module(new buffer(new idu_bru()))
     val exu = Module(new exu())
-    val bru = Module(new bru())
     val exu_lsu = Module(new buffer(new exu_lsu()))
+    val exu_bru = Module(new buffer(new exu_bru()))
     val lsu = Module(new lsu())
+    val bru = Module(new bru())
     val lsu_wbu = Module(new buffer(new lsu_wbu()))
     val wbu = Module(new wbu())
 
@@ -45,11 +45,11 @@ class core extends Module {
     ifu_idu.io.flush := bru.io.flush
     idu_exu.io.stall := 0.B
     idu_exu.io.flush := bru.io.flush
-    idu_bru.io.stall := lsu.io.stall
-    bru.io.stall := lsu.io.stall
-    idu_bru.io.flush := bru.io.flush
     exu_lsu.io.stall := lsu.io.stall
-    exu_lsu.io.flush := 0.B
+    exu_lsu.io.flush := bru.io.flush
+    exu_bru.io.stall := lsu.io.stall
+    exu_bru.io.flush := bru.io.flush
+    bru.io.stall := lsu.io.stall
     lsu.io.flush := 0.B
     lsu_wbu.io.stall := 0.B
     lsu_wbu.io.flush := 0.B
@@ -80,11 +80,11 @@ class core extends Module {
     ifu.io.next <> ifu_idu.io.prev
     ifu_idu.io.next <> idu.io.prev
     idu.io.next <> idu_exu.io.prev
-    idu.io.bru <> idu_bru.io.prev
     idu_exu.io.next <> exu.io.prev
-    idu_bru.io.next <> bru.io.prev
     exu.io.next <> exu_lsu.io.prev
+    exu.io.bru <> exu_bru.io.prev
     exu_lsu.io.next <> lsu.io.prev
+    exu_bru.io.next <> bru.io.prev
     lsu.io.next <> lsu_wbu.io.prev
     lsu_wbu.io.next <> wbu.io.prev
 }

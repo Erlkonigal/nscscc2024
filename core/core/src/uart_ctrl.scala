@@ -3,7 +3,7 @@ import chisel3.util._
 import bundles._
 
 class async_transmitter extends BlackBox(Map(
-    "ClkFrequency" -> 100000000,
+    "ClkFrequency" -> 105000000,
     "Baud" -> 9600
 )) {
     val io = IO(new Bundle {
@@ -16,7 +16,7 @@ class async_transmitter extends BlackBox(Map(
 }
 
 class async_receiver extends BlackBox(Map(
-    "ClkFrequency" -> 100000000,
+    "ClkFrequency" -> 105000000,
     "Baud" -> 9600
 )) {
     val io = IO(new Bundle {

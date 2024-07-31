@@ -66,7 +66,6 @@ class idu extends Module {
         // pipe
         val prev = Flipped(Decoupled(new ifu_idu()))
         val next = Decoupled(new idu_exu())
-        val bru = Decoupled(new idu_bru())
         //pipe signal
         val stall = Input(Bool())
         // val flush = Input(Bool())
@@ -222,6 +221,7 @@ class idu extends Module {
     io.next.bits.aluAsrc := Decode(1)
     io.next.bits.aluBsrc := Decode(2)
     io.next.bits.memOp := Decode(4)
+    io.next.bits.branchOp := Decode(5)
     io.next.bits.wbSel := Decode(6)
     io.next.bits.wbDst := Decode(7)
     io.next.bits.Imm := immGen.io.Imm
@@ -232,15 +232,8 @@ class idu extends Module {
     io.next.bits.rj_data := ForwardRJ
     io.next.bits.rk_data := ForwardRK
     io.next.bits.pc := io.prev.bits.pc
+    io.next.bits.npc := io.prev.bits.npc
 
-    io.bru.bits.branchOp := Decode(5)
-    io.bru.bits.Imm := immGen.io.Imm
-    io.bru.bits.pc := io.prev.bits.pc
-    io.bru.bits.npc := io.prev.bits.npc
-    io.bru.bits.rd_data := ForwardRD
-    io.bru.bits.rj_data := ForwardRJ
-
-    io.bru.valid := io.prev.valid && ~io.stall
     io.next.valid := io.prev.valid && ~io.stall // assert after stall
     io.prev.ready := io.next.ready
 }

@@ -26,3 +26,5 @@ core/.bloop
 core/.metals
 core/.vscode
 core/out
+bsp
+program
