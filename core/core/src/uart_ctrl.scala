@@ -43,8 +43,8 @@ class uart_ctrl extends Module {
     val tran = Module(new async_transmitter())
     val recv = Module(new async_receiver())
     
-    val tran_fifo = Module(new Queue(UInt(8.W), 16))
-    val recv_fifo = Module(new Queue(UInt(8.W), 16))
+    val tran_fifo = Module(new Queue(UInt(8.W), 4))
+    val recv_fifo = Module(new Queue(UInt(8.W), 4))
 
     val master_write = ~io.in.bits.ce_n & ~io.in.bits.we_n & io.in.bits.oe_n
     val master_read = ~io.in.bits.ce_n & io.in.bits.we_n & ~io.in.bits.oe_n

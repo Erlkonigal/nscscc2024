@@ -3998,40 +3998,11 @@ module lsu(	// core/src/lsu.scala:5:7
   reg  [31:0]      wq_3_data;	// core/src/lsu.scala:88:21
   reg  [3:0]       wq_3_be_n;	// core/src/lsu.scala:88:21
   reg  [1:0]       wq_3_op;	// core/src/lsu.scala:88:21
-  reg              wq_4_valid;	// core/src/lsu.scala:88:21
-  reg  [31:0]      wq_4_addr;	// core/src/lsu.scala:88:21
-  reg  [31:0]      wq_4_data;	// core/src/lsu.scala:88:21
-  reg  [3:0]       wq_4_be_n;	// core/src/lsu.scala:88:21
-  reg  [1:0]       wq_4_op;	// core/src/lsu.scala:88:21
-  reg              wq_5_valid;	// core/src/lsu.scala:88:21
-  reg  [31:0]      wq_5_addr;	// core/src/lsu.scala:88:21
-  reg  [31:0]      wq_5_data;	// core/src/lsu.scala:88:21
-  reg  [3:0]       wq_5_be_n;	// core/src/lsu.scala:88:21
-  reg  [1:0]       wq_5_op;	// core/src/lsu.scala:88:21
   reg  [1:0]       wq_state;	// core/src/lsu.scala:89:27
-  reg  [2:0]       wq_ptr;	// core/src/lsu.scala:90:25
-  wire [7:0]       _GEN =
-    {{wq_0_valid},
-     {wq_0_valid},
-     {wq_5_valid},
-     {wq_4_valid},
-     {wq_3_valid},
-     {wq_2_valid},
-     {wq_1_valid},
-     {wq_0_valid}};	// core/src/lsu.scala:88:21, :92:49
-  wire             wq_full = wq_ptr == 3'h5 & _GEN[wq_ptr];	// core/src/lsu.scala:31:71, :90:25, :92:{45,49}
+  reg  [1:0]       wq_ptr;	// core/src/lsu.scala:90:25
+  wire [3:0]       _GEN = {{wq_3_valid}, {wq_2_valid}, {wq_1_valid}, {wq_0_valid}};	// core/src/lsu.scala:88:21, :92:49
+  wire             wq_full = (&wq_ptr) & _GEN[wq_ptr];	// core/src/lsu.scala:90:25, :92:{45,49}
   wire [1:0]       _hit_0_T_13 = {wq_0_op[1], ~(wq_0_op[0])};	// core/src/lsu.scala:88:21, :114:37
-  wire             hit_0 =
-    wq_0_valid & (wq_0_addr ^ io_prev_bits_ALUOut) == 32'h0
-    & (io_prev_bits_memOp == 4'h4
-         ? wq_0_op == 2'h2
-         : io_prev_bits_memOp == 4'h3
-             ? _hit_0_T_13 == 2'h0
-             : io_prev_bits_memOp == 4'h2
-                 ? _hit_0_T_13 == 2'h0
-                 : io_prev_bits_memOp == 4'h1
-                     ? wq_0_op == 2'h0
-                     : ~(|io_prev_bits_memOp) & wq_0_op == 2'h0);	// core/src/lsu.scala:5:7, :36:70, :88:{21,34}, :111:{47,58,62,84}, :112:44, :113:45, :114:{37,44}, :115:45, :116:44
   wire [1:0]       _hit_1_T_13 = {wq_1_op[1], ~(wq_1_op[0])};	// core/src/lsu.scala:88:21, :114:37
   wire             hit_1 =
     wq_1_valid & (wq_1_addr ^ io_prev_bits_ALUOut) == 32'h0
@@ -4068,36 +4039,23 @@ module lsu(	// core/src/lsu.scala:5:7
                  : io_prev_bits_memOp == 4'h1
                      ? wq_3_op == 2'h0
                      : ~(|io_prev_bits_memOp) & wq_3_op == 2'h0);	// core/src/lsu.scala:5:7, :36:70, :88:{21,34}, :111:{47,58,62,84}, :112:44, :113:45, :114:{37,44}, :115:45, :116:44
-  wire [1:0]       _hit_4_T_13 = {wq_4_op[1], ~(wq_4_op[0])};	// core/src/lsu.scala:88:21, :114:37
-  wire             hit_4 =
-    wq_4_valid & (wq_4_addr ^ io_prev_bits_ALUOut) == 32'h0
-    & (io_prev_bits_memOp == 4'h4
-         ? wq_4_op == 2'h2
-         : io_prev_bits_memOp == 4'h3
-             ? _hit_4_T_13 == 2'h0
-             : io_prev_bits_memOp == 4'h2
-                 ? _hit_4_T_13 == 2'h0
-                 : io_prev_bits_memOp == 4'h1
-                     ? wq_4_op == 2'h0
-                     : ~(|io_prev_bits_memOp) & wq_4_op == 2'h0);	// core/src/lsu.scala:5:7, :36:70, :88:{21,34}, :111:{47,58,62,84}, :112:44, :113:45, :114:{37,44}, :115:45, :116:44
-  wire [1:0]       _hit_5_T_13 = {wq_5_op[1], ~(wq_5_op[0])};	// core/src/lsu.scala:88:21, :114:37
-  wire             hit_5 =
-    wq_5_valid & (wq_5_addr ^ io_prev_bits_ALUOut) == 32'h0
-    & (io_prev_bits_memOp == 4'h4
-         ? wq_5_op == 2'h2
-         : io_prev_bits_memOp == 4'h3
-             ? _hit_5_T_13 == 2'h0
-             : io_prev_bits_memOp == 4'h2
-                 ? _hit_5_T_13 == 2'h0
-                 : io_prev_bits_memOp == 4'h1
-                     ? wq_5_op == 2'h0
-                     : ~(|io_prev_bits_memOp) & wq_5_op == 2'h0);	// core/src/lsu.scala:5:7, :36:70, :88:{21,34}, :111:{47,58,62,84}, :112:44, :113:45, :114:{37,44}, :115:45, :116:44
-  wire [2:0]       _hit_index_T_4 =
-    hit_5 ? 3'h0 : hit_4 ? 3'h1 : hit_3 ? 3'h2 : hit_2 ? 3'h3 : {2'h2, ~hit_1};	// core/src/lsu.scala:36:70, :90:25, :111:62, :126:32, src/main/scala/chisel3/util/Mux.scala:50:70
+  wire [1:0]       _hit_index_T_2 = hit_3 ? 2'h0 : hit_2 ? 2'h1 : {1'h1, ~hit_1};	// core/src/lsu.scala:6:16, :31:39, :88:34, :89:27, :111:62, src/main/scala/chisel3/util/Mux.scala:50:70
   wire             _GEN_0 = wq_state == 2'h1;	// core/src/lsu.scala:89:27, :121:22
-  wire [7:0]       _GEN_1 =
-    {{hit_0}, {hit_0}, {hit_5}, {hit_4}, {hit_3}, {hit_2}, {hit_1}, {hit_0}};	// core/src/lsu.scala:111:62, :135:32
-  wire             _GEN_2 = _GEN_1[~_hit_index_T_4];	// core/src/lsu.scala:119:18, :135:32, src/main/scala/chisel3/util/Mux.scala:50:70
+  wire [3:0]       _GEN_1 =
+    {{hit_3},
+     {hit_2},
+     {hit_1},
+     {wq_0_valid & (wq_0_addr ^ io_prev_bits_ALUOut) == 32'h0
+        & (io_prev_bits_memOp == 4'h4
+             ? wq_0_op == 2'h2
+             : io_prev_bits_memOp == 4'h3
+                 ? _hit_0_T_13 == 2'h0
+                 : io_prev_bits_memOp == 4'h2
+                     ? _hit_0_T_13 == 2'h0
+                     : io_prev_bits_memOp == 4'h1
+                         ? wq_0_op == 2'h0
+                         : ~(|io_prev_bits_memOp) & wq_0_op == 2'h0)}};	// core/src/lsu.scala:5:7, :36:70, :88:{21,34}, :111:{47,58,62,84}, :112:44, :113:45, :114:{37,44}, :115:45, :116:44, :135:32
+  wire             _GEN_2 = _GEN_1[~_hit_index_T_2];	// core/src/lsu.scala:119:18, :135:32, src/main/scala/chisel3/util/Mux.scala:50:70
   wire             _GEN_3 = wq_state == 2'h2;	// core/src/lsu.scala:36:70, :89:27, :121:22
   wire             wq_stall =
     _GEN_0
@@ -4106,16 +4064,8 @@ module lsu(	// core/src/lsu.scala:5:7
           ? (Writevalid ? wq_full : Readvalid & ~_GEN_2)
           : (&wq_state) & ~Writevalid & Readvalid & ~_GEN_2;	// core/src/lsu.scala:31:{49,71}, :36:48, :89:27, :92:49, :95:14, :121:22, :123:30, :125:32, :133:34, :135:{26,32}, :147:30, :149:32, :157:34, :159:{26,32}, :166:30, :181:34, :183:32
   reg              state;	// core/src/lsu.scala:201:24
-  wire [7:0][31:0] _GEN_4 =
-    {{wq_0_data},
-     {wq_0_data},
-     {wq_5_data},
-     {wq_4_data},
-     {wq_3_data},
-     {wq_2_data},
-     {wq_1_data},
-     {wq_0_data}};	// core/src/lsu.scala:88:21, :207:23
-  wire [31:0]      ReadData = state ? io_ext_in_bits_data_out : _GEN_4[~_hit_index_T_4];	// core/src/lsu.scala:119:18, :201:24, :207:23, src/main/scala/chisel3/util/Mux.scala:50:70
+  wire [3:0][31:0] _GEN_4 = {{wq_3_data}, {wq_2_data}, {wq_1_data}, {wq_0_data}};	// core/src/lsu.scala:88:21, :207:23
+  wire [31:0]      ReadData = state ? io_ext_in_bits_data_out : _GEN_4[~_hit_index_T_2];	// core/src/lsu.scala:119:18, :201:24, :207:23, src/main/scala/chisel3/util/Mux.scala:50:70
   wire [3:0][7:0]  _GEN_5 =
     {{ReadData[31:24]}, {ReadData[23:16]}, {ReadData[15:8]}, {ReadData[7:0]}};	// core/src/lsu.scala:207:23, :208:51, :209:24, :210:24, :211:24, :212:24
   wire [7:0]       FetchByte = _GEN_5[io_prev_bits_ALUOut[1:0]];	// core/src/lsu.scala:46:37, :208:51
@@ -4168,18 +4118,8 @@ module lsu(	// core/src/lsu.scala:5:7
       wq_3_data <= 32'h0;	// core/src/lsu.scala:88:{21,34}
       wq_3_be_n <= 4'h0;	// core/src/lsu.scala:5:7, :88:21
       wq_3_op <= 2'h0;	// core/src/lsu.scala:88:{21,34}
-      wq_4_valid <= 1'h0;	// core/src/lsu.scala:6:16, :88:21
-      wq_4_addr <= 32'h0;	// core/src/lsu.scala:88:{21,34}
-      wq_4_data <= 32'h0;	// core/src/lsu.scala:88:{21,34}
-      wq_4_be_n <= 4'h0;	// core/src/lsu.scala:5:7, :88:21
-      wq_4_op <= 2'h0;	// core/src/lsu.scala:88:{21,34}
-      wq_5_valid <= 1'h0;	// core/src/lsu.scala:6:16, :88:21
-      wq_5_addr <= 32'h0;	// core/src/lsu.scala:88:{21,34}
-      wq_5_data <= 32'h0;	// core/src/lsu.scala:88:{21,34}
-      wq_5_be_n <= 4'h0;	// core/src/lsu.scala:5:7, :88:21
-      wq_5_op <= 2'h0;	// core/src/lsu.scala:88:{21,34}
       wq_state <= 2'h1;	// core/src/lsu.scala:89:27
-      wq_ptr <= 3'h0;	// core/src/lsu.scala:90:25
+      wq_ptr <= 2'h0;	// core/src/lsu.scala:88:34, :90:25
       state <= 1'h0;	// core/src/lsu.scala:6:16, :201:24
     end
     else begin	// core/src/lsu.scala:5:7
@@ -4229,333 +4169,223 @@ module lsu(	// core/src/lsu.scala:5:7
       automatic logic [31:0]      _GEN_31;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       automatic logic [3:0]       _GEN_32;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       automatic logic [1:0]       _GEN_33;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic             _GEN_34;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic             _GEN_35;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic [31:0]      _GEN_36;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic [31:0]      _GEN_37;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic [3:0]       _GEN_38;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic [1:0]       _GEN_39;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic             _GEN_40;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic             _GEN_41;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic [31:0]      _GEN_42;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic [31:0]      _GEN_43;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic [3:0]       _GEN_44;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic [1:0]       _GEN_45;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      automatic logic             _GEN_46;	// core/src/lsu.scala:90:25, :123:30, :125:32, :127:28
-      automatic logic             _GEN_47;	// core/src/lsu.scala:168:32, :170:{31,37}, :176:31
-      automatic logic             _GEN_48;	// core/src/lsu.scala:168:32, :170:{31,37}, :176:31
-      automatic logic             _GEN_49;	// core/src/lsu.scala:168:32, :170:{31,37}, :176:31
-      automatic logic             _GEN_50;	// core/src/lsu.scala:168:32, :170:{31,37}, :176:31
-      automatic logic             _GEN_51;	// core/src/lsu.scala:168:32, :170:{31,37}, :176:31
-      automatic logic [3:0]       _GEN_52;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_53;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic             _GEN_34;	// core/src/lsu.scala:90:25, :123:30, :125:32, :127:28
+      automatic logic             _GEN_35;	// core/src/lsu.scala:168:32, :170:{31,37}, :176:31
+      automatic logic             _GEN_36;	// core/src/lsu.scala:168:32, :170:{31,37}, :176:31
+      automatic logic             _GEN_37;	// core/src/lsu.scala:168:32, :170:{31,37}, :176:31
+      automatic logic [3:0]       _GEN_38;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][31:0] _GEN_39;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][31:0] _GEN_40;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][3:0]  _GEN_41;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][1:0]  _GEN_42;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0]       _GEN_43;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][31:0] _GEN_44;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][31:0] _GEN_45;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][3:0]  _GEN_46;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][1:0]  _GEN_47;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0]       _GEN_48;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][31:0] _GEN_49;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][31:0] _GEN_50;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][3:0]  _GEN_51;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][1:0]  _GEN_52;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0]       _GEN_53;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
       automatic logic [3:0][31:0] _GEN_54;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][3:0]  _GEN_55;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][1:0]  _GEN_56;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0]       _GEN_57;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_58;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_59;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][3:0]  _GEN_60;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][1:0]  _GEN_61;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0]       _GEN_62;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_63;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_64;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][3:0]  _GEN_65;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][1:0]  _GEN_66;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0]       _GEN_67;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_68;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_69;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][3:0]  _GEN_70;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][1:0]  _GEN_71;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0]       _GEN_72;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_73;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_74;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][3:0]  _GEN_75;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][1:0]  _GEN_76;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0]       _GEN_77;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_78;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][31:0] _GEN_79;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][3:0]  _GEN_80;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][1:0]  _GEN_81;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
-      automatic logic [3:0][1:0]  _GEN_82;	// core/src/lsu.scala:89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_10 = Writevalid & ~wq_full & wq_ptr == 3'h0;	// core/src/lsu.scala:31:49, :88:21, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
+      automatic logic [3:0][31:0] _GEN_55;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][3:0]  _GEN_56;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][1:0]  _GEN_57;	// core/src/lsu.scala:88:21, :121:22, :123:30, :147:30, :166:30
+      automatic logic [3:0][1:0]  _GEN_58;	// core/src/lsu.scala:89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_10 = Writevalid & ~wq_full & wq_ptr == 2'h0;	// core/src/lsu.scala:31:49, :88:{21,34}, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
       _GEN_11 = _GEN_10 | wq_0_valid;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       _GEN_12 = _GEN_10 ? io_prev_bits_ALUOut : wq_0_addr;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       _GEN_13 = _GEN_10 ? GenData : wq_0_data;	// core/src/lsu.scala:74:38, :88:21, :123:30, :125:32, :126:32
       _GEN_14 = _GEN_10 ? GenMask : wq_0_be_n;	// core/src/lsu.scala:57:38, :88:21, :123:30, :125:32, :126:32
       _GEN_15 = _GEN_10 ? newdata_op : wq_0_op;	// core/src/lsu.scala:88:21, :102:38, :123:30, :125:32, :126:32
-      _GEN_16 = Writevalid & ~wq_full & wq_ptr == 3'h1;	// core/src/lsu.scala:31:49, :88:21, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
+      _GEN_16 = Writevalid & ~wq_full & wq_ptr == 2'h1;	// core/src/lsu.scala:31:49, :88:21, :89:27, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
       _GEN_17 = _GEN_16 | wq_1_valid;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       _GEN_18 = _GEN_16 ? io_prev_bits_ALUOut : wq_1_addr;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       _GEN_19 = _GEN_16 ? GenData : wq_1_data;	// core/src/lsu.scala:74:38, :88:21, :123:30, :125:32, :126:32
       _GEN_20 = _GEN_16 ? GenMask : wq_1_be_n;	// core/src/lsu.scala:57:38, :88:21, :123:30, :125:32, :126:32
       _GEN_21 = _GEN_16 ? newdata_op : wq_1_op;	// core/src/lsu.scala:88:21, :102:38, :123:30, :125:32, :126:32
-      _GEN_22 = Writevalid & ~wq_full & wq_ptr == 3'h2;	// core/src/lsu.scala:31:49, :88:21, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
+      _GEN_22 = Writevalid & ~wq_full & wq_ptr == 2'h2;	// core/src/lsu.scala:31:49, :36:70, :88:21, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
       _GEN_23 = _GEN_22 | wq_2_valid;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       _GEN_24 = _GEN_22 ? io_prev_bits_ALUOut : wq_2_addr;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       _GEN_25 = _GEN_22 ? GenData : wq_2_data;	// core/src/lsu.scala:74:38, :88:21, :123:30, :125:32, :126:32
       _GEN_26 = _GEN_22 ? GenMask : wq_2_be_n;	// core/src/lsu.scala:57:38, :88:21, :123:30, :125:32, :126:32
       _GEN_27 = _GEN_22 ? newdata_op : wq_2_op;	// core/src/lsu.scala:88:21, :102:38, :123:30, :125:32, :126:32
-      _GEN_28 = Writevalid & ~wq_full & wq_ptr == 3'h3;	// core/src/lsu.scala:31:49, :88:21, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
+      _GEN_28 = Writevalid & ~wq_full & (&wq_ptr);	// core/src/lsu.scala:31:49, :88:21, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
       _GEN_29 = _GEN_28 | wq_3_valid;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       _GEN_30 = _GEN_28 ? io_prev_bits_ALUOut : wq_3_addr;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
       _GEN_31 = _GEN_28 ? GenData : wq_3_data;	// core/src/lsu.scala:74:38, :88:21, :123:30, :125:32, :126:32
       _GEN_32 = _GEN_28 ? GenMask : wq_3_be_n;	// core/src/lsu.scala:57:38, :88:21, :123:30, :125:32, :126:32
       _GEN_33 = _GEN_28 ? newdata_op : wq_3_op;	// core/src/lsu.scala:88:21, :102:38, :123:30, :125:32, :126:32
-      _GEN_34 = Writevalid & ~wq_full & wq_ptr == 3'h4;	// core/src/lsu.scala:31:49, :36:70, :88:21, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
-      _GEN_35 = _GEN_34 | wq_4_valid;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      _GEN_36 = _GEN_34 ? io_prev_bits_ALUOut : wq_4_addr;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      _GEN_37 = _GEN_34 ? GenData : wq_4_data;	// core/src/lsu.scala:74:38, :88:21, :123:30, :125:32, :126:32
-      _GEN_38 = _GEN_34 ? GenMask : wq_4_be_n;	// core/src/lsu.scala:57:38, :88:21, :123:30, :125:32, :126:32
-      _GEN_39 = _GEN_34 ? newdata_op : wq_4_op;	// core/src/lsu.scala:88:21, :102:38, :123:30, :125:32, :126:32
-      _GEN_40 = Writevalid & ~wq_full & wq_ptr == 3'h5;	// core/src/lsu.scala:31:{49,71}, :88:21, :90:25, :92:49, :123:30, :125:{22,32}, :126:32
-      _GEN_41 = _GEN_40 | wq_5_valid;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      _GEN_42 = _GEN_40 ? io_prev_bits_ALUOut : wq_5_addr;	// core/src/lsu.scala:88:21, :123:30, :125:32, :126:32
-      _GEN_43 = _GEN_40 ? GenData : wq_5_data;	// core/src/lsu.scala:74:38, :88:21, :123:30, :125:32, :126:32
-      _GEN_44 = _GEN_40 ? GenMask : wq_5_be_n;	// core/src/lsu.scala:57:38, :88:21, :123:30, :125:32, :126:32
-      _GEN_45 = _GEN_40 ? newdata_op : wq_5_op;	// core/src/lsu.scala:88:21, :102:38, :123:30, :125:32, :126:32
-      _GEN_46 = Writevalid & ~wq_full;	// core/src/lsu.scala:31:49, :90:25, :92:49, :123:30, :125:{22,32}, :127:28
-      _GEN_47 = ~wq_full & {wq_ptr[2:1], ~(wq_ptr[0])} == 3'h0;	// core/src/lsu.scala:90:25, :92:49, :125:22, :168:32, :170:{31,37,47,60}, :176:31
-      _GEN_48 = ~wq_full & {wq_ptr[2], wq_ptr[1:0] ^ 2'h2} == 3'h0;	// core/src/lsu.scala:36:70, :90:25, :92:49, :125:22, :168:32, :170:{31,37,47,60}, :176:31
-      _GEN_49 = ~wq_full & {wq_ptr[2], ~(wq_ptr[1:0])} == 3'h0;	// core/src/lsu.scala:90:25, :92:49, :125:22, :168:32, :170:{31,37,47,60}, :176:31
-      _GEN_50 = ~wq_full & wq_ptr == 3'h4;	// core/src/lsu.scala:36:70, :90:25, :92:49, :125:22, :168:32, :170:{31,37,60}, :176:31
-      _GEN_51 = ~wq_full & wq_ptr == 3'h5;	// core/src/lsu.scala:31:71, :90:25, :92:49, :125:22, :168:32, :170:{31,37,60}, :176:31
-      _GEN_52 =
-        {{Writevalid ? _GEN_47 | wq_1_valid : Readvalid ? wq_0_valid : wq_1_valid},
+      _GEN_34 = Writevalid & ~wq_full;	// core/src/lsu.scala:31:49, :90:25, :92:49, :123:30, :125:{22,32}, :127:28
+      _GEN_35 = ~wq_full & {wq_ptr[1], ~(wq_ptr[0])} == 2'h0;	// core/src/lsu.scala:88:34, :90:25, :92:49, :125:22, :168:32, :170:{31,37,47,60}, :176:31
+      _GEN_36 = ~wq_full & wq_ptr == 2'h2;	// core/src/lsu.scala:36:70, :90:25, :92:49, :125:22, :168:32, :170:{31,37,60}, :176:31
+      _GEN_37 = ~wq_full & (&wq_ptr);	// core/src/lsu.scala:90:25, :92:49, :125:22, :168:32, :170:{31,37,60}, :176:31
+      _GEN_38 =
+        {{Writevalid ? _GEN_35 | wq_1_valid : Readvalid ? wq_0_valid : wq_1_valid},
          {_GEN_11},
          {_GEN_11},
          {wq_0_valid}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_0_valid <= _GEN_52[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_53 =
+      wq_0_valid <= _GEN_38[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_39 =
         {{Writevalid
-            ? (_GEN_47 ? io_prev_bits_ALUOut : wq_1_addr)
+            ? (_GEN_35 ? io_prev_bits_ALUOut : wq_1_addr)
             : Readvalid ? wq_0_addr : wq_1_addr},
          {_GEN_12},
          {_GEN_12},
          {wq_0_addr}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_0_addr <= _GEN_53[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_54 =
+      wq_0_addr <= _GEN_39[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_40 =
         {{Writevalid
-            ? (_GEN_47 ? GenData : wq_1_data)
+            ? (_GEN_35 ? GenData : wq_1_data)
             : Readvalid ? wq_0_data : wq_1_data},
          {_GEN_13},
          {_GEN_13},
          {wq_0_data}};	// core/src/lsu.scala:31:49, :36:48, :74:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_0_data <= _GEN_54[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_55 =
+      wq_0_data <= _GEN_40[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_41 =
         {{Writevalid
-            ? (_GEN_47 ? GenMask : wq_1_be_n)
+            ? (_GEN_35 ? GenMask : wq_1_be_n)
             : Readvalid ? wq_0_be_n : wq_1_be_n},
          {_GEN_14},
          {_GEN_14},
          {wq_0_be_n}};	// core/src/lsu.scala:31:49, :36:48, :57:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_0_be_n <= _GEN_55[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_56 =
-        {{Writevalid ? (_GEN_47 ? newdata_op : wq_1_op) : Readvalid ? wq_0_op : wq_1_op},
+      wq_0_be_n <= _GEN_41[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_42 =
+        {{Writevalid ? (_GEN_35 ? newdata_op : wq_1_op) : Readvalid ? wq_0_op : wq_1_op},
          {_GEN_15},
          {_GEN_15},
          {wq_0_op}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :102:38, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_0_op <= _GEN_56[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_57 =
-        {{Writevalid ? _GEN_48 | wq_2_valid : Readvalid ? wq_1_valid : wq_2_valid},
+      wq_0_op <= _GEN_42[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_43 =
+        {{Writevalid ? _GEN_36 | wq_2_valid : Readvalid ? wq_1_valid : wq_2_valid},
          {_GEN_17},
          {_GEN_17},
          {wq_1_valid}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_1_valid <= _GEN_57[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_58 =
+      wq_1_valid <= _GEN_43[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_44 =
         {{Writevalid
-            ? (_GEN_48 ? io_prev_bits_ALUOut : wq_2_addr)
+            ? (_GEN_36 ? io_prev_bits_ALUOut : wq_2_addr)
             : Readvalid ? wq_1_addr : wq_2_addr},
          {_GEN_18},
          {_GEN_18},
          {wq_1_addr}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_1_addr <= _GEN_58[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_59 =
+      wq_1_addr <= _GEN_44[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_45 =
         {{Writevalid
-            ? (_GEN_48 ? GenData : wq_2_data)
+            ? (_GEN_36 ? GenData : wq_2_data)
             : Readvalid ? wq_1_data : wq_2_data},
          {_GEN_19},
          {_GEN_19},
          {wq_1_data}};	// core/src/lsu.scala:31:49, :36:48, :74:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_1_data <= _GEN_59[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_60 =
+      wq_1_data <= _GEN_45[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_46 =
         {{Writevalid
-            ? (_GEN_48 ? GenMask : wq_2_be_n)
+            ? (_GEN_36 ? GenMask : wq_2_be_n)
             : Readvalid ? wq_1_be_n : wq_2_be_n},
          {_GEN_20},
          {_GEN_20},
          {wq_1_be_n}};	// core/src/lsu.scala:31:49, :36:48, :57:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_1_be_n <= _GEN_60[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_61 =
-        {{Writevalid ? (_GEN_48 ? newdata_op : wq_2_op) : Readvalid ? wq_1_op : wq_2_op},
+      wq_1_be_n <= _GEN_46[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_47 =
+        {{Writevalid ? (_GEN_36 ? newdata_op : wq_2_op) : Readvalid ? wq_1_op : wq_2_op},
          {_GEN_21},
          {_GEN_21},
          {wq_1_op}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :102:38, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_1_op <= _GEN_61[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_62 =
-        {{Writevalid ? _GEN_49 | wq_3_valid : Readvalid ? wq_2_valid : wq_3_valid},
+      wq_1_op <= _GEN_47[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_48 =
+        {{Writevalid ? _GEN_37 | wq_3_valid : Readvalid ? wq_2_valid : wq_3_valid},
          {_GEN_23},
          {_GEN_23},
          {wq_2_valid}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_2_valid <= _GEN_62[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_63 =
+      wq_2_valid <= _GEN_48[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_49 =
         {{Writevalid
-            ? (_GEN_49 ? io_prev_bits_ALUOut : wq_3_addr)
+            ? (_GEN_37 ? io_prev_bits_ALUOut : wq_3_addr)
             : Readvalid ? wq_2_addr : wq_3_addr},
          {_GEN_24},
          {_GEN_24},
          {wq_2_addr}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_2_addr <= _GEN_63[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_64 =
+      wq_2_addr <= _GEN_49[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_50 =
         {{Writevalid
-            ? (_GEN_49 ? GenData : wq_3_data)
+            ? (_GEN_37 ? GenData : wq_3_data)
             : Readvalid ? wq_2_data : wq_3_data},
          {_GEN_25},
          {_GEN_25},
          {wq_2_data}};	// core/src/lsu.scala:31:49, :36:48, :74:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_2_data <= _GEN_64[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_65 =
+      wq_2_data <= _GEN_50[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_51 =
         {{Writevalid
-            ? (_GEN_49 ? GenMask : wq_3_be_n)
+            ? (_GEN_37 ? GenMask : wq_3_be_n)
             : Readvalid ? wq_2_be_n : wq_3_be_n},
          {_GEN_26},
          {_GEN_26},
          {wq_2_be_n}};	// core/src/lsu.scala:31:49, :36:48, :57:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_2_be_n <= _GEN_65[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_66 =
-        {{Writevalid ? (_GEN_49 ? newdata_op : wq_3_op) : Readvalid ? wq_2_op : wq_3_op},
+      wq_2_be_n <= _GEN_51[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_52 =
+        {{Writevalid ? (_GEN_37 ? newdata_op : wq_3_op) : Readvalid ? wq_2_op : wq_3_op},
          {_GEN_27},
          {_GEN_27},
          {wq_2_op}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :102:38, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_2_op <= _GEN_66[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_67 =
-        {{Writevalid ? _GEN_50 | wq_4_valid : Readvalid ? wq_3_valid : wq_4_valid},
+      wq_2_op <= _GEN_52[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_53 =
+        {{Writevalid ? wq_full : Readvalid & wq_3_valid},
          {_GEN_29},
          {_GEN_29},
-         {wq_3_valid}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_3_valid <= _GEN_67[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_68 =
-        {{Writevalid
-            ? (_GEN_50 ? io_prev_bits_ALUOut : wq_4_addr)
-            : Readvalid ? wq_3_addr : wq_4_addr},
-         {_GEN_30},
-         {_GEN_30},
-         {wq_3_addr}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_3_addr <= _GEN_68[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_69 =
-        {{Writevalid
-            ? (_GEN_50 ? GenData : wq_4_data)
-            : Readvalid ? wq_3_data : wq_4_data},
-         {_GEN_31},
-         {_GEN_31},
-         {wq_3_data}};	// core/src/lsu.scala:31:49, :36:48, :74:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_3_data <= _GEN_69[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_70 =
-        {{Writevalid
-            ? (_GEN_50 ? GenMask : wq_4_be_n)
-            : Readvalid ? wq_3_be_n : wq_4_be_n},
-         {_GEN_32},
-         {_GEN_32},
-         {wq_3_be_n}};	// core/src/lsu.scala:31:49, :36:48, :57:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_3_be_n <= _GEN_70[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_71 =
-        {{Writevalid ? (_GEN_50 ? newdata_op : wq_4_op) : Readvalid ? wq_3_op : wq_4_op},
-         {_GEN_33},
-         {_GEN_33},
-         {wq_3_op}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :102:38, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_3_op <= _GEN_71[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_72 =
-        {{Writevalid ? _GEN_51 | wq_5_valid : Readvalid ? wq_4_valid : wq_5_valid},
-         {_GEN_35},
-         {_GEN_35},
-         {wq_4_valid}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_4_valid <= _GEN_72[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_73 =
-        {{Writevalid
-            ? (_GEN_51 ? io_prev_bits_ALUOut : wq_5_addr)
-            : Readvalid ? wq_4_addr : wq_5_addr},
-         {_GEN_36},
-         {_GEN_36},
-         {wq_4_addr}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_4_addr <= _GEN_73[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_74 =
-        {{Writevalid
-            ? (_GEN_51 ? GenData : wq_5_data)
-            : Readvalid ? wq_4_data : wq_5_data},
-         {_GEN_37},
-         {_GEN_37},
-         {wq_4_data}};	// core/src/lsu.scala:31:49, :36:48, :74:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_4_data <= _GEN_74[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_75 =
-        {{Writevalid
-            ? (_GEN_51 ? GenMask : wq_5_be_n)
-            : Readvalid ? wq_4_be_n : wq_5_be_n},
-         {_GEN_38},
-         {_GEN_38},
-         {wq_4_be_n}};	// core/src/lsu.scala:31:49, :36:48, :57:38, :88:21, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_4_be_n <= _GEN_75[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_76 =
-        {{Writevalid ? (_GEN_51 ? newdata_op : wq_5_op) : Readvalid ? wq_4_op : wq_5_op},
-         {_GEN_39},
-         {_GEN_39},
-         {wq_4_op}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :102:38, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :170:{31,37}, :176:31, :181:34, :193:27
-      wq_4_op <= _GEN_76[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_77 =
-        {{Writevalid ? wq_full : Readvalid & wq_5_valid},
-         {_GEN_41},
-         {_GEN_41},
-         {wq_5_valid}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :92:49, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :181:34, :195:35
-      wq_5_valid <= _GEN_77[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_78 =
+         {wq_3_valid}};	// core/src/lsu.scala:31:49, :36:48, :88:21, :92:49, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :181:34, :195:35
+      wq_3_valid <= _GEN_53[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_54 =
         {{Writevalid
             ? (wq_full ? io_prev_bits_ALUOut : 32'h0)
-            : Readvalid ? wq_5_addr : 32'h0},
-         {_GEN_42},
-         {_GEN_42},
-         {wq_5_addr}};	// core/src/lsu.scala:31:49, :36:48, :88:{21,34}, :92:49, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :172:39, :178:39, :181:34, :195:35
-      wq_5_addr <= _GEN_78[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_79 =
-        {{Writevalid ? (wq_full ? GenData : 32'h0) : Readvalid ? wq_5_data : 32'h0},
-         {_GEN_43},
-         {_GEN_43},
-         {wq_5_data}};	// core/src/lsu.scala:31:49, :36:48, :74:38, :88:{21,34}, :92:49, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :172:39, :178:39, :181:34, :195:35
-      wq_5_data <= _GEN_79[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_80 =
+            : Readvalid ? wq_3_addr : 32'h0},
+         {_GEN_30},
+         {_GEN_30},
+         {wq_3_addr}};	// core/src/lsu.scala:31:49, :36:48, :88:{21,34}, :92:49, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :172:39, :178:39, :181:34, :195:35
+      wq_3_addr <= _GEN_54[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_55 =
+        {{Writevalid ? (wq_full ? GenData : 32'h0) : Readvalid ? wq_3_data : 32'h0},
+         {_GEN_31},
+         {_GEN_31},
+         {wq_3_data}};	// core/src/lsu.scala:31:49, :36:48, :74:38, :88:{21,34}, :92:49, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :172:39, :178:39, :181:34, :195:35
+      wq_3_data <= _GEN_55[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_56 =
         {{Writevalid
             ? (~wq_full | _GenMask_T_8 ? 4'h0 : _GenMask_T_7)
-            : Readvalid ? wq_5_be_n : 4'h0},
-         {_GEN_44},
-         {_GEN_44},
-         {wq_5_be_n}};	// core/src/lsu.scala:5:7, :31:49, :36:48, :57:38, :88:21, :92:49, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :172:39, :178:39, :181:34, :195:35
-      wq_5_be_n <= _GEN_80[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_81 =
-        {{Writevalid ? (wq_full ? newdata_op : 2'h0) : Readvalid ? wq_5_op : 2'h0},
-         {_GEN_45},
-         {_GEN_45},
-         {wq_5_op}};	// core/src/lsu.scala:31:49, :36:48, :88:{21,34}, :92:49, :102:38, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :172:39, :178:39, :181:34, :195:35
-      wq_5_op <= _GEN_81[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
-      _GEN_82 =
-        {{Writevalid | ~(Readvalid | {wq_ptr[2:1], ~(wq_ptr[0])} == 3'h0) ? 2'h2 : 2'h1},
+            : Readvalid ? wq_3_be_n : 4'h0},
+         {_GEN_32},
+         {_GEN_32},
+         {wq_3_be_n}};	// core/src/lsu.scala:5:7, :31:49, :36:48, :57:38, :88:21, :92:49, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :172:39, :178:39, :181:34, :195:35
+      wq_3_be_n <= _GEN_56[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_57 =
+        {{Writevalid ? (wq_full ? newdata_op : 2'h0) : Readvalid ? wq_3_op : 2'h0},
+         {_GEN_33},
+         {_GEN_33},
+         {wq_3_op}};	// core/src/lsu.scala:31:49, :36:48, :88:{21,34}, :92:49, :102:38, :121:22, :123:30, :125:32, :126:32, :147:30, :166:30, :168:32, :172:39, :178:39, :181:34, :195:35
+      wq_3_op <= _GEN_57[wq_state];	// core/src/lsu.scala:88:21, :89:27, :121:22, :123:30, :147:30, :166:30
+      _GEN_58 =
+        {{Writevalid | ~(Readvalid | {wq_ptr[1], ~(wq_ptr[0])} == 2'h0) ? 2'h2 : 2'h1},
          {Writevalid ? 2'h3 : {~Readvalid, 1'h1}},
-         {Writevalid | ~(Readvalid | wq_ptr == 3'h0 & ~wq_0_valid) ? 2'h2 : 2'h1},
-         {wq_state}};	// core/src/lsu.scala:6:16, :31:{39,49}, :36:{48,70}, :88:21, :89:27, :90:25, :91:{28,32,35}, :121:22, :123:30, :124:26, :133:34, :134:26, :138:33, :147:30, :148:26, :157:34, :158:26, :162:26, :166:30, :167:26, :170:47, :181:34, :182:26, :186:{30,37,42}
-      wq_state <= _GEN_82[wq_state];	// core/src/lsu.scala:89:27, :121:22, :123:30, :147:30, :166:30
+         {Writevalid | ~(Readvalid | wq_ptr == 2'h0 & ~wq_0_valid) ? 2'h2 : 2'h1},
+         {wq_state}};	// core/src/lsu.scala:6:16, :31:{39,49}, :36:{48,70}, :88:{21,34}, :89:27, :90:25, :91:{28,32,35}, :121:22, :123:30, :124:26, :133:34, :134:26, :138:33, :147:30, :148:26, :157:34, :158:26, :162:26, :166:30, :167:26, :170:47, :181:34, :182:26, :186:{30,37,42}
+      wq_state <= _GEN_58[wq_state];	// core/src/lsu.scala:89:27, :121:22, :123:30, :147:30, :166:30
       if (_GEN_0) begin	// core/src/lsu.scala:121:22
-        if (~_GEN_46 | wq_ptr == 3'h5) begin	// core/src/lsu.scala:31:71, :90:25, :123:30, :125:32, :127:{28,61}
+        if (~_GEN_34 | (&wq_ptr)) begin	// core/src/lsu.scala:90:25, :123:30, :125:32, :127:{28,61}
         end
         else	// core/src/lsu.scala:90:25, :123:30, :125:32, :127:28
-          wq_ptr <= wq_ptr + 3'h1;	// core/src/lsu.scala:90:25, :126:32, :127:81
+          wq_ptr <= wq_ptr + 2'h1;	// core/src/lsu.scala:89:27, :90:25, :127:81
       end
       else if (_GEN_3) begin	// core/src/lsu.scala:121:22
-        if (~_GEN_46 | wq_ptr == 3'h5) begin	// core/src/lsu.scala:31:71, :90:25, :123:30, :125:32, :127:28, :147:30, :149:32, :151:{28,61}
+        if (~_GEN_34 | (&wq_ptr)) begin	// core/src/lsu.scala:90:25, :123:30, :125:32, :127:28, :147:30, :149:32, :151:{28,61}
         end
         else	// core/src/lsu.scala:90:25, :147:30, :149:32, :151:28
-          wq_ptr <= wq_ptr + 3'h1;	// core/src/lsu.scala:90:25, :126:32, :151:81
+          wq_ptr <= wq_ptr + 2'h1;	// core/src/lsu.scala:89:27, :90:25, :151:81
       end
       else if (~(&wq_state) | Writevalid | Readvalid) begin	// core/src/lsu.scala:31:49, :36:48, :89:27, :90:25, :121:22, :166:30
       end
       else	// core/src/lsu.scala:90:25, :121:22, :166:30
-        wq_ptr <= wq_ptr - 3'h1;	// core/src/lsu.scala:90:25, :196:34
+        wq_ptr <= wq_ptr - 2'h1;	// core/src/lsu.scala:90:25, :196:34
       state <= ~state & (wq_stall | state);	// core/src/lsu.scala:121:22, :123:30, :201:24, :202:{17,55}, :203:19
     end
     if (_GEN_7) begin	// core/src/lsu.scala:235:42
@@ -4572,13 +4402,13 @@ module lsu(	// core/src/lsu.scala:5:7
       `FIRRTL_BEFORE_INITIAL	// core/src/lsu.scala:5:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// core/src/lsu.scala:5:7
-      automatic logic [31:0] _RANDOM[0:15];	// core/src/lsu.scala:5:7
+      automatic logic [31:0] _RANDOM[0:11];	// core/src/lsu.scala:5:7
       `ifdef INIT_RANDOM_PROLOG_	// core/src/lsu.scala:5:7
         `INIT_RANDOM_PROLOG_	// core/src/lsu.scala:5:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// core/src/lsu.scala:5:7
-        for (logic [4:0] i = 5'h0; i < 5'h10; i += 5'h1) begin
-          _RANDOM[i[3:0]] = `RANDOM;	// core/src/lsu.scala:5:7
+        for (logic [3:0] i = 4'h0; i < 4'hC; i += 4'h1) begin
+          _RANDOM[i] = `RANDOM;	// core/src/lsu.scala:5:7
         end	// core/src/lsu.scala:5:7
         wq_0_valid = _RANDOM[4'h0][0];	// core/src/lsu.scala:5:7, :88:21
         wq_0_addr = {_RANDOM[4'h0][31:1], _RANDOM[4'h1][0]};	// core/src/lsu.scala:5:7, :88:21
@@ -4600,25 +4430,15 @@ module lsu(	// core/src/lsu.scala:5:7
         wq_3_data = {_RANDOM[4'h7][31:22], _RANDOM[4'h8][21:0]};	// core/src/lsu.scala:5:7, :88:21
         wq_3_be_n = _RANDOM[4'h8][25:22];	// core/src/lsu.scala:5:7, :88:21
         wq_3_op = _RANDOM[4'h8][27:26];	// core/src/lsu.scala:5:7, :88:21
-        wq_4_valid = _RANDOM[4'h8][28];	// core/src/lsu.scala:5:7, :88:21
-        wq_4_addr = {_RANDOM[4'h8][31:29], _RANDOM[4'h9][28:0]};	// core/src/lsu.scala:5:7, :88:21
-        wq_4_data = {_RANDOM[4'h9][31:29], _RANDOM[4'hA][28:0]};	// core/src/lsu.scala:5:7, :88:21
-        wq_4_be_n = {_RANDOM[4'hA][31:29], _RANDOM[4'hB][0]};	// core/src/lsu.scala:5:7, :88:21
-        wq_4_op = _RANDOM[4'hB][2:1];	// core/src/lsu.scala:5:7, :88:21
-        wq_5_valid = _RANDOM[4'hB][3];	// core/src/lsu.scala:5:7, :88:21
-        wq_5_addr = {_RANDOM[4'hB][31:4], _RANDOM[4'hC][3:0]};	// core/src/lsu.scala:5:7, :88:21
-        wq_5_data = {_RANDOM[4'hC][31:4], _RANDOM[4'hD][3:0]};	// core/src/lsu.scala:5:7, :88:21
-        wq_5_be_n = _RANDOM[4'hD][7:4];	// core/src/lsu.scala:5:7, :88:21
-        wq_5_op = _RANDOM[4'hD][9:8];	// core/src/lsu.scala:5:7, :88:21
-        wq_state = _RANDOM[4'hD][11:10];	// core/src/lsu.scala:5:7, :88:21, :89:27
-        wq_ptr = _RANDOM[4'hD][14:12];	// core/src/lsu.scala:5:7, :88:21, :90:25
-        state = _RANDOM[4'hD][15];	// core/src/lsu.scala:5:7, :88:21, :201:24
-        regs_bits_MemOut = {_RANDOM[4'hD][31:16], _RANDOM[4'hE][15:0]};	// core/src/lsu.scala:5:7, :88:21, :228:19
-        regs_bits_ALUOut = {_RANDOM[4'hE][31:16], _RANDOM[4'hF][15:0]};	// core/src/lsu.scala:5:7, :228:19
-        regs_bits_wbSel = _RANDOM[4'hF][17:16];	// core/src/lsu.scala:5:7, :228:19
-        regs_bits_wbDst = _RANDOM[4'hF][19:18];	// core/src/lsu.scala:5:7, :228:19
-        regs_bits_rd = _RANDOM[4'hF][24:20];	// core/src/lsu.scala:5:7, :228:19
-        regs_valid = _RANDOM[4'hF][25];	// core/src/lsu.scala:5:7, :228:19
+        wq_state = _RANDOM[4'h8][29:28];	// core/src/lsu.scala:5:7, :88:21, :89:27
+        wq_ptr = _RANDOM[4'h8][31:30];	// core/src/lsu.scala:5:7, :88:21, :90:25
+        state = _RANDOM[4'h9][0];	// core/src/lsu.scala:5:7, :201:24
+        regs_bits_MemOut = {_RANDOM[4'h9][31:1], _RANDOM[4'hA][0]};	// core/src/lsu.scala:5:7, :201:24, :228:19
+        regs_bits_ALUOut = {_RANDOM[4'hA][31:1], _RANDOM[4'hB][0]};	// core/src/lsu.scala:5:7, :228:19
+        regs_bits_wbSel = _RANDOM[4'hB][2:1];	// core/src/lsu.scala:5:7, :228:19
+        regs_bits_wbDst = _RANDOM[4'hB][4:3];	// core/src/lsu.scala:5:7, :228:19
+        regs_bits_rd = _RANDOM[4'hB][9:5];	// core/src/lsu.scala:5:7, :228:19
+        regs_valid = _RANDOM[4'hB][10];	// core/src/lsu.scala:5:7, :228:19
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// core/src/lsu.scala:5:7
@@ -4651,7 +4471,7 @@ module lsu(	// core/src/lsu.scala:5:7
   assign io_l2_Dst =
     io_next_valid_0
       ? (next_wbDst == 2'h1 ? 5'h1 : next_wbDst == 2'h0 ? next_rd : 5'h0)
-      : 5'h0;	// core/src/lsu.scala:5:7, :88:34, :89:27, :273:17, :277:20, :278:17, :281:14, :296:{16,31}, :297:{19,49}, :304:19
+      : 5'h0;	// core/src/lsu.scala:5:7, :88:34, :89:27, :273:17, :277:20, :278:17, :281:14, :286:57, :296:{16,31}, :297:{19,49}, :304:19
   assign io_l2_Sel = io_next_valid_0 ? next_wbSel : 2'h3;	// core/src/lsu.scala:5:7, :36:70, :273:17, :276:20, :281:14, :296:{16,31}, :301:19, :305:19
   assign io_l2_ALU = next_ALUOut;	// core/src/lsu.scala:5:7, :273:17, :275:21, :281:14
   assign io_l2_Mem = next_MemOut;	// core/src/lsu.scala:5:7, :273:17, :274:21, :281:14
@@ -5397,18 +5217,18 @@ endmodule
 // external module async_receiver
 
 // VCS coverage exclude_file
-module ram_16x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  input  [3:0] R0_addr,
+module ram_4x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  input  [1:0] R0_addr,
   input        R0_en,
                R0_clk,
   output [7:0] R0_data,
-  input  [3:0] W0_addr,
+  input  [1:0] W0_addr,
   input        W0_en,
                W0_clk,
   input  [7:0] W0_data
 );
 
-  reg [7:0] Memory[0:15];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg [7:0] Memory[0:3];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
     if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
       Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
@@ -5418,9 +5238,9 @@ module ram_16x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
     initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
       `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
       `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        for (logic [4:0] i = 5'h0; i < 5'h10; i += 5'h1) begin
+        for (logic [2:0] i = 3'h0; i < 3'h4; i += 3'h1) begin
           _RANDOM_MEM = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          Memory[i[3:0]] = _RANDOM_MEM[7:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          Memory[i[1:0]] = _RANDOM_MEM[7:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
         end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
       `endif // RANDOMIZE_MEM_INIT
     end // initial
@@ -5428,7 +5248,7 @@ module ram_16x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   assign R0_data = R0_en ? Memory[R0_addr] : 8'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
-module Queue16_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+module Queue4_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   input        clock,	// src/main/scala/chisel3/util/Decoupled.scala:243:7
                reset,	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -5439,8 +5259,8 @@ module Queue16_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   output [7:0] io_deq_bits	// src/main/scala/chisel3/util/Decoupled.scala:255:14
 );
 
-  reg  [3:0] enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [3:0] deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [1:0] enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [1:0] deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg        maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
   wire       ptr_match = enq_ptr_value == deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
   wire       empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
@@ -5448,16 +5268,16 @@ module Queue16_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
   always @(posedge clock) begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
     if (reset) begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      enq_ptr_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      deq_ptr_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
     else begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+        enq_ptr_value <= enq_ptr_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        deq_ptr_value <= deq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+        deq_ptr_value <= deq_ptr_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
         maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
     end
@@ -5473,16 +5293,16 @@ module Queue16_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
         _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][3:0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][7:4];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        maybe_full = _RANDOM[/*Zero width*/ 1'b0][8];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+        enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][1:0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][3:2];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        maybe_full = _RANDOM[/*Zero width*/ 1'b0][4];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
       `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  ram_16x8 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  ram_4x8 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
     .R0_addr (deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
     .R0_clk  (clock),
@@ -5584,7 +5404,7 @@ module uart_ctrl(	// core/src/uart_ctrl.scala:31:7
     .RxD_clear      (_recv_RxD_data_ready & _recv_fifo_io_enq_ready),	// core/src/uart_ctrl.scala:44:22, :47:27, :69:49
     .RxD_data       (_recv_RxD_data)
   );
-  Queue16_UInt8 tran_fifo (	// core/src/uart_ctrl.scala:46:27
+  Queue4_UInt8 tran_fifo (	// core/src/uart_ctrl.scala:46:27
     .clock        (clock),
     .reset        (reset),
     .io_enq_ready (_tran_fifo_io_enq_ready),
@@ -5594,7 +5414,7 @@ module uart_ctrl(	// core/src/uart_ctrl.scala:31:7
     .io_deq_valid (_tran_fifo_io_deq_valid),
     .io_deq_bits  (_tran_fifo_io_deq_bits)
   );
-  Queue16_UInt8 recv_fifo (	// core/src/uart_ctrl.scala:47:27
+  Queue4_UInt8 recv_fifo (	// core/src/uart_ctrl.scala:47:27
     .clock        (clock),
     .reset        (reset),
     .io_enq_ready (_recv_fifo_io_enq_ready),
