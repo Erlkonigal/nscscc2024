@@ -77,7 +77,7 @@ class lsu extends Module {
         MemOp.stw -> WordData,
     ))
 // write queue
-    def qsize = 4 // queue size >= 2
+    def qsize = 6 // queue size >= 2
     val wqbundle = new Bundle {
         val valid = Bool()
         val addr = UInt(32.W)
