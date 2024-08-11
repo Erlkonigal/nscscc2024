@@ -1,7 +1,7 @@
+package bundles
+
 import chisel3._
 import chisel3.util._
-
-package bundles{
     
 object Compare {
     def equals(a: UInt, b: UInt): Bool = {
@@ -94,6 +94,10 @@ class idu_exu extends Bundle {
     val memOp = Output(MemOp())
     val wbSel = Output(WBSel())
     val wbDst = Output(WBDst())
+// Forwarding
+    val FwEX_RJ = Output(ForwardSrc())
+    val FwEX_RK = Output(ForwardSrc())
+    val FwEX_RD = Output(ForwardSrc())
 // ImmGen
     val Imm = Output(UInt(32.W))
 // RegFile
@@ -196,11 +200,7 @@ class lsu_wbu extends Bundle {
 }
 
 object ForwardSrc extends ChiselEnum {
-    val exALU, 
-        l1ALU, l1Mem,
-        l2ALU, l2Mem, 
-        wbALU, wbMem, wbMul, 
+    val lsALU,
+        wbALU, wbMem, wbMul,
         stall, other = Value
-}
-
 }

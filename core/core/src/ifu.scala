@@ -117,7 +117,7 @@ class btb extends Module {
         val u_target = Input(UInt(32.W))
     })
     val btb = Module(new dist_mem())
-    val pht = RegInit(VecInit(Seq.fill(64)(0.U(2.W))))
+    val pht = Reg(Vec(64, UInt(2.W)))
 
     val s_index = io.pc(7, 2)
     val s_valid = btb.io.dpo(47)
@@ -148,22 +148,17 @@ class btb extends Module {
     btb.io.we := io.update
 
     val branchSeq = Seq(
-        0.U -> 1.U,
-        1.U -> 2.U,
-        2.U -> 3.U,
-        3.U -> 3.U
+        0.U -> 1.U, 1.U -> 2.U,
+        2.U -> 3.U, 3.U -> 3.U
     )
     val unbranchSeq = Seq(
-        0.U -> 0.U,
-        1.U -> 0.U,
-        2.U -> 1.U,
-        3.U -> 2.U
+        0.U -> 0.U, 1.U -> 0.U,
+        2.U -> 1.U, 3.U -> 2.U
     )
-
     when(io.update && io.u_type) {
         pht(io.u_pc(7, 2)) := MuxCase(pht(io.u_pc(7, 2)), Seq(
-            io.u_branch -> MuxLookup(pht(io.u_pc(7, 2)), pht(io.u_pc(7, 2))) (branchSeq),
-            ~io.u_branch -> MuxLookup(pht(io.u_pc(7, 2)), pht(io.u_pc(7, 2))) (unbranchSeq)
+            io.u_branch -> MuxLookup(pht(io.u_pc(7, 2)), 0.U) (branchSeq),
+            ~io.u_branch -> MuxLookup(pht(io.u_pc(7, 2)), 0.U) (unbranchSeq)
         ))
     }
 }

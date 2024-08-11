@@ -14,15 +14,9 @@ class lsu extends Module {
         val stall = Output(Bool())
         val flush = Input(Bool())
         // forwarding
-        val l1_Dst = Output(UInt(5.W))
-        val l1_Sel = Output(WBSel())
-        val l1_ALU = Output(UInt(32.W))
-        val l1_Mem = Output(UInt(32.W))
-
-        val l2_Dst = Output(UInt(5.W))
-        val l2_Sel = Output(WBSel())
-        val l2_ALU = Output(UInt(32.W))
-        val l2_Mem = Output(UInt(32.W))
+        val ls_Dst = Output(UInt(5.W))
+        val ls_Sel = Output(WBSel())
+        val ls_ALU = Output(UInt(32.W))
     })
 // mem signals
     val Address = io.prev.bits.ALUOut
@@ -41,7 +35,6 @@ class lsu extends Module {
         MemOp.ldw -> 1.B,
     ))
     val Memvalid = (Writevalid || Readvalid)
-    val uMemvalid = Op === MemOp.other && io.prev.valid
 // mask
     val ByteMask = MuxLookup(Address(1, 0), 0.U) (Seq(
         0.U -> "b1110".U,
@@ -79,23 +72,22 @@ class lsu extends Module {
 // write queue
     def qsize = 4 // queue size >= 2
     val wqbundle = new Bundle {
-        val valid = Bool()
         val addr = UInt(32.W)
         val data = UInt(32.W)
         val be_n = UInt(4.W)
         val op = UInt(2.W) // 0.stb, 1.sth, 2.stw
     }
-    val wq = RegInit(0.U.asTypeOf(Vec(qsize, wqbundle)))
+    val wq = Reg((Vec(qsize, wqbundle)))
+    val wq_valid = RegInit(0.U.asTypeOf(Vec(qsize, Bool())))
     val wq_state = RegInit(1.U(2.W))
     val wq_ptr = RegInit(0.U(log2Ceil(qsize).W))
-    val wq_empty = ~wq_ptr.orR && ~wq(0).valid
-    val wq_full = ~(wq_ptr ^ (qsize - 1).U).orR && wq(wq_ptr).valid
+    val wq_empty = ~wq_ptr.orR && ~wq_valid(0)
+    val wq_full = ~(wq_ptr ^ (qsize - 1).U).orR && wq_valid(wq_ptr)
 
     val wq_stall = Wire(Bool())
     wq_stall := 0.B
 
     val newdata = Wire(wqbundle)
-    newdata.valid := 1.B
     newdata.addr := Address
     newdata.data := GenData
     newdata.be_n := GenMask
@@ -108,11 +100,11 @@ class lsu extends Module {
     val hit = Wire(Vec(qsize, Bool()))
     val hit_index = Wire(UInt(log2Ceil(qsize).W))
     for(i <- 0 until qsize) {
-        hit(i) := wq(i).valid && ~(wq(i).addr ^ Address).orR && MuxLookup(Op, 0.B) (Seq(
-            MemOp.ldb -> ~(wq(i).op ^ 0.U).orR,
-            MemOp.ldbu -> ~(wq(i).op ^ 0.U).orR,
-            MemOp.ldh -> ~(wq(i).op ^ 1.U).orR,
-            MemOp.ldhu -> ~(wq(i).op ^ 1.U).orR,
+        hit(i) := wq_valid(i) && ~(wq(i).addr ^ Address).orR && MuxLookup(Op, 0.B) (Seq(
+            MemOp.ldb -> 1.B,
+            MemOp.ldbu -> 1.B,
+            MemOp.ldh -> (wq(i).op ^ 0.U).orR,
+            MemOp.ldhu -> (wq(i).op ^ 0.U).orR,
             MemOp.ldw -> ~(wq(i).op ^ 2.U).orR,
         ))
     }
@@ -124,6 +116,7 @@ class lsu extends Module {
                 wq_state := 2.U
                 when(~wq_full) {
                     wq(wq_ptr) := newdata
+                    wq_valid(wq_ptr) := 1.B
                     wq_ptr := Mux(~(wq_ptr ^ (qsize - 1).U).orR, wq_ptr, wq_ptr + 1.U)
                 }
                 .otherwise {
@@ -148,6 +141,7 @@ class lsu extends Module {
                 wq_state := 3.U
                 when(~wq_full) {
                     wq(wq_ptr) := newdata
+                    wq_valid(wq_ptr) := 1.B
                     wq_ptr := Mux(~(wq_ptr ^ (qsize - 1).U).orR, wq_ptr, wq_ptr + 1.U)
                 }
                 .otherwise {
@@ -167,15 +161,21 @@ class lsu extends Module {
                 wq_state := 2.U
                 when(~wq_full) {
                     for(i <- 0 until qsize - 1) {
-                        wq(i) := Mux(~(wq_ptr ^ (i + 1).U).orR, newdata, wq(i + 1))
+                        val cmp = ~(wq_ptr ^ (i + 1).U).orR
+                        wq(i) := Mux(cmp, newdata, wq(i + 1))
+                        wq_valid(i) := Mux(cmp, 1.B, wq_valid(i + 1))
+                        
                     }
-                    wq((qsize - 1).U) := 0.U.asTypeOf(wqbundle)
+                    wq((qsize - 1).U) := DontCare
+                    wq_valid((qsize - 1).U) := 0.B
                 }
                 .otherwise {
                     for(i <- 0 until qsize - 1) {
                         wq(i) := wq(i + 1)
+                        wq_valid(i) := wq_valid(i + 1)
                     }
                     wq((qsize - 1).U) := newdata
+                    wq_valid((qsize - 1).U) := 1.B
                 }
             }
             .elsewhen(Readvalid) {
@@ -191,8 +191,10 @@ class lsu extends Module {
                 }
                 for(i <- 0 until qsize - 1) {
                     wq(i) := wq(i + 1)
+                    wq_valid(i) := wq_valid(i + 1)
                 }
-                wq((qsize - 1).U) := 0.U.asTypeOf(wqbundle)
+                wq((qsize - 1).U) := DontCare
+                wq_valid((qsize - 1).U) := 0.B
                 wq_ptr := wq_ptr - 1.U
             }
         }
@@ -224,26 +226,6 @@ class lsu extends Module {
         MemOp.ldw  -> FetchWord,
     ))
 
-// mem pipline
-    val regs = Reg(new Bundle {
-        val bits = new lsu_wbu()
-        val valid = Bool()
-    })
-    when(io.flush) {
-        regs.valid := 0.B
-    }
-    .elsewhen(io.prev.valid && ~wq_stall && ~state) {
-        regs.bits.MemOut := FixLoad
-        regs.bits.ALUOut := io.prev.bits.ALUOut
-        regs.bits.rd := io.prev.bits.rd
-        regs.bits.wbSel := io.prev.bits.wbSel
-        regs.bits.wbDst := io.prev.bits.wbDst
-        regs.bits.rd := io.prev.bits.rd
-        regs.valid := 1.B
-    }
-    .otherwise {
-        regs.valid := 0.B
-    }
 // io
     when(Readvalid) {
         io.ext_out.bits.addr := Address
@@ -269,46 +251,20 @@ class lsu extends Module {
     io.ext_out.valid := wq_state(1) || Readvalid
     io.ext_in.ready := 1.B
 
-    val next = Wire(new lsu_wbu())  
-    when(state) {
-        next.MemOut := FixLoad
-        next.ALUOut := io.prev.bits.ALUOut
-        next.wbSel := io.prev.bits.wbSel
-        next.wbDst := io.prev.bits.wbDst
-        next.rd := io.prev.bits.rd
-    }
-    .otherwise {
-        next := regs.bits
-    }
-    io.next.bits := next
+    
+    io.ls_Dst := Mux(io.prev.valid, MuxLookup(io.prev.bits.wbDst, 0.U) (Seq(
+        WBDst.rd -> io.prev.bits.rd,
+        WBDst.one -> 1.U
+    )), 0.U)
+    io.ls_Sel := io.prev.bits.wbSel
+    io.ls_ALU := io.prev.bits.ALUOut
 
-    when(io.prev.valid && ~state && ~io.flush) {
-        io.l1_Dst := MuxLookup(io.prev.bits.wbDst, 0.U) (Seq(
-            WBDst.rd -> io.prev.bits.rd,
-            WBDst.one -> 1.U,
-        ))
-        io.l1_Sel := io.prev.bits.wbSel
-    }
-    .otherwise {
-        io.l1_Dst := 0.U
-        io.l1_Sel := WBSel.other
-    }
-    when(state || regs.valid) {
-        io.l2_Dst := MuxLookup(next.wbDst, 0.U) (Seq(
-            WBDst.rd -> next.rd,
-            WBDst.one -> 1.U,
-        ))
-        io.l2_Sel := next.wbSel
-    }
-    .otherwise {
-        io.l2_Dst := 0.U
-        io.l2_Sel := WBSel.other
-    }
-    io.l1_ALU := io.prev.bits.ALUOut
-    io.l1_Mem := FixLoad
-    io.l2_ALU := next.ALUOut
-    io.l2_Mem := next.MemOut
+    io.next.bits.MemOut := FixLoad
+    io.next.bits.ALUOut := io.prev.bits.ALUOut
+    io.next.bits.wbSel := io.prev.bits.wbSel
+    io.next.bits.wbDst := io.prev.bits.wbDst
+    io.next.bits.rd := io.prev.bits.rd
 
-    io.next.valid := state || regs.valid
+    io.next.valid := io.prev.valid && ~io.flush && (state || (~wq_stall && ~state))
     io.prev.ready := io.next.ready
 }

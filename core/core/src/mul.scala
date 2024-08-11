@@ -4,7 +4,6 @@ import bundles._
 
 class mult_gen_0 extends BlackBox {
     val io = IO(new Bundle {
-        val CLK = Input(Clock())
         val A = Input(UInt(32.W))
         val B = Input(UInt(32.W))
         val P = Output(UInt(32.W))
@@ -13,6 +12,7 @@ class mult_gen_0 extends BlackBox {
 
 class wallace(n: Int) extends Module {
     val io = IO(new Bundle {
+        val stall = Input(Bool())
         val A = Input(UInt(n.W))
         val B = Input(UInt(n.W))
         val S = Output(UInt((2 * n).W))
@@ -20,24 +20,32 @@ class wallace(n: Int) extends Module {
     val odd = n % 2
 // stage 1 : booth
     val output = Reg(Vec(n / 2 + odd, UInt((n * 2).W)))
+    val output_next = Wire(Vec(n / 2 + odd, UInt((n * 2).W)))
     val booths = Seq.fill(n / 2)(Module(new booth2(n)))
+    val A = io.A
+    val A_ = -io.A
+    val SignExtA = Cat(Fill(n, A(n - 1)), A)
+    val SignExtA_ = Cat(Fill(n, A_(n - 1)), A_)
     for(i <- (n - 1) to (3 - odd) by -2) {
-        booths(i / 2 - odd).io.A := io.A
+        booths(i / 2 - odd).io.SignExtA := SignExtA
+        booths(i / 2 - odd).io.SignExtA_ := SignExtA_
         booths(i / 2 - odd).io.B := io.B(i, i - 2)
     }
     if(odd == 0) {
-        booths(0).io.A := io.A
+        booths(0).io.SignExtA := SignExtA
+        booths(0).io.SignExtA_ := SignExtA_
         booths(0).io.B := Cat(io.B(1, 0), 0.B) // B1, B0, (B-1)
     }
     for(i <- 0 until n / 2) {
-        output(i) := booths(i).io.S << (i * 2 + odd).U
+        output_next(i) := booths(i).io.S << (i * 2 + odd).U
     } // calculate the partial products
     if(odd == 1) {
-        output(n / 2) := Mux(io.B(0), (~Cat(Fill(n, io.A(n - 1)), io.A) + 1.U), 0.U)
+        output_next(n / 2) := Mux(io.B(0), SignExtA_, 0.U)
     }
+    output := Mux(io.stall, output, output_next)
 // stage 2 : wallace tree
-    val ma = Reg(UInt((n * 2).W))
-    val mb = Reg(UInt((n * 2).W))
+    val S = Reg(UInt((n * 2).W))
+    val S_next = Wire(UInt((n * 2).W))
     var length = output.length
     var cur = output
     while(length > 2) {
@@ -65,30 +73,27 @@ class wallace(n: Int) extends Module {
         length = next_length
         cur = tmp
     }
-    ma := cur(0)
-    mb := cur(1)
-// stage 3 : final adder
-    val S = Reg(UInt((n * 2).W))
-    S := ma + mb
+    S_next := cur(0) +& cur(1)
+    S := Mux(io.stall, S, S_next)
 // output
     io.S := S
 }
 
 class booth2(n: Int) extends Module {
     val io = IO(new Bundle {
-        val A = Input(UInt(n.W))
+        val SignExtA = Input(UInt((n * 2).W))
+        val SignExtA_ = Input(UInt((n * 2).W))
         val B = Input(UInt(3.W)) // Bi+1, Bi, Bi-1
         val S = Output(UInt((n * 2).W))
     })
-    val SignExtA = Cat(Fill(n, io.A(n - 1)), io.A)
     io.S := MuxLookup(io.B, 0.U) (Seq(
         "b000".U -> 0.U,
-        "b001".U -> SignExtA,
-        "b010".U -> SignExtA,
-        "b011".U -> (SignExtA << 1.U),
-        "b100".U -> (~(SignExtA << 1.U) + 1.U),
-        "b101".U -> (~SignExtA + 1.U),
-        "b110".U -> (~SignExtA + 1.U),
+        "b001".U -> io.SignExtA,
+        "b010".U -> io.SignExtA,
+        "b011".U -> (io.SignExtA << 1.U),
+        "b100".U -> (io.SignExtA_ << 1.U),
+        "b101".U -> io.SignExtA_,
+        "b110".U -> io.SignExtA_,
         "b111".U -> 0.U
     ))
 }

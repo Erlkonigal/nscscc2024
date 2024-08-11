@@ -9,56 +9,103 @@ class forward extends Module {
         val RD = Input(UInt(5.W))
 
         val ex_Dst = Input(UInt(5.W))
-        val l1_Dst = Input(UInt(5.W))
-        val l2_Dst = Input(UInt(5.W))
+        val ls_Dst = Input(UInt(5.W))
         val wb_Dst = Input(UInt(5.W))
 
         val ex_Sel = Input(WBSel())
-        val l1_Sel = Input(WBSel())
-        val l1_stall = Input(Bool())
-        val l2_Sel = Input(WBSel())
+        val ls_Sel = Input(WBSel())
         val wb_Sel = Input(WBSel())
 
         val stall = Output(Bool())
 
-        val Fw_RJ = Output(ForwardSrc())
-        val Fw_RK = Output(ForwardSrc())
-        val Fw_RD = Output(ForwardSrc())
+        val FwID_RJ = Output(ForwardSrc())
+        val FwID_RK = Output(ForwardSrc())
+        val FwID_RD = Output(ForwardSrc())
+
+        val FwEX_RJ = Output(ForwardSrc())
+        val FwEX_RK = Output(ForwardSrc())
+        val FwEX_RD = Output(ForwardSrc())
     })
-    val calc = (src: UInt) => {
-        Mux(Compare.equals(src, 0.U), ForwardSrc.other,
+
+    val calcID = (src: UInt) => {
+        Mux(Compare.equals(src, 0.U), ForwardSrc.other, 
             MuxCase(ForwardSrc.other, Seq(
                 Compare.equals(src, io.ex_Dst) -> MuxCase(ForwardSrc.other, Seq(
-                    Compare.equals(io.ex_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.exALU,
+                    Compare.equals(io.ex_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.stall,
                     Compare.equals(io.ex_Sel.asUInt, WBSel.mem.asUInt) -> ForwardSrc.stall,
-                    Compare.equals(io.ex_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.stall
+                    Compare.equals(io.ex_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.stall,
                 )),
-                Compare.equals(src, io.l1_Dst) -> MuxCase(ForwardSrc.other, Seq(
-                    Compare.equals(io.l1_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.l1ALU,
-                    Compare.equals(io.l1_Sel.asUInt, WBSel.mem.asUInt) -> Mux(io.l1_stall, ForwardSrc.stall, ForwardSrc.l1Mem),
-                    Compare.equals(io.l1_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.stall
-                )),
-                Compare.equals(src, io.l2_Dst) -> MuxCase(ForwardSrc.other, Seq(
-                    Compare.equals(io.l2_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.l2ALU,
-                    Compare.equals(io.l2_Sel.asUInt, WBSel.mem.asUInt) -> ForwardSrc.l2Mem,
-                    Compare.equals(io.l2_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.stall
+                Compare.equals(src, io.ls_Dst) -> MuxCase(ForwardSrc.other, Seq(
+                    Compare.equals(io.ls_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.lsALU,
+                    Compare.equals(io.ls_Sel.asUInt, WBSel.mem.asUInt) -> ForwardSrc.stall,
+                    Compare.equals(io.ls_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.stall,
                 )),
                 Compare.equals(src, io.wb_Dst) -> MuxCase(ForwardSrc.other, Seq(
                     Compare.equals(io.wb_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.wbALU,
                     Compare.equals(io.wb_Sel.asUInt, WBSel.mem.asUInt) -> ForwardSrc.wbMem,
-                    Compare.equals(io.wb_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.wbMul
+                    Compare.equals(io.wb_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.wbMul,
+                ))
+            ))
+        )
+    }
+    val calcEX = (src: UInt) => {
+        Mux(Compare.equals(src, 0.U), ForwardSrc.other, 
+            MuxCase(ForwardSrc.other, Seq(
+                Compare.equals(src, io.ex_Dst) -> MuxCase(ForwardSrc.other, Seq(
+                    Compare.equals(io.ex_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.lsALU,
+                    Compare.equals(io.ex_Sel.asUInt, WBSel.mem.asUInt) -> ForwardSrc.stall,
+                    Compare.equals(io.ex_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.stall,
+                )),
+                Compare.equals(src, io.ls_Dst) -> MuxCase(ForwardSrc.other, Seq(
+                    Compare.equals(io.ls_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.wbALU,
+                    Compare.equals(io.ls_Sel.asUInt, WBSel.mem.asUInt) -> ForwardSrc.wbMem,
+                    Compare.equals(io.ls_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.wbMul,
+                )),
+                Compare.equals(src, io.wb_Dst) -> MuxCase(ForwardSrc.other, Seq(
+                    Compare.equals(io.wb_Sel.asUInt, WBSel.alu.asUInt) -> ForwardSrc.stall,
+                    Compare.equals(io.wb_Sel.asUInt, WBSel.mem.asUInt) -> ForwardSrc.stall,
+                    Compare.equals(io.wb_Sel.asUInt, WBSel.mul.asUInt) -> ForwardSrc.stall,
                 ))
             ))
         )
     }
 
-    io.Fw_RJ := calc(io.RJ)
-    io.Fw_RK := calc(io.RK)
-    io.Fw_RD := calc(io.RD)
+    val calcRet = (srcID: ForwardSrc.Type, srcEX: ForwardSrc.Type) => {
+        val retID = Wire(ForwardSrc())
+        val retEX = Wire(ForwardSrc())
+        when(Compare.equals(srcID.asUInt, ForwardSrc.stall.asUInt) && 
+             Compare.equals(srcEX.asUInt, ForwardSrc.stall.asUInt)) {
+            retID := ForwardSrc.stall
+            retEX := ForwardSrc.stall
+        }
+        .elsewhen(Compare.equals(srcID.asUInt, ForwardSrc.stall.asUInt)) {
+            retID := ForwardSrc.other
+            retEX := srcEX
+        }
+        .otherwise {
+            retID := srcID
+            retEX := ForwardSrc.other
+        }
+        (retID, retEX)
+    }
 
-    io.stall := Compare.equals(io.Fw_RJ.asUInt, ForwardSrc.stall.asUInt) || 
-                Compare.equals(io.Fw_RK.asUInt, ForwardSrc.stall.asUInt) || 
-                Compare.equals(io.Fw_RD.asUInt, ForwardSrc.stall.asUInt)
+    val FwRJ = calcRet(calcID(io.RJ), calcEX(io.RJ))
+    val FwRK = calcRet(calcID(io.RK), calcEX(io.RK))
+    val FwRD = calcRet(calcID(io.RD), calcEX(io.RD))
+
+    io.FwID_RJ := FwRJ._1
+    io.FwID_RK := FwRK._1
+    io.FwID_RD := FwRD._1
+    io.FwEX_RJ := FwRJ._2
+    io.FwEX_RK := FwRK._2
+    io.FwEX_RD := FwRD._2
+
+    io.stall := Compare.equals(FwRJ._1.asUInt, ForwardSrc.stall.asUInt) || 
+                Compare.equals(FwRK._1.asUInt, ForwardSrc.stall.asUInt) || 
+                Compare.equals(FwRD._1.asUInt, ForwardSrc.stall.asUInt) || 
+                Compare.equals(FwRJ._2.asUInt, ForwardSrc.stall.asUInt) ||
+                Compare.equals(FwRK._2.asUInt, ForwardSrc.stall.asUInt) ||
+                Compare.equals(FwRD._2.asUInt, ForwardSrc.stall.asUInt)
 }
 
 class idu extends Module {
@@ -77,16 +124,15 @@ class idu extends Module {
         val RJ = Output(UInt(5.W))
         val RK = Output(UInt(5.W))
         val RD = Output(UInt(5.W))
-        val Fw_RJ = Input(ForwardSrc())
-        val Fw_RK = Input(ForwardSrc())
-        val Fw_RD = Input(ForwardSrc())
+        val FwID_RJ = Input(ForwardSrc())
+        val FwID_RK = Input(ForwardSrc())
+        val FwID_RD = Input(ForwardSrc())
+        val FwEX_RJ = Input(ForwardSrc())
+        val FwEX_RK = Input(ForwardSrc())
+        val FwEX_RD = Input(ForwardSrc())
         // forwarding signal
-        val ex_ALU = Input(UInt(32.W))
-        val l1_ALU = Input(UInt(32.W))
-        val l2_ALU = Input(UInt(32.W))
+        val ls_ALU = Input(UInt(32.W))
         val wb_ALU = Input(UInt(32.W))
-        val l1_Mem = Input(UInt(32.W))
-        val l2_Mem = Input(UInt(32.W))
         val wb_Mem = Input(UInt(32.W))
         val wb_Mul = Input(UInt(32.W))
     })
@@ -199,23 +245,19 @@ class idu extends Module {
     regFile.io.waddr := io.waddr
     regFile.io.wdata := io.wdata
 
-    io.RD := io.prev.bits.inst(4, 0)
-    io.RJ := io.prev.bits.inst(9, 5)
-    io.RK := io.prev.bits.inst(14, 10)
+    io.RD := Mux(io.prev.valid, io.prev.bits.inst(4, 0), 0.U)
+    io.RJ := Mux(io.prev.valid, io.prev.bits.inst(9, 5), 0.U)
+    io.RK := Mux(io.prev.valid, io.prev.bits.inst(14, 10), 0.U)
 
     val FwSrcSeq = Seq(
-        ForwardSrc.exALU -> io.ex_ALU,
-        ForwardSrc.l1ALU -> io.l1_ALU,
-        ForwardSrc.l2ALU -> io.l2_ALU,
+        ForwardSrc.lsALU -> io.ls_ALU,
         ForwardSrc.wbALU -> io.wb_ALU,
-        ForwardSrc.l1Mem -> io.l1_Mem,
-        ForwardSrc.l2Mem -> io.l2_Mem,
         ForwardSrc.wbMem -> io.wb_Mem,
         ForwardSrc.wbMul -> io.wb_Mul
     )
-    val ForwardRD = MuxLookup(io.Fw_RD, regFile.io.rd_data) (FwSrcSeq)
-    val ForwardRJ = MuxLookup(io.Fw_RJ, regFile.io.rj_data) (FwSrcSeq)
-    val ForwardRK = MuxLookup(io.Fw_RK, regFile.io.rk_data) (FwSrcSeq)
+    val ForwardRD = MuxLookup(io.FwID_RD, regFile.io.rd_data) (FwSrcSeq)
+    val ForwardRJ = MuxLookup(io.FwID_RJ, regFile.io.rj_data) (FwSrcSeq)
+    val ForwardRK = MuxLookup(io.FwID_RK, regFile.io.rk_data) (FwSrcSeq)
 
     io.next.bits.aluOp := Decode(0)
     io.next.bits.aluAsrc := Decode(1)
@@ -234,6 +276,10 @@ class idu extends Module {
     io.next.bits.pc := io.prev.bits.pc
     io.next.bits.npc := io.prev.bits.npc
 
+    io.next.bits.FwEX_RD := io.FwEX_RD
+    io.next.bits.FwEX_RJ := io.FwEX_RJ
+    io.next.bits.FwEX_RK := io.FwEX_RK
+
     io.next.valid := io.prev.valid && ~io.stall // assert after stall
     io.prev.ready := io.next.ready
 }
@@ -251,7 +297,7 @@ class RegFile extends Module {
         val waddr = Input(UInt(5.W))
         val wdata = Input(UInt(32.W))
     })
-    val reg = RegInit(VecInit(Seq.fill(32)(0.U(32.W))))
+    val reg = Reg(Vec(32, UInt(32.W)))
 
     io.rd_data := Mux(Compare.equals(io.rd, 0.U), 0.U, reg(io.rd))
     io.rj_data := Mux(Compare.equals(io.rj, 0.U), 0.U, reg(io.rj))

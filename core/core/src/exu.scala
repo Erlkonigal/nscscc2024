@@ -9,36 +9,55 @@ class exu extends Module {
         val next = Decoupled(new exu_lsu())
         val bru = Decoupled(new exu_bru())
         // pipe signal
-        // val stall = Input(Bool())
+        val stall = Input(Bool())
         // val flush = Input(Bool())
         // multiplier
-        val P = Output(UInt(32.W))
-        // forward data
+        val MulOut = Output(UInt(32.W))
+        // forwarding signals
         val ex_Dst = Output(UInt(5.W))
         val ex_Sel = Output(WBSel())
-        val ex_ALU = Output(UInt(32.W))
+        // forwarding data
+        val ls_ALU = Input(UInt(32.W))
+        val wb_ALU = Input(UInt(32.W))
+        val wb_Mem = Input(UInt(32.W))
     })
     val mult = Module(new wallace(32))
     val ALU = Module(new alu())
 
+    val ForwardSeq = Seq(
+        ForwardSrc.lsALU -> io.ls_ALU,
+        ForwardSrc.wbALU -> io.wb_ALU,
+        ForwardSrc.wbMem -> io.wb_Mem,
+        ForwardSrc.wbMul -> mult.io.S
+    )
+    val ForwardRJ = MuxLookup(io.prev.bits.FwEX_RJ, io.prev.bits.rj_data) (ForwardSeq)
+    val ForwardRK = MuxLookup(io.prev.bits.FwEX_RK, io.prev.bits.rk_data) (ForwardSeq)
+    val ForwardRD = MuxLookup(io.prev.bits.FwEX_RD, io.prev.bits.rd_data) (ForwardSeq)
+
     val ALUA = MuxLookup(io.prev.bits.aluAsrc, 0.U) (Seq(
-        ALUAsrc.rj -> io.prev.bits.rj_data,
+        ALUAsrc.rj -> ForwardRJ,
         ALUAsrc.pc -> io.prev.bits.pc,
     ))
     val ALUB = MuxLookup(io.prev.bits.aluBsrc, 0.U) (Seq(
-        ALUBsrc.rk -> io.prev.bits.rk_data,
-        ALUBsrc.rd -> io.prev.bits.rd_data,
+        ALUBsrc.rk -> ForwardRK,
+        ALUBsrc.rd -> ForwardRD,
         ALUBsrc.imm -> io.prev.bits.Imm,
         ALUBsrc.four -> 4.U,
     ))
-
     ALU.io.A := ALUA
     ALU.io.B := ALUB
     ALU.io.Op := io.prev.bits.aluOp
 
     mult.io.A := ALUA
     mult.io.B := ALUB
-    io.P := mult.io.S(31, 0)
+    mult.io.stall := io.stall
+    io.MulOut := mult.io.S
+
+    io.ex_Dst := Mux(io.prev.valid, MuxLookup(io.prev.bits.wbDst, 0.U) (Seq(
+        WBDst.rd -> io.prev.bits.rd,
+        WBDst.one -> 1.U
+    )), 0.U)
+    io.ex_Sel := io.prev.bits.wbSel
 
     io.next.bits.ALUOut := ALU.io.Out
     io.next.bits.memOp := io.prev.bits.memOp
@@ -46,30 +65,17 @@ class exu extends Module {
     io.next.bits.wbDst := io.prev.bits.wbDst
     io.next.bits.Imm := io.prev.bits.Imm
     io.next.bits.rd := io.prev.bits.rd
-    io.next.bits.rd_data := io.prev.bits.rd_data
+    io.next.bits.rd_data := ForwardRD
 
-    io.bru.bits.Zero := Compare.equals(io.prev.bits.rj_data, io.prev.bits.rd_data)
-    io.bru.bits.SLess := io.prev.bits.rj_data.asSInt < io.prev.bits.rd_data.asSInt
-    io.bru.bits.ULess := io.prev.bits.rj_data < io.prev.bits.rd_data
+    io.bru.bits.Zero := Compare.equals(ForwardRJ, ForwardRD)
+    io.bru.bits.SLess := ForwardRJ.asSInt < ForwardRD.asSInt
+    io.bru.bits.ULess := ForwardRJ < ForwardRD
     io.bru.bits.branchOp := io.prev.bits.branchOp
     io.bru.bits.pcadd4 := io.prev.bits.pc + 4.U
     io.bru.bits.pcoff := io.prev.bits.pc + io.prev.bits.Imm
-    io.bru.bits.jirlpc := io.prev.bits.rj_data + io.prev.bits.Imm
+    io.bru.bits.jirlpc := ForwardRJ + io.prev.bits.Imm
     io.bru.bits.pc := io.prev.bits.pc
     io.bru.bits.npc := io.prev.bits.npc
-
-    when(io.prev.valid) {
-        io.ex_Dst := MuxLookup(io.prev.bits.wbDst, 0.U) (Seq(
-            WBDst.rd -> io.prev.bits.rd,
-            WBDst.one -> 1.U,
-        ))
-        io.ex_Sel := io.prev.bits.wbSel
-    }
-    .otherwise {
-        io.ex_Dst := 0.U
-        io.ex_Sel := WBSel.other
-    }
-    io.ex_ALU := ALU.io.Out
 
     io.bru.valid := io.prev.valid && io.next.ready // branch after handshake
     io.next.valid := io.prev.valid
@@ -83,7 +89,6 @@ class alu extends Module {
         val Op = Input(ALUOp())
         val Out = Output(UInt(32.W))
     })
-
     val Sub = MuxLookup(io.Op, 0.B) (
         Seq(
             ALUOp.sub -> 1.B,

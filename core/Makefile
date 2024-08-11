@@ -17,7 +17,7 @@ CXXFLAGS += -DCONFIG_WAVE
 LDFLAGS = $(shell llvm-config --libs) -lreadline
 
 CSRCS = $(shell find $(SIM_DIR) -name "*.cpp" -or -name "*.cc" -or -name "*.c")
-VSRCS = $(shell find $(MODULES_DIR) -name "*.v")
+VSRCS = $(shell find $(MODULES_DIR) -name "*.v" -or -name "*.sv")
 
 verilator:
 	@mkdir -p $(BUILD_DIR)
@@ -41,8 +41,6 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 remote: 
-	cp -f $(MODULES_DIR)/subtop.v ~/Documents/remote/
-#	sed -i 's/ClkFrequency(9600)/ClkFrequency(100000000)/' ~/Documents/remote/subtop.v
+	cp -f $(MODULES_DIR)/subtop.sv ~/Documents/remote/
 copy:
-	cp -f $(MODULES_DIR)/subtop.v ../thinpad_top.srcs/sources_1/new/
-#	sed -i 's/ClkFrequency(9600)/ClkFrequency(100000000)/' ../thinpad_top.srcs/sources_1/new/subtop.v
+	cp -f $(MODULES_DIR)/subtop.sv ../thinpad_top.srcs/sources_1/new/

@@ -3,7 +3,7 @@ import chisel3.util._
 import bundles._
 
 class async_transmitter extends BlackBox(Map(
-    "ClkFrequency" -> 105000000,
+    "ClkFrequency" -> 110000000,
     "Baud" -> 9600
 )) {
     val io = IO(new Bundle {
@@ -16,7 +16,7 @@ class async_transmitter extends BlackBox(Map(
 }
 
 class async_receiver extends BlackBox(Map(
-    "ClkFrequency" -> 105000000,
+    "ClkFrequency" -> 110000000,
     "Baud" -> 9600
 )) {
     val io = IO(new Bundle {
@@ -36,9 +36,9 @@ class uart_ctrl extends Module {
     })
     // write state machine
     val state = RegInit(0.U(2.W))
-    val tx_data_buf = RegInit(0.U(8.W))
-    val tx_addr_buf = RegInit(0.B)
-    val uart_rd_buf = RegInit(0.B) // 0: write, 1: read
+    val tx_data_buf = Reg(UInt(8.W))
+    val tx_addr_buf = Reg(Bool())
+    val uart_rd_buf = Reg(Bool()) // 0: write, 1: read
 
     val tran = Module(new async_transmitter())
     val recv = Module(new async_receiver())

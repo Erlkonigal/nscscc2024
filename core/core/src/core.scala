@@ -32,27 +32,26 @@ class core extends Module {
     forward.io.RK := idu.io.RK
     forward.io.ex_Dst := exu.io.ex_Dst
     forward.io.ex_Sel := exu.io.ex_Sel
-    forward.io.l1_Dst := lsu.io.l1_Dst
-    forward.io.l1_Sel := lsu.io.l1_Sel
-    forward.io.l1_stall := lsu.io.stall
-    forward.io.l2_Dst := lsu.io.l2_Dst
-    forward.io.l2_Sel := lsu.io.l2_Sel
+    forward.io.ls_Dst := lsu.io.ls_Dst
+    forward.io.ls_Sel := lsu.io.ls_Sel
     forward.io.wb_Dst := wbu.io.wb_Dst
     forward.io.wb_Sel := wbu.io.wb_Sel
 
     ifu.io.flush := bru.io.flush
-    ifu_idu.io.stall := forward.io.stall
+    ifu_idu.io.stall := forward.io.stall || lsu.io.stall
     ifu_idu.io.flush := bru.io.flush
-    idu_exu.io.stall := 0.B
+    idu_exu.io.stall := lsu.io.stall
     idu_exu.io.flush := bru.io.flush
+    exu.io.stall := lsu.io.stall // for pipeline multiplier
     exu_lsu.io.stall := lsu.io.stall
     exu_lsu.io.flush := bru.io.flush
     exu_bru.io.stall := lsu.io.stall
     exu_bru.io.flush := bru.io.flush
     bru.io.stall := lsu.io.stall
     lsu.io.flush := 0.B
-    lsu_wbu.io.stall := 0.B
+    lsu_wbu.io.stall := lsu.io.stall
     lsu_wbu.io.flush := 0.B
+    wbu.io.stall := lsu.io.stall
 
     ifu.io.nextPC := bru.io.nextPC
     ifu.io.update := bru.io.update
@@ -64,18 +63,20 @@ class core extends Module {
     idu.io.wen := wbu.io.wen
     idu.io.waddr := wbu.io.waddr
     idu.io.wdata := wbu.io.wdata // write back
-    idu.io.Fw_RD := forward.io.Fw_RD
-    idu.io.Fw_RJ := forward.io.Fw_RJ
-    idu.io.Fw_RK := forward.io.Fw_RK
-    idu.io.ex_ALU := exu.io.ex_ALU
-    idu.io.l1_ALU := lsu.io.l1_ALU
-    idu.io.l2_ALU := lsu.io.l2_ALU
+    idu.io.FwID_RD := forward.io.FwID_RD
+    idu.io.FwID_RJ := forward.io.FwID_RJ
+    idu.io.FwID_RK := forward.io.FwID_RK
+    idu.io.FwEX_RD := forward.io.FwEX_RD
+    idu.io.FwEX_RJ := forward.io.FwEX_RJ
+    idu.io.FwEX_RK := forward.io.FwEX_RK
+    idu.io.ls_ALU := lsu.io.ls_ALU
     idu.io.wb_ALU := wbu.io.wb_ALU
-    idu.io.l1_Mem := lsu.io.l1_Mem
-    idu.io.l2_Mem := lsu.io.l2_Mem
     idu.io.wb_Mem := wbu.io.wb_Mem
-    idu.io.wb_Mul := wbu.io.wb_Mul
-    wbu.io.P := exu.io.P
+    idu.io.wb_Mul := exu.io.MulOut
+    exu.io.ls_ALU := lsu.io.ls_ALU
+    exu.io.wb_ALU := wbu.io.wb_ALU
+    exu.io.wb_Mem := wbu.io.wb_Mem
+    wbu.io.MulOut := exu.io.MulOut
 
     ifu.io.next <> ifu_idu.io.prev
     ifu_idu.io.next <> idu.io.prev
@@ -104,8 +105,7 @@ class buffer[T <: Bundle](gen: T) extends Module {
         state := 0.B
         ready := 0.B
     }
-    .elsewhen(state && (io.stall || ~io.next.ready)) {
-        state := 1.B
+    .elsewhen((state && ~io.next.ready) || io.stall) {
         ready := 0.B
         regs := regs
     }
