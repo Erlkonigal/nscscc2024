@@ -5460,7 +5460,7 @@ module uart_ctrl(
   end // always @(posedge)
   async_transmitter #(
     .Baud(9600),
-    .ClkFrequency(110000000)
+    .ClkFrequency(113000000)
   ) tran_0 (
     .clk       (clock),
     .TxD_start (_tran_io_TxD_start_T_1),
@@ -5470,7 +5470,7 @@ module uart_ctrl(
   );
   async_receiver #(
     .Baud(9600),
-    .ClkFrequency(110000000)
+    .ClkFrequency(113000000)
   ) recv (
     .clk            (clock),
     .RxD            (io_uart_rx),
